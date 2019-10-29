@@ -24,8 +24,8 @@ export default {
   },
   data() {
     return {
-      title: 'Vue Admin Template',
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
+      title: '风雨者航空气象服务系统',
+      logo: '/images/mainpage-logo.png'
     }
   }
 }
@@ -55,10 +55,10 @@ export default {
     width: 100%;
 
     & .sidebar-logo {
-      width: 32px;
-      height: 32px;
+      width: 5rem;
+      height: 5.1rem;
       vertical-align: middle;
-      margin-right: 12px;
+      // margin-right: 12px;
     }
 
     & .sidebar-title {

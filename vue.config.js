@@ -6,7 +6,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || 'vue Admin Template' // page title
+const name = defaultSettings.title || '风雨者航空气象服务' // page title
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
@@ -14,6 +14,12 @@ const name = defaultSettings.title || 'vue Admin Template' // page title
 // You can change the port by the following methods:
 // port = 9528 npm run dev OR npm run dev --port = 9528
 const port = process.env.port || process.env.npm_config_port || 9528 // dev port
+
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const webpack = require('webpack')
+const debug = process.env.NODE_ENV !== 'production'
+const cesiumSource = './node_modules/cesium/Source'
+const cesiumWorkers = '../Build/Cesium/Workers'
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -55,8 +61,29 @@ module.exports = {
     name: name,
     resolve: {
       alias: {
-        '@': resolve('src')
+        'vue$': 'vue/dist/vue.esm.js',
+        '@': path.resolve('src'),
+        'cesium': path.resolve(__dirname, cesiumSource)
       }
+    },
+    output: {
+      sourcePrefix: ' '
+    },
+    amd: {
+      toUrlUndefined: true
+    },
+    plugins: [
+      new CopyWebpackPlugin([ { from: path.join(cesiumSource, cesiumWorkers), to: 'Workers'}]),
+      new CopyWebpackPlugin([ { from: path.join(cesiumSource, 'Assets'), to: 'Assets'}]),
+      new CopyWebpackPlugin([ { from: path.join(cesiumSource, 'Widgets'), to: 'Widgets'}]),
+      new CopyWebpackPlugin([ { from: path.join(cesiumSource, 'ThirdParty/Workers'), to: 'ThirdParty/Workers'}]),
+      new webpack.DefinePlugin({
+        CESIUM_BASE_URL: JSON.stringify('./')
+      })
+    ],
+    module: {
+      unknownContextRegExp: /^.\/.*$/,
+      unknownContextCritical: false
     }
   },
   chainWebpack(config) {
@@ -137,3 +164,4 @@ module.exports = {
       )
   }
 }
+

@@ -1,29 +1,37 @@
 <template>
   <div class="navbar">
-    <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <!-- <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" /> -->
 
-    <breadcrumb class="breadcrumb-container" />
-
+    <!-- <breadcrumb class="breadcrumb-container" /> -->
+    <div class="infor">
+      <img src="../../assets/images/infor.png" alt="" class="inforimage">
+      <span class="inforSpan">信息</span>
+    </div>
+    <div class="settings">
+       <img src="../../assets/images/settings.png" alt="" class="inforimage">
+      <span class="settingsSpan">设置</span>
+     </div>
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+          <img :src="avatar" class="user-avatar">
+          <span>David</span>
+          <!-- <i class="el-icon-caret-bottom" /> -->
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item>
-              Home
+              主页
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
+          <!-- <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
           <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
             <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
+          </a> -->
           <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">Log Out</span>
+            <span style="display:block;" @click="logout">退出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -61,7 +69,40 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
+  .infor{
+    width:100%;
+    height:8.8rem;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    span{
+    // width:1.4rem;
+    height:2rem;
+    font-size:1.4rem;
+    font-weight:500;
+    color:rgba(255,255,255,1);
+    line-height:20px;
+  }
+  };
+  .settings{
+    width:100%;
+    height:8.8rem;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    span{
+    // width:1.4rem;
+    height:2rem;
+    font-size:1.4rem;
+    font-weight:500;
+    color:rgba(255,255,255,1);
+    line-height:20px;
+  }
+   
+  };
+  height: 30%;
   overflow: hidden;
   position: relative;
   background: #fff;
@@ -85,6 +126,7 @@ export default {
   }
 
   .right-menu {
+    padding-top:1rem;
     float: right;
     height: 100%;
     line-height: 50px;
@@ -112,11 +154,24 @@ export default {
     }
 
     .avatar-container {
-      margin-right: 30px;
+      // margin-right: 30px;
+      
 
       .avatar-wrapper {
-        margin-top: 5px;
+        // margin-top: 5px;
         position: relative;
+        display: flex;
+        flex-flow: column nowrap;
+        height:8.8rem;
+        justify-content: center;
+        align-items: center;
+        span{
+          height:2rem;
+          font-size:1.4rem;
+          font-weight:500;
+          color:#fff;
+          line-height:20px;
+        }
 
         .user-avatar {
           cursor: pointer;

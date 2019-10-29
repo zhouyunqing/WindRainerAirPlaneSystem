@@ -1,54 +1,64 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <div class="login-head">
+      <img src="../../assets/images/logo.png" class="customer-logo"/>
+    </div>
+    <div class="login-body">
+      <div class="login-outer">
+        <div class="login-airbg">
+          <div class="slogan-panel">
+            <div class="slogan">风雨者航空气象服务</div>
+            <hr align="center"  color="#FFFFFF" width="100%" size="0.1rem"> 
+          </div>
+        </div>
 
-      <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <div class="login-formcontainer">
+          <div class="title-container">
+            <h3 class="title">登 录</h3>
+          </div>
+        <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+          <el-form-item prop="username">
+            <span class="svg-container">
+              <svg-icon icon-class="user" />
+            </span>
+            <el-input
+              ref="username"
+              v-model="loginForm.username"
+              placeholder="用户名"
+              name="username"
+              type="text"
+              tabindex="1"
+              auto-complete="on"
+            />
+          </el-form-item>
+
+          <el-form-item prop="password">
+            <span class="svg-container">
+              <svg-icon icon-class="password" />
+            </span>
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="loginForm.password"
+              :type="passwordType"
+              placeholder="密码"
+              name="password"
+              tabindex="2"
+              auto-complete="on"
+              @keyup.enter.native="handleLogin"
+            />
+            <span class="show-pwd" @click="showPwd">
+              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            </span>
+          </el-form-item>
+
+          <el-button :loading="loading"  class="login-button" @click.native.prevent="handleLogin">登 录</el-button>
+
+        </el-form>
+        </div>
+
       </div>
-
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
-
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="Password"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-        </span>
-      </el-form-item>
-
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
-
-    </el-form>
+    </div>
   </div>
 </template>
 
@@ -60,14 +70,14 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('请输入正确的用户名'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('密码不能少于6位数'))
       } else {
         callback()
       }
@@ -126,12 +136,14 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../../styles/def.scss';
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg:#283443;
+$bg:#FFFFFF;
 $light_gray:#fff;
-$cursor: #fff;
+$cursor: #000;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {
@@ -141,6 +153,19 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  .login-button
+  {
+    margin-top: 3rem;
+    width:70%;
+    background:rgba(5,137,42,1);
+    box-shadow:0px 10px 22px 2px rgba(14,21,68,0.12);
+    border-radius:0.4rem;
+    font-size:1.6rem;
+    font-family:PingFangSC-Medium,PingFang SC;
+    font-weight:500;
+    color:rgba(255,255,255,1);
+    line-height:22px;
+  }
   .el-input {
     display: inline-block;
     height: 47px;
@@ -152,7 +177,7 @@ $cursor: #fff;
       -webkit-appearance: none;
       border-radius: 0px;
       padding: 12px 5px 12px 15px;
-      color: $light_gray;
+      // color: $light_gray;
       height: 47px;
       caret-color: $cursor;
 
@@ -164,32 +189,137 @@ $cursor: #fff;
   }
 
   .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(139, 9, 9, 0.1);
     background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     color: #454545;
+    width: 70%;
+    .el-input{
+      width: 32rem;
+    } 
   }
 }
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
+@import '../../styles/def.scss';
+$bg:#462d4b;
 $dark_gray:#889aa4;
 $light_gray:#eee;
 
+$bgimg:url('../../assets/images/loginbg.png') center center no-repeat;
+$bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
+  // background-color: $bg;
+  background: $bgimg;
   overflow: hidden;
+  .login-head{
+    @include align-middle;
+    flex: 0 0 3rem;
+    justify-content: flex-start;
+    padding: 4.4rem 5.9rem;
+    z-index: 999;
+    .customer-logo{
+      @include wh(13.5rem,3.5rem);
+      @media screen and (max-width: $width-medium){  width: 6rem;}
+    }
+  }
 
-  .login-form {
-    position: relative;
-    width: 520px;
-    max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
-    overflow: hidden;
+  .login-body{
+    @include align-center-middle;
+    flex: auto;
+    flex-flow: column nowrap;
+
+    @media screen and (max-width: $width-medium) and (min-aspect-ratio: 10/8){ //(orientation: landscape)
+        flex-flow: row nowrap;
+        justify-content: space-around
+      };
+    .login-outer {
+      @include wh(102rem,56rem);
+      @include align-middle-between;
+      display: flex;
+      flex-flow: row nowrap;
+      right: 20%;
+      font-size: $fontsize-s;
+      background:rgba(255,255,255,1);
+      box-shadow:0px 0px 20px 6px rgba(0,87,33,0.09);
+      border-radius:1.6rem;
+      // padding: 2.7rem 4rem;
+      z-index: 999;
+      .login-airbg{
+        @include wh(45.4rem,100%);
+        background:$bgimgair;
+        display: flex;
+        @include align-center-middle;
+        // background:$bgimgair;
+        .login-border{
+            position: relative;
+            width:100%;
+            height:100%;
+          }
+        .slogan-panel{
+          @include align-middle;
+          flex-flow: column nowrap;
+          // min-width: 20rem
+          z-index: 999;
+          height: 10rem;
+
+          @media screen and (max-width: $width-medium){
+            height: 6rem
+          }
+          
+          .slogan{
+            @include font-color-pos(2.4rem,$active-ft,left);
+            padding-bottom: 2rem;
+            @media screen and (max-width: $width-medium)
+            {
+              font-size: 1.4rem;
+              padding-bottom: 1rem
+            }
+                
+
+          }
+
+          .minor-slogan{
+            @include font-color-pos(1.2rem,$grip-color,left);
+              @media screen and (max-width: $width-medium){
+                font-size: $fontsize-s
+              }
+                         
+          }
+         
+          
+                      
+        }
+       
+
+        
+
+       
+      }
+
+      .login-formcontainer{
+        position: relative;
+        @include wh(56.6rem,100%);
+         .login-form {
+          display: flex;
+          @include align-middle;
+          flex-flow: column nowrap;
+          // position: relative;
+          // width: 52rem;
+          // max-width: 100%;
+          padding-top: 10rem;
+          // margin: 0 auto;
+          // overflow: hidden;
+      }
+        
+      }
+     
+    }
+    // width:102rem;
+    // height:56rem;
   }
 
   .tips {
@@ -216,11 +346,10 @@ $light_gray:#eee;
     position: relative;
 
     .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
+      font-size: 3.6rem;
+      color: rgba(51,51,51,1);
       text-align: center;
-      font-weight: bold;
+      font-weight: 500;
     }
   }
 

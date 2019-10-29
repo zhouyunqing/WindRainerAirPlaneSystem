@@ -24,6 +24,7 @@ import '@/permission' // permission control
  * please remove it before going online! ! !
  */
 import { mockXHR } from '../mock'
+
 if (process.env.NODE_ENV === 'production') {
   mockXHR()
 }
@@ -33,9 +34,20 @@ Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
 
+// new Vue({
+//   el: '#app',
+//   router,
+//   store,
+//   render: h => h(App)
+
+// })
 new Vue({
-  el: '#app',
   router,
   store,
   render: h => h(App)
-})
+  // mounted () {
+  //   var viewer = new Cesium.Viewer('cesiumContainer')
+  // }
+
+}).$mount('#app')
+
