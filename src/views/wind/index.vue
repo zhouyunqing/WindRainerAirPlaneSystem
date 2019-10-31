@@ -12,12 +12,13 @@ export default {
    mounted(){
       // Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(71.39628233299722, 17.90751494736041, 137.14821935043528, 49.06704603525708)
       this.viewer = new Cesium.Viewer('cesiumContainer', {
+      geocoder:false,
       animation: false,
       shouldAnimate: true,
-      homeButton: true,
-      baseLayerPicker: true,
+      homeButton: false,
+      baseLayerPicker: false,
       fullscreenButton: false,
-      sceneModePicker: true,
+      sceneModePicker: false,
       timeline: false,
       navigationHelpButton: false,
       // imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
