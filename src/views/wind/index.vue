@@ -20,11 +20,29 @@ export default {
       sceneModePicker: true,
       timeline: false,
       navigationHelpButton: false,
-      imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-        url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer',
-        enablePickFeatures: false
-      })
-    })
+      // imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
+      //   url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer',
+      //   enablePickFeatures: false
+      // }),
+      imageryProvider : new Cesium.UrlTemplateImageryProvider({
+                url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+//                layer: "tdtVecBasicLayer",
+//                style: "default",
+//                format: "image/png",
+//                tileMatrixSetID: "GoogleMapsCompatible",
+//                show: false
+            })
+        });
+     this.viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
+                url: "http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8",
+    //            layer: "tdtAnnoLayer",
+    //            style: "default",
+    //            format: "image/jpeg",
+    //            tileMatrixSetID: "GoogleMapsCompatible"
+            }));
+
+
+    //摄像机定位
     let camera = this.viewer.camera;
     camera.setView({
         destination : Cesium.Cartesian3.fromDegrees(116.576534748692, 40.0780145185529, 500),
