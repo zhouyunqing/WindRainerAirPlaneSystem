@@ -172,13 +172,13 @@ $cursor: #000;
     width: 85%;
 
     input {
-      background: transparent;
+      // background: transparent;
       border: 0px;
       -webkit-appearance: none;
       border-radius: 0px;
-      padding: 12px 5px 12px 15px;
+      // padding: 12px 5px 12px 15px;
       // color: $light_gray;
-      height: 47px;
+      height: 3rem;
       caret-color: $cursor;
 
       &:-webkit-autofill {
@@ -193,10 +193,20 @@ $cursor: #000;
     background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     color: #454545;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-content: middle;
     width: 70%;
     .el-input{
       width: 88%;
     } 
+    // .el-form-item__content
+    // {
+    //   line-height: 3rem;
+    // }
+  
+  
   }
 }
 </style>
@@ -332,7 +342,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
   }
 
   .svg-container {
-    // padding: 6px 5px 6px 15px;
+    padding: 6px 5px 6px 15px;
     color: $dark_gray;
     vertical-align: middle;
     width: 30px;
