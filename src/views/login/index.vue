@@ -195,7 +195,7 @@ $cursor: #000;
     color: #454545;
     width: 70%;
     .el-input{
-      width: 32rem;
+      width: 88%;
     } 
   }
 }
@@ -237,7 +237,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
         justify-content: space-around
       };
     .login-outer {
-      @include wh(102rem,56rem);
+      @include wh(70%,56rem);
       @include align-middle-between;
       display: flex;
       flex-flow: row nowrap;
@@ -257,6 +257,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
         @include wh(45.4rem,100%);
         background:$bgimgair;
         display: flex;
+        border-radius: 1.6rem 0rem 0rem 1.6rem;
         @include align-center-middle;
         // background:$bgimgair;
         .login-border{
@@ -331,7 +332,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
   }
 
   .svg-container {
-    padding: 6px 5px 6px 15px;
+    // padding: 6px 5px 6px 15px;
     color: $dark_gray;
     vertical-align: middle;
     width: 30px;
