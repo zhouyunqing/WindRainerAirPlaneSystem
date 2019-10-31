@@ -249,6 +249,11 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
       // padding: 2.7rem 4rem;
       z-index: 999;
       .login-airbg{
+        @media screen and (max-width: $width-medium){
+          display: none
+
+        }
+                
         @include wh(45.4rem,100%);
         background:$bgimgair;
         display: flex;
@@ -281,7 +286,6 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
                 
 
           }
-
           .minor-slogan{
             @include font-color-pos(1.2rem,$grip-color,left);
               @media screen and (max-width: $width-medium){
@@ -289,15 +293,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
               }
                          
           }
-         
-          
-                      
         }
-       
-
-        
-
-       
       }
 
       .login-formcontainer{

@@ -55,7 +55,7 @@ export default {
     });
 
     this.viewer.camera.flyTo({
-      destination: Cesium.Cartesian3.fromDegrees(116.576534748692, 40.0780145185529, 21961.9883961571),
+      destination: Cesium.Cartesian3.fromDegrees(116.606534748692, 40.0780145185529, 21961.9883961571),
       orientation: {
         heading: Cesium.Math.toRadians(359.668148999818),
         pitch: Cesium.Math.toRadians(-88.8329210486802),
