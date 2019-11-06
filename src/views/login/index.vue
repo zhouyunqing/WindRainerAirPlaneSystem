@@ -353,10 +353,11 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
     position: relative;
 
     .title {
+      font-family: "Noto Sans SC";
       font-size: 3.6rem;
       color: rgba(51,51,51,1);
       text-align: center;
-      font-weight: 500;
+      font-weight: 550;
     }
   }
 
