@@ -56,6 +56,18 @@ export function deleteRiskConfig(params) {
   })
 }
 
+// 修改预警配置提交
+export function updateRiskConfig(params) {
+  return request({
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    url: base_url + '/gis/riskConfig/updateRiskConfig',
+    method: 'post',
+    data: params
+  })
+}
+
 //  获得报警记录
 export function getRiskInfoes(params) {
   return request({
@@ -64,3 +76,9 @@ export function getRiskInfoes(params) {
   })
 }
 
+export function getRiskConfig(id) {
+  return request({
+    url: base_url + '/gis/riskConfig/getRiskConfig?id='+id,
+    method: 'get'
+  })
+}

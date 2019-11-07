@@ -1,6 +1,6 @@
 <template>
   <div class="forecast">
-    <notice-dialog :noticeVisible='noticeVisible' @save="RiskConfigList"
+    <notice-dialog :noticeVisible='noticeVisible' :riskTypeId='riskTypeId' @save="RiskConfigList"
                    @closeAddNotice="closeAddNotice"></notice-dialog>
     <h1 class="title-font">预警</h1>
     <el-menu :default-active="activeIndex"
@@ -17,11 +17,11 @@
                   prefix-icon="el-icon-search"
                   v-model="input">
         </el-input>
-        <el-button class="input-right"
+        <!-- <el-button class="input-right"
                    icon="el-icon-plus"
-                   @click="addNotice">
+                   @click="addNotice(-1)">
           添加新预警
-        </el-button>
+        </el-button> -->
       </div>
       <div class="notice-table">
         <el-table ref="singleTable"
@@ -32,19 +32,19 @@
                            label="名称"
                            :width="noticeWidth">
           </el-table-column>
-          <el-table-column property="address"
+          <el-table-column property="site"
                            label="地点"
                            :width="noticeWidth">
           </el-table-column>
-          <el-table-column property="from"
+          <el-table-column property="dealuser"
                            :width="noticeWidth"
                            label="发件人">
           </el-table-column>
-          <el-table-column property="level"
+          <el-table-column property="severity"
                            :width="noticeWidth"
                            label="预警级别">
           </el-table-column>
-          <el-table-column property="nstatus"
+          <el-table-column property="status"
                            :width="noticeWidth"
                            label="执行情况">
           </el-table-column>
@@ -66,7 +66,7 @@
         </el-input>
         <el-button class="input-right"
                    icon="el-icon-plus"
-                   @click="addNotice">
+                   @click="(addNotice(-1))">
           添加新预警
         </el-button>
       </div>
@@ -91,7 +91,7 @@
                            label="状态">
             <template slot-scope="scope">
               <el-switch v-model="scope.row.isactive"
-                         active-color="#48FF47">
+                         active-color="#48FF47"  disabled >
               </el-switch>
               <span v-if="scope.row.isactive">开启</span>
               <span v-else>关闭</span>
@@ -102,7 +102,7 @@
                            property="status"
                            label="">
             <template slot-scope="scope">
-              <el-button>修改</el-button>
+              <el-button @click="addNotice(scope.row.id)">修改</el-button>
               <el-button @click="deleteRiskConfigItem(scope.row.id)">删除</el-button>
             </template>
             
@@ -116,12 +116,14 @@
 
 <script>
 import noticeDialog from './noticeDialog'
-import {getRiskConfigList,deleteRiskConfig,getRiskInfoes} from '../../api/alert.js'
+import {getRiskConfigList,deleteRiskConfig,getRiskInfoes,getRiskServerity,getRunwayHistoryData,getGroupList,getRiskConfig} from '../../api/alert.js'
+import { constants } from 'fs';
 export default {
   name: 'forecast',
   data () {
     return {
       noticeVisible: false,
+      riskTypeId:{},
       value: true,
       activeIndex: 'notice',
       noticeWidth: 190,
@@ -130,7 +132,10 @@ export default {
       tableDataConfig: [],
       tableData: [],
       runwayHistoryData:[],
-      riskServerity:[]
+      riskServerity:[],
+      conditionsOptions:[],
+      wind_speed_options:[],
+      groupList:[]
       
     }
   },
@@ -144,7 +149,8 @@ export default {
     handleCurrentChange (val) {
       this.currentRow = val;
     },
-    addNotice () {
+    addNotice (id) {
+      this.initRiskTypeId(id)
       this.noticeVisible = true
     },
     closeAddNotice () {
@@ -158,16 +164,16 @@ export default {
           var item={
             id:rs['data']['pagedList'][id].id,
             name:rs['data']['pagedList'][id].name,
-            creater:rs['data']['pagedList'][id].dealuser,
-            isactive:rs['data']['pagedList'][id].severity,
-            isactive:rs['data']['pagedList'][id].state
+            site:'ZABB',
+            dealuser:rs['data']['pagedList'][id].dealuser,
+            severity:rs['data']['pagedList'][id].severity,
+            state:rs['data']['pagedList'][id].state
           }
           this.tableData.push(item)
           console.log(item)
         }
       })
-    }
-    ,
+    },
     RiskConfigList(){
     
       getRiskConfigList().then(rs=>{
@@ -178,7 +184,7 @@ export default {
             id:rs['data']['data'][id].id,
             name:rs['data']['data'][id].name,
             site:'ZBAA',
-            creater:rs['data']['data'][id].creater,
+            creater:rs['data']['data'][id].noticemails,
             isactive:rs['data']['data'][id].isactive
           }
           this.tableDataConfig.push(item)
@@ -186,6 +192,51 @@ export default {
         }
         
       })
+    }
+    ,RiskServerity(){
+       getRiskServerity().then(rs=>{
+        this.conditionsOptions=[];
+        if(rs['data']['data'].length>0){
+          this.conditionsLevel=rs['data']['data'][0].value
+        }
+        for(var id in rs['data']['data']){
+          this.conditionsOptions.push({
+             value:rs['data']['data'][id].key,
+             label:rs['data']['data'][id].value
+             })
+        }
+      })
+    }
+    ,RunwayHistoryData(){
+      var that=this
+      getRunwayHistoryData().then(rs=>{
+        this.wind_speed_options=[];
+        if(rs['data']['data'].length>0){
+          this.wind_speed=rs['data']['data'][0].key;
+        }
+        for(var id in rs['data']['data']){
+         
+          this.wind_speed_options.push({
+             value:rs['data']['data'][id].key,
+             label:rs['data']['data'][id].value
+             })
+        }
+        this.addCondition()
+        
+      })
+    }
+    ,GroupList(){
+      getGroupList().then(rs=>{
+        this.groupList=[]
+        for(var id in rs['data']['data']){
+         
+          this.groupList.push({
+            name: rs['data']['data'][id].name,
+            id:rs['data']['data'][id].id
+          })
+        }
+      })
+      
     },
     deleteRiskConfigItem(id){
       console.log('deleteRiskConfigid='+id)
@@ -197,12 +248,131 @@ export default {
         })
 
       }
+    },
+    riskServerityFun(){
+      getRiskServerity().then(rs=>{
+        this.conditionsOptions=[];
+        if(rs['data']['data'].length>0){
+          this.conditionsLevel=rs['data']['data'][0].value
+        }
+        for(var id in rs['data']['data']){
+          this.conditionsOptions.push({
+             value:rs['data']['data'][id].key,
+             label:rs['data']['data'][id].value
+             })
+        }
+      })
+    },
+    RunwayHistoryData(){
+      var that=this
+      getRunwayHistoryData().then(rs=>{
+        this.wind_speed_options=[];
+        if(rs['data']['data'].length>0){
+          this.wind_speed=rs['data']['data'][0].key;
+        }
+        for(var id in rs['data']['data']){
+         
+          this.wind_speed_options.push({
+             value:rs['data']['data'][id].key,
+             label:rs['data']['data'][id].value
+             })
+        }
+      
+      })
+    },
+    initRiskTypeId(id){
+      //init item
+      let conditionList=[]
+      conditionList.push({
+          wind_speed:this.wind_speed_options[0].value,
+          compare:1,
+          speed:0
+      })
+      
+      let groupItems=[]
+      for(var item in this.groupList){
+        groupItems.push({
+              name: this.groupList[item].name,
+              email: false,
+              message: false,
+              id:this.groupList[item].id,
+            })
+
+      }
+
+      this.riskTypeId={
+        name:'',
+        site:'ZABB',
+        status:true,
+        conditionsLevel:1,
+        conditionList:conditionList,
+        remark:'',
+        minutes:0,
+        second:0,
+        tableData:groupItems,
+        conditionListLength:conditionList.length,
+        wind_speed_options: this.wind_speed_options,
+        id:-1
+      }
+      if(id>-1){
+        getRiskConfig(id).then(rs=>{
+          console.log(rs);
+
+          var data=rs['data']['data']
+          if(data.queryitems.length>0){            
+            var t=data.queryitems.split(",")
+            conditionList=[]
+            for(var len=t.length,i=0;i<len/3;i++){
+              conditionList.push({
+                  wind_speed:t[i*3],
+                  compare:(t[i*3+1]=='>'?1:2),
+                  speed:t[i*3+2]
+              })
+            }
+          }
+
+          if(data.noticemails.length>0){
+            var t=data.noticemails.split(',');
+            for(var len=t.length,i=0;i<len;i++){
+              let groupItem = groupItems.find(function(x) {
+                return x.id == t[i];
+              })
+              groupItem.email=true
+            }
+          }
+
+          if(data.noticephones.length>0){
+            var t=data.noticephones.split(',');
+            for(var len=t.length,i=0;i<len;i++){
+              let groupItem = groupItems.find(function(x) {
+                return x.id == t[i];
+              })
+              groupItem.message=true
+            }
+          }
+
+          this.riskTypeId.name=data.name
+          this.riskTypeId.state=data.isactive
+          this.riskTypeId.conditionsLevel=data.severity
+          this.riskTypeId.conditionList=conditionList
+          this.riskTypeId.remark=data.remark
+          this.riskTypeId.minutes=data.prenoticehour
+          this.riskTypeId.second=data.prenoticemin
+          this.riskTypeId.tableData=groupItems
+          this.riskTypeId.conditionListLength=conditionList.length
+          this.riskTypeId.id=data.id
+          
+        })
+      }
+      
     }
     
   },
   mounted () {
+    this.RunwayHistoryData()
     this.RiskConfigList()
-    // this.riskinfoList()
+    this.GroupList()
+    this.riskinfoList()
     //预警通知 暂时注释下一步实现
     // this.$notify({
     //   title: '1个新的预警',

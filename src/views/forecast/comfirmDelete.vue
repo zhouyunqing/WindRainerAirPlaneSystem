@@ -7,8 +7,8 @@
                class="comfirmDelete">
       <div class="content">执行此操作将会删除未保存信息，您确定要继续删除吗？</div>
       <div class="footer">
-        <span class="span_foot">取消</span>
-        <el-button>确认删除</el-button>
+        <span class="span_foot" @click="comfirmDeleteClose">取消</span>
+        <el-button @click="comfirmDelete">确认删除</el-button>
       </div>
     </el-dialog>
   </div>
@@ -23,6 +23,9 @@ export default {
   methods: {
     comfirmDeleteClose (done) {
       this.$emit('closeComfirmDelete')
+    },
+    comfirmDelete(done){
+      this.$emit('comfirmDelete')
     }
   },
   props: {
