@@ -24,34 +24,34 @@
         </el-button> -->
       </div>
       <div class="notice-table">
-        <el-table ref="singleTable"
+        <el-table 
                   :data="tableData"
                   @current-change="handleCurrentChange"
                   style="width: 100%">
           <el-table-column property="name"
                            label="名称"
-                           :width="noticeWidth">
+                           :width="noticeWidth" :key="Math.random()">
           </el-table-column>
           <el-table-column property="site"
                            label="地点"
-                           :width="noticeWidth">
+                           :width="noticeWidth" :key="Math.random()">
           </el-table-column>
           <el-table-column property="dealuser"
                            :width="noticeWidth"
-                           label="发件人">
+                           label="发件人" :key="Math.random()">
           </el-table-column>
           <el-table-column property="severity"
                            :width="noticeWidth"
-                           label="预警级别">
+                           label="预警级别" :key="Math.random()">
           </el-table-column>
           <el-table-column property="status"
                            :width="noticeWidth"
-                           label="执行情况">
+                           label="执行情况" :key="Math.random()">
           </el-table-column>
           <el-table-column class="button-right"
                            property="status"
-                           label="">
-            <el-button>删除</el-button>
+                           label="" :key="Math.random()">
+            <el-button>删除</el-button >
           </el-table-column>
         </el-table>
       </div>
@@ -71,24 +71,24 @@
         </el-button>
       </div>
       <div class="notice-table">
-        <el-table ref="singleTable"
+        <el-table
                   :data="tableDataConfig"
                   @current-change="handleCurrentChange"
                   style="width: 100%">
           <el-table-column property="name"
                            label="名称"
-                           :width="configWidth">
+                           :width="configWidth" :key="Math.random()">
           </el-table-column>
           <el-table-column property="site"
                            label="地点"
-                           :width="configWidth">
+                           :width="configWidth" :key="Math.random()">
           </el-table-column>
           <el-table-column property="creater"
                            :width="configWidth"
-                           label="收件人">
+                           label="收件人" :key="Math.random()">
           </el-table-column>
           <el-table-column :width="configWidth"
-                           label="状态">
+                           label="状态" :key="Math.random()">
             <template slot-scope="scope">
               <el-switch v-model="scope.row.isactive"
                          active-color="#48FF47"  disabled >
@@ -100,14 +100,22 @@
           </el-table-column>
           <el-table-column class="button-right"
                            property="status"
-                           label="">
+                           label="" :key="Math.random()">
             <template slot-scope="scope">
               <el-button @click="addNotice(scope.row.id)">修改</el-button>
               <el-button @click="deleteRiskConfigItem(scope.row.id)">删除</el-button>
             </template>
             
           </el-table-column>
+
         </el-table>
+       
+          <pagination 
+            :total="total"
+            :page.sync="listQuery.page"
+            :limit.sync="listQuery.limit"
+            @pagination="RiskConfigList" />
+       
       </div>
     </div>
 
@@ -115,6 +123,7 @@
 </template>
 
 <script>
+import Pagination from '@/components/Pagination'
 import noticeDialog from './noticeDialog'
 import {getRiskConfigList,deleteRiskConfig,getRiskInfoes,getRiskServerity,getRunwayHistoryData,getGroupList,getRiskConfig} from '../../api/alert.js'
 import { constants } from 'fs';
@@ -122,6 +131,14 @@ export default {
   name: 'forecast',
   data () {
     return {
+      //分页控制
+      total: 0,
+      listQuery: {
+        page: 1,
+        limit: 8
+      },
+      
+
       noticeVisible: false,
       riskTypeId:{},
       value: true,
@@ -140,10 +157,12 @@ export default {
     }
   },
   components: {
-    noticeDialog
+    noticeDialog,
+    Pagination
   },
   methods: {
     handleSelect (key, keyPath) {
+
       this.activeIndex = key
     },
     handleCurrentChange (val) {
@@ -159,9 +178,10 @@ export default {
     riskinfoList(){
       getRiskInfoes().then(rs=>{
          console.log(rs['data']);
+         console.log('update riskinfo')
           this.tableData=[]
-        for(var id in rs['data']['pagedList']){
-          var item={
+        for(let id in rs['data']['pagedList']){
+          let item={
             id:rs['data']['pagedList'][id].id,
             name:rs['data']['pagedList'][id].name,
             site:'ZABB',
@@ -175,12 +195,21 @@ export default {
       })
     },
     RiskConfigList(){
-    
-      getRiskConfigList().then(rs=>{
-        // console.log(rs['data']);
+      let params={
+        isActive:-1,
+        pageSize:this.listQuery.limit,
+        skipped:0
+        }
+      if(this.total>0){
+        params.skipped=(this.listQuery.page-0)*this.listQuery.limit
+      }
+      
+      getRiskConfigList(params).then(rs=>{
+        console.log(rs['data']);
+        this.total=rs['data'].totalSize
         this.tableDataConfig=[]
-        for(var id in rs['data']['data']){
-          var item={
+        for(let id in rs['data']['data']){
+          let item={
             id:rs['data']['data'][id].id,
             name:rs['data']['data'][id].name,
             site:'ZBAA',
@@ -188,7 +217,7 @@ export default {
             isactive:rs['data']['data'][id].isactive
           }
           this.tableDataConfig.push(item)
-          console.log(item)
+          // console.log(item)
         }
         
       })
@@ -199,7 +228,7 @@ export default {
         if(rs['data']['data'].length>0){
           this.conditionsLevel=rs['data']['data'][0].value
         }
-        for(var id in rs['data']['data']){
+        for(let id in rs['data']['data']){
           this.conditionsOptions.push({
              value:rs['data']['data'][id].key,
              label:rs['data']['data'][id].value
@@ -208,13 +237,13 @@ export default {
       })
     }
     ,RunwayHistoryData(){
-      var that=this
+      let that=this
       getRunwayHistoryData().then(rs=>{
         this.wind_speed_options=[];
         if(rs['data']['data'].length>0){
           this.wind_speed=rs['data']['data'][0].key;
         }
-        for(var id in rs['data']['data']){
+        for(let id in rs['data']['data']){
          
           this.wind_speed_options.push({
              value:rs['data']['data'][id].key,
@@ -228,7 +257,7 @@ export default {
     ,GroupList(){
       getGroupList().then(rs=>{
         this.groupList=[]
-        for(var id in rs['data']['data']){
+        for(let id in rs['data']['data']){
          
           this.groupList.push({
             name: rs['data']['data'][id].name,
@@ -255,7 +284,7 @@ export default {
         if(rs['data']['data'].length>0){
           this.conditionsLevel=rs['data']['data'][0].value
         }
-        for(var id in rs['data']['data']){
+        for(let id in rs['data']['data']){
           this.conditionsOptions.push({
              value:rs['data']['data'][id].key,
              label:rs['data']['data'][id].value
@@ -264,13 +293,13 @@ export default {
       })
     },
     RunwayHistoryData(){
-      var that=this
+      let that=this
       getRunwayHistoryData().then(rs=>{
         this.wind_speed_options=[];
         if(rs['data']['data'].length>0){
           this.wind_speed=rs['data']['data'][0].key;
         }
-        for(var id in rs['data']['data']){
+        for(let id in rs['data']['data']){
          
           this.wind_speed_options.push({
              value:rs['data']['data'][id].key,
@@ -290,7 +319,7 @@ export default {
       })
       
       let groupItems=[]
-      for(var item in this.groupList){
+      for(let item in this.groupList){
         groupItems.push({
               name: this.groupList[item].name,
               email: false,
@@ -318,11 +347,11 @@ export default {
         getRiskConfig(id).then(rs=>{
           console.log(rs);
 
-          var data=rs['data']['data']
+          let data=rs['data']['data']
           if(data.queryitems.length>0){            
-            var t=data.queryitems.split(",")
+            let t=data.queryitems.split(",")
             conditionList=[]
-            for(var len=t.length,i=0;i<len/3;i++){
+            for(let len=t.length,i=0;i<len/3;i++){
               conditionList.push({
                   wind_speed:t[i*3],
                   compare:(t[i*3+1]=='>'?1:2),
@@ -332,8 +361,8 @@ export default {
           }
 
           if(data.noticemails.length>0){
-            var t=data.noticemails.split(',');
-            for(var len=t.length,i=0;i<len;i++){
+            let t=data.noticemails.split(',');
+            for(let len=t.length,i=0;i<len;i++){
               let groupItem = groupItems.find(function(x) {
                 return x.id == t[i];
               })
@@ -342,8 +371,8 @@ export default {
           }
 
           if(data.noticephones.length>0){
-            var t=data.noticephones.split(',');
-            for(var len=t.length,i=0;i<len;i++){
+            let t=data.noticephones.split(',');
+            for(let len=t.length,i=0;i<len;i++){
               let groupItem = groupItems.find(function(x) {
                 return x.id == t[i];
               })
