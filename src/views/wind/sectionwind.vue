@@ -1,31 +1,29 @@
 <template>
-  <div class="wind">
- 
-    <el-input  class="search" v-model="searchInput" placeholder="输入查询机场名称或拼音">
-      <i slot="prefix" class="el-input__icon el-icon-search"></i>
-    </el-input>
-
-    <div id="cesiumContainer">
-    </div>
-    <article class="wind_header">
+  <div class="sectionwind" @mouseup="stopMove">
+    <section>
+      <article class="wind_header">
         <div>
-          <el-button id="planewind" type="primary" @click="windToggle('plane')">平面风展示</el-button>
-          <el-button id="sectionwind" type="primary" @click="windToggle('section')">剖面风展示</el-button>
+          <el-input v-model="searchInput" placeholder="输入查询机场名称或拼音">
+            <i slot="prefix" class="el-input__icon el-icon-search"></i>
+          </el-input>
         </div>
-
-      </article>
-
-      <article  v-if="activeWind=='sectionwind'" class="wind_content">
-        <div v-if="activeWind=='sectionwind'" class="wind_header_icon">
+        <div>
+          <el-button type="primary">平面风向展示</el-button>
+          <el-button class="button_color" type="primary">部面风向展示</el-button>
+        </div>
+        <div class="wind_header_icon">
           <div class="pic_icon"></div>
           <span>详细</span>
         </div>
+      </article>
+
+      <article class="wind_content">
         <div id="body">
           <div  ref="canvas" id="canvas" class="canvas"></div>
         </div>
       </article>
 
-      <article  v-if="activeWind=='sectionwind'" class="wind_footer">
+      <article class="wind_footer">
         <div class="wind_footer_header">
           <el-button :class="{ 'select_color': runType=='runway1' }"  @click="changeRunway('runway1')">跑道1</el-button>
           <el-button :class="{ 'select_color': runType=='runway2' }" @click="changeRunway('runway2')">跑道2</el-button>
@@ -61,73 +59,37 @@
           </div>
         </div>
       </article>
+    </section>
   </div>
-  
 </template>
 <script>
-
-import Cesium from 'cesium/Cesium'; 
-import  widgets from'cesium/Widgets/widgets.css';
-import colorTable from '@/components/wind/colorTable.js'
-import Wind3D from '@/components/wind/wind3D.js'
-import sectionwind from './sectionwind'
 import data from "@/assets/data/j1.json";
 import request from "@/utils/request1";
-
 export default {
-   name: 'cesiumContainer',
-   data(){
-     return{
-        data: Object,
-        colorTable: {
-          type: Object,
-          default: () => {
-            return colorTable
-          }
-        },
-        particleSystemOptions: {
-          type: Object,
-          default: function () {
-            return {
-              particlesTextureSize: 128,
-              maxParticles: 128 * 128,
-              particleHeight: 100.0,
-              fadeOpacity: 0.996,
-              dropRate: 0.003,
-              dropRateBump: 0.01,
-              speedFactor: 4.0,
-              lineWidth: 4.0
-            }
-          }
-        },
-        searchInput: "",
-        mySliderLeft: 0,
-        mouseX: 0,
-        mouseXstart: 0,
-        flag: false,
-        height_num: 35,
-        initLeft: 0,
-        runType: 'runway1',
-        activeWind: 'planewind',
-     }
-    
-   },
-  components: {
-    sectionwind
+  name: 'sectionwind',
+  data() {
+    return {
+      searchInput: "",
+      mySliderLeft: 0,
+      mouseX: 0,
+      mouseXstart: 0,
+      flag: false,
+      height_num: 35,
+      initLeft: 0,
+      runType: 'runway1'
+    };
   },
-    methods: {
-    windToggle(windType) {
-      if(windType=="section"){
-        this.activeWind="sectionwind"
-        this.$el.querySelector("#planewind").classList.remove('active')
-        this.$el.querySelector("#sectionwind").classList.add('active')
-      }else{
-        this.activeWind="planewind"
-        this.$el.querySelector("#sectionwind").classList.remove('active')
-        this.$el.querySelector("#planewind").classList.add('active')
-        changeRunway('runway1')
-      }
-    },
+  mounted() {
+    let self = this;
+    request({
+      url:
+        "http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=2019-11-01%2000:00:00&resolution=1000M&runway=runway1",
+      method: "get"
+    }).then(resp => {
+      self.draw(resp.data);
+    });
+  },
+  methods: {
     changeRunway(type) {
       this.runType = type
       let self = this
@@ -327,220 +289,13 @@ export default {
     stopMove(event) {
       this.flag = false;
     }
-  },
-   mounted(){
-    this.$el.querySelector("#planewind").classList.add('active')
-    let self = this;
-    request({
-      url:
-        "http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=2019-11-01%2000:00:00&resolution=1000M&runway=runway1",
-      method: "get"
-    }).then(resp => {
-      self.draw(resp.data);
-    });
-    // Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(71.39628233299722, 17.90751494736041, 137.14821935043528, 49.06704603525708)
-    this.viewer = new Cesium.Viewer('cesiumContainer', {
-    geocoder:false,
-    animation: false,
-    shouldAnimate: true,
-    homeButton: false,
-    baseLayerPicker: false,
-    fullscreenButton: false,
-    sceneModePicker: false,
-    timeline: false,
-    navigationHelpButton: false,
-    imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-      url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer',
-      enablePickFeatures: false
-    }),
-//     imageryProvider : new Cesium.UrlTemplateImageryProvider({
-//                 url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
-//             })
-        });
-    this.viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
-                url: "http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8",
-            }));
-    //摄像机定位
-    let camera = this.viewer.camera;
-    camera.setView({
-        destination : Cesium.Cartesian3.fromDegrees(116.576534748692, 40.0780145185529, 500),
-        orientation: {
-            heading : 359.668148999818,
-            pitch : -88.8329210486802,
-            roll : 0.0
-        }
-    });
-    //定位北京首都机场
-    this.viewer.camera.flyTo({
-      destination: Cesium.Cartesian3.fromDegrees(116.606534748692, 40.0780145185529, 21961.9883961571),
-      orientation: {
-        heading: Cesium.Math.toRadians(359.668148999818),
-        pitch: Cesium.Math.toRadians(-88.8329210486802),
-        roll: Cesium.Math.toRadians(0)
-      }
-    })
-    this.viewer._cesiumWidget._creditContainer.style.display = "none";
-    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjY5ODg0MS1lZTMxLTRmMGMtOTRhYi00N2M2YjQ3ZDMzNjgiLCJpZCI6NDgwLCJpYXQiOjE1MjUyNTE1Nzh9.5Mi3ijReKCRQ_Shupv2w-wl2eJBRLOOW3Bmeq0IL5Y4'
-    let val=2;
-    //加载风场
-    if (val === 1){
-        this.loadNetCDF(this.urlNetCDF).then((data)=>{
-          this.windData = data
-        })
-      } else if (val === 2){
-        let time = "2019-10-31%2000:00:00";
-        let level =0
-
-        let jsonPath = "http://161.189.11.216:8090/gis/BJPEK/ModelForecast?datacode=ABC&dataset=XLONG,XLAT,U,V&time="+time+"&bbox=110,30,120,42&z="+level +"&resolution=1000M";//fileOptions.dataDirectory + "wind/wind_"+time+"_L"+level+".json";
-        Cesium.Resource.fetchJson({ url: jsonPath }).then((resData) => {
-          resData=resData.data 
-          let data = {};
-      
-          data.dimensions = {};
-          data.dimensions.lon = 120;//dimensions['lon'].size;
-          data.dimensions.lat = 120;//dimensions['lat'].size;
-          data.dimensions.lev = 1;//dimensions['lev'].size;
-
-          data.lon = {};
-          data.lon.array = new Float32Array(resData.XLONG);
-          data.lon.min = Math.min.apply(null,data.lon.array);//Math.min(...data.lon.array);
-          data.lon.max = Math.max.apply(null,data.lon.array);//Math.max(...data.lon.array);
-
-          data.lat = {};
-          data.lat.array = new Float32Array(resData.XLAT);
-          data.lat.min = Math.min.apply(null,data.lat.array);//Math.min(...data.lat.array);
-          data.lat.max = Math.max.apply(null,data.lat.array);//Math.max(...data.lat.array);
-
-          data.lev = {};
-          data.lev.array = new Float32Array([1.0]);
-          data.lev.min = Math.min.apply(null,data.lev.array);//Math.min(...data.lev.array);
-          data.lev.max = Math.max.apply(null,data.lev.array);//Math.max(...data.lev.array);
-
-          data.U = {};
-          data.U.array = new Float32Array(resData.U);//new Float32Array(resData.U);
-          data.U.min = Math.min.apply(null,data.U.array);//Math.min(...data.U.array);
-          data.U.max = Math.max.apply(null,data.U.array);//Math.max(...data.U.array);
-
-          data.V = {};
-          data.V.array = new Float32Array(resData.V);//new Float32Array(resData.V);
-          data.V.min = Math.min.apply(null,data.V.array);//Math.min(...data.V.array);
-          data.V.max = Math.max.apply(null,data.V.array);//Math.max(...data.V.array);
-           
-          this.windData = data
-          this.windData.colorTable = loadColorTable()
-          let  particlecount=100
-          let  particleSystemOptions={
-            particlesTextureSize: particlecount,
-            maxParticles: particlecount * particlecount,
-            particleHeight: 100.0,
-            fadeOpacity: 0.92,
-            dropRate: 0.03,
-            dropRateBump: 0.01,
-            speedFactor: 3.0,
-            lineWidth: 4
-          }
-          let windDataMap= this.windData
-          let particleSystemOptionsMap=particleSystemOptions;
-          let wind3D = new Wind3D(this.viewer,windDataMap,particleSystemOptionsMap) 
-          function loadColorTable () {
-              let json =  {
-                ncolors: 1,
-                colorTable: [
-                  1,
-                  1,
-                  1.000000,
-                  0.8
-                ]
-              }
-              let colorNum = json['ncolors']
-              let colorTable = json['colorTable']
-              // let colorsArray = new Float32Array(3 * colorNum)
-              // for (let i = 0; i < colorNum; i++) {
-              //   colorsArray[3 * i] = colorTable[3 * i]
-              //   colorsArray[3 * i + 1] = colorTable[3 * i + 1]
-              //   colorsArray[3 * i + 2] = colorTable[3 * i + 2]
-              // }
-
-              let channel = 4;
-              let colorsArray = new Float32Array(channel * colorNum);
-              for (var i = 0; i < colorNum; i++) {
-                  for(var j = 0; j < channel; j++){
-                      colorsArray[channel * i + j] = colorTable[channel * i + j];
-                  }
-                  //colorsArray[channel * i + 1] = colorTable[channel * i + 1];
-                  //colorsArray[channel * i + 2] = colorTable[channel * i + 2];
-              }
-              let result = {}
-              result.colorNum = colorNum
-              result.array = colorsArray
-              return result
-            }
-
-          function  objToStrMap(obj){
-              let strMap = new Map();
-              for (let k of Object.keys(obj)) {
-                  strMap.set(k,obj[k]);
-              }
-              return strMap;
-          }
-        })    
-      };
-  },
-
-  async loadNetCDF (filePath) {
-    let _this = this
-    return new Promise(function (resolve) {
-      let request = new XMLHttpRequest()
-      request.open('GET', filePath)
-      request.responseType = 'arraybuffer'
-      request.onload = function () {
-        var arrayToMap = function (array) {
-          return array.reduce(function (map, object) {
-            map[object.name] = object
-            return map
-          }, {})
-        }
-        var NetCDF = new NetCDFReader(request.response)
-        let data = {}
-        var dimensions = arrayToMap(NetCDF.dimensions)
-        data.dimensions = {}
-        data.dimensions.lon = dimensions['lon'].size
-        data.dimensions.lat = dimensions['lat'].size
-        data.dimensions.lev = dimensions['lev'].size
-        var variables = arrayToMap(NetCDF.variables)
-        var uAttributes = arrayToMap(variables['U'].attributes)
-        var vAttributes = arrayToMap(variables['V'].attributes)
-        data.lon = {}
-        data.lon.array = new Float32Array(NetCDF.getDataVariable('lon').flat())
-        data.lon.min = Math.min(...data.lon.array)
-        data.lon.max = Math.max(...data.lon.array)
-        data.lat = {}
-        data.lat.array = new Float32Array(NetCDF.getDataVariable('lat').flat())
-        data.lat.min = Math.min(...data.lat.array)
-        data.lat.max = Math.max(...data.lat.array)
-        data.lev = {}
-        data.lev.array = new Float32Array(NetCDF.getDataVariable('lev').flat())
-        data.lev.min = Math.min(...data.lev.array)
-        data.lev.max = Math.max(...data.lev.array)
-        data.U = {}
-        data.U.array = new Float32Array(NetCDF.getDataVariable('U').flat())
-        data.U.min = uAttributes['min'].value
-        data.U.max = uAttributes['max'].value
-        data.V = {}
-        data.V.array = new Float32Array(NetCDF.getDataVariable('V').flat())
-        data.V.min = vAttributes['min'].value
-        data.V.max = vAttributes['max'].value
-        resolve(data)
-      }
-      request.send()
-    })
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
 
+<style  lang="scss">
 @font-face {
   font-family: "icomoon";
   src: url("./fonts/icomoon.eot?rl3qay");
@@ -552,29 +307,15 @@ export default {
   font-style: normal;
   font-display: block;
 }
-.wind {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
-  .search{
-    position:absolute;
-    top:5%;
-    left:3rem;
-    width: 25.6rem;
-    height: 4rem;
-    z-index: 999;
-  }
+.sectionwind {
+  height: 100vh;
   .wind_header {
     display: flex;
-    justify-content: center;
-    position:absolute;
-    top: 5%;
-  
-    // .el-input {
-    //   width: 256px;
-    // }
+    justify-content: space-between;
+    padding: 20px;
+    .el-input {
+      width: 256px;
+    }
     .el-button {
       font-size: 15px;
       font-family: PingFangSC-Medium, PingFang SC;
@@ -583,9 +324,6 @@ export default {
       line-height: 21px;
       padding: 9px 6px 10px 12px;
       background-color: #006426;
-      &.active{
-        background-color: #05892a
-      }
     }
     .button_color {
       background-color: #05892a;
@@ -593,12 +331,6 @@ export default {
     .pic_icon {
       width: 256px;
     }
-
-  }
-  .wind_content {
-    position:absolute;
-    top: 20%;
-    background: #242236;
     .wind_header_icon {
       display: flex;
       span {
@@ -612,6 +344,9 @@ export default {
         text-decoration: underline;
       }
     }
+  }
+  .wind_content {
+    margin-top: 24px;
     #canvas {
       overflow: scroll;
       width: 100%;

@@ -42,7 +42,7 @@ class Wind3D {
     this.setupEventListeners()
     this.imageryLayers = this.viewer.imageryLayers
     // this.drawWindLayer(this.data)
-    // this.drawWindHeatLayer(this.data)
+    this.drawWindHeatLayer(this.data)
   }
 
   // drawWindLayer(data){//绘制风向图
