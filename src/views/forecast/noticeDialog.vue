@@ -1,6 +1,6 @@
 <template>
   <div>
-    <comfirm-delete :comfirmDeleteVisible="comfirmDeleteVisible" @closeComfirmDelete="closeComfirmDelete"></comfirm-delete>
+    <comfirm-delete :comfirmDeleteVisible="comfirmDeleteVisible" @closeComfirmDelete="closeComfirmDelete" @comfirmDelete="comfirmDelete"></comfirm-delete>
     <el-dialog title="预警配置"
                :visible.sync="noticeVisible"
                width="30%"
@@ -10,13 +10,13 @@
         <section class="config">
           <article class="name">
             <div class="name_font">名称</div>
-            <el-input v-model="name"
+            <el-input v-model="riskTypeId.name"
                       placeholder="在这里填写报警名称"></el-input>
           </article>
           <article class="address">
             <div class="name_font">预警地点</div>
             <el-select class="address_select"
-                       v-model="site"
+                       v-model="riskTypeId.site"
                        placeholder="请选择">
               <el-option v-for="item in options"
                          :key="item.value"
@@ -25,13 +25,13 @@
               </el-option>
             </el-select>
           </article>
-          <article class="status">
+          <article class="status" v-if="riskTypeId.id>0">
             <div class="name_font">状态</div>
             <div class="status_body">
-              <el-switch v-model="status"
+              <el-switch v-model="riskTypeId.status"
                          active-color="#13ce66">
               </el-switch>
-              <span v-if="status"
+              <span v-if="riskTypeId.status"
                     class="status_font">开</span>
               <span v-else
                     class="status_font">关</span>
@@ -41,9 +41,9 @@
             <div class="conditions_header">
               <span class="name_font">预警条件</span>
               <el-select class="address_select"
-                         v-model="conditionsLevel"
+                         v-model="riskTypeId.conditionsLevel"
                          placeholder="请选择">
-                <el-option v-for="item in conditionsOptions"
+                <el-option v-for="item in riskTypeId.conditionsOptions"
                            :key="item.value"
                            :label="item.label"
                            :value="item.value"
@@ -53,12 +53,12 @@
             </div>
             <div class="conditions_body">
              
-              <div class="list " v-for="(itemp,index) in conditionList" :key="index">
+              <div class="list " v-for="(itemp,index) in riskTypeId.conditionList" :key="index">
                 <div>
                   <el-select class="wind_speed_width"
                              v-model="itemp.wind_speed"
                              placeholder="请选择">
-                    <el-option v-for="item in wind_speed_options"
+                    <el-option v-for="item in riskTypeId.wind_speed_options"
                                :key="item.value"
                                :label="item.label"
                                :value="item.value">
@@ -77,7 +77,7 @@
                   <span class="speed_font">m/s</span>
                 </div>
                 <div>
-                  <el-button @click="addCondition" v-show="index==conditionListLength-1">添加</el-button>
+                  <el-button @click="addCondition" v-show="index==riskTypeId.conditionListLength-1">添加</el-button>
                   <el-button @click="deleteCondition(index)" v-show='index>0'>删除</el-button>
                 </div>
               </div>
@@ -91,14 +91,14 @@
                       id=""
                       cols="30"
                       rows="10"
-                      placeholder="在这里填写你想要的警报信息" v-model="remark"></textarea>
+                      placeholder="在这里填写你想要的警报信息" v-model="riskTypeId.remark"></textarea>
           </article>
           <article class="notice">
             <div class="name_font">预警通知</div>
             <div class="notice_body">
               <span>将在预警发生前</span>
               <el-select class="compare_width"
-                         v-model="minutes"
+                         v-model="riskTypeId.minutes"
                          placeholder="请选择">
                 <el-option v-for="item in minutesOptions"
                            :key="item.value"
@@ -108,7 +108,7 @@
               </el-select>
               <span>小时</span>
               <el-select class="compare_width"
-                         v-model="second"
+                         v-model="riskTypeId.second"
                          placeholder="请选择">
                 <el-option v-for="item in secondOptions"
                            :key="item.value"
@@ -123,7 +123,7 @@
             <div class="name_font">发送信息到群组</div>
             <div class="sendMessage_body">
               
-              <el-table :data="tableData"
+              <el-table :data="riskTypeId.tableData"
                         style="width: 100%">
                 <el-table-column prop="name"
                                  label="姓名">
@@ -150,7 +150,7 @@
         </section>
       </div>
       <footer class="footer">
-        <el-button class="cancel">取消</el-button>
+        <el-button class="cancel" @click="comfirmDeleteOpen">取消</el-button>
         <el-button class="save" @click="submit">保存</el-button>
       </footer>
     </el-dialog>
@@ -158,7 +158,7 @@
 </template>
 <script>
 import comfirmDelete from './comfirmDelete'
-import {getRiskServerity,getRunwayHistoryData,getGroupList,createRiskConfig} from '../../api/alert.js'
+import {createRiskConfig,updateRiskConfig} from '../../api/alert.js'
 export default {
 
   name: 'noticeDialog',
@@ -167,19 +167,13 @@ export default {
   },
   data () {
     return {
-      remark:'',
-      comfirmDeleteVisible: false,
-      name: '',
-      site: 'ZBAA',
-      conditionsLevel: 1,
+      comfirmDeleteVisible: false,    
       options: [
         {
           label: 'ZBAA',
           value: 'ZBAA'
         }
       ],
-      status: true,
-      conditionsOptions: [],
       compareOptions: [
         {
           label: '大于',
@@ -190,17 +184,8 @@ export default {
           value: 2
         }
       ],
-      compare: 1,
-      wind_speed_options: [],
-      wind_speed: 1,
-      speed: 0,
-      minutes: 0,
-      second: 0,
       secondOptions: [],
       minutesOptions: [],
-      tableData: [],
-      conditionList: [],
-      conditionListLength:0,
       show:false
     }
   },
@@ -217,52 +202,11 @@ export default {
     closeComfirmDelete(){
       this.comfirmDeleteVisible = false
     }
-    ,RiskServerity(){
-      getRiskServerity().then(rs=>{
-        this.conditionsOptions=[];
-        if(rs['data']['data'].length>0){
-          this.conditionsLevel=rs['data']['data'][0].value
-        }
-        for(var id in rs['data']['data']){
-          this.conditionsOptions.push({
-             value:rs['data']['data'][id].key,
-             label:rs['data']['data'][id].value
-             })
-        }
-      })
-    }
-    ,RunwayHistoryData(){
-      var that=this
-      getRunwayHistoryData().then(rs=>{
-        this.wind_speed_options=[];
-        if(rs['data']['data'].length>0){
-          this.wind_speed=rs['data']['data'][0].key;
-        }
-        for(var id in rs['data']['data']){
-         
-          this.wind_speed_options.push({
-             value:rs['data']['data'][id].key,
-             label:rs['data']['data'][id].value
-             })
-        }
-        this.addCondition()
-        
-      })
-    }
-    ,GroupList(){
-      getGroupList().then(rs=>{
-        this.tableData=[]
-        for(var id in rs['data']['data']){
-         
-          this.tableData.push({
-            name: rs['data']['data'][id].name,
-            email: false,
-            message: false,
-            id:rs['data']['data'][id].id
-          })
-        }
-      })
-      
+    ,
+    comfirmDelete(){
+
+      this.closeComfirmDelete()
+      this.handleClose()
     },
     submitCreateRiskConfig(data){
       createRiskConfig(data).then(rs=>{
@@ -271,19 +215,27 @@ export default {
         this.handleClose()
       })
     },
+    submitUpdateRiskConfig(data){
+      updateRiskConfig(data).then(rs=>{
+        console.log(rs)
+        this.$emit('save')
+        this.handleClose()
+      })
+    }
+    ,
     addCondition(){
-      if(this.wind_speed_options.length>0){
-        this.conditionList.push({
-          wind_speed:this.wind_speed_options[0].value,
+      if(this.riskTypeId.wind_speed_options.length>0){
+        this.riskTypeId.conditionList.push({
+          wind_speed:this.riskTypeId.wind_speed_options[0].value,
           compare:1,
           speed:0
         })
-        this.conditionListLength=this.conditionList.length
+        this.riskTypeId.conditionListLength=this.riskTypeId.conditionList.length
       }
     },
     deleteCondition(index){
-      this.conditionList.splice(index,1)
-      this.conditionListLength=this.conditionList.length
+      this.riskTypeId.conditionList.splice(index,1)
+      this.riskTypeId.conditionListLength=this.conditionList.length
       
     }
     ,initBaseData(){
@@ -295,49 +247,50 @@ export default {
       this.secondOptions=[]
       for(var i=0;i<60;i++){
         this.secondOptions.push({value:i,label:i})
-      }
-      this.RiskServerity()
-      this.RunwayHistoryData()
-      this.GroupList()
-
-      
+      }      
     }
     ,submit(){
       let queryitems=""
       let noticemails=""
       let noticephones=""
-      console.log(this.conditionList);
-      for(let index in this.conditionList){
+  
+      for(let index in this.riskTypeId.conditionList){
         if(queryitems!=""){
           queryitems += ','
         }
-        queryitems += this.conditionList[index]['wind_speed']+','+(this.conditionList[index].compare==1?'>':'<')+','+this.conditionList[index].speed
+        queryitems += this.riskTypeId.conditionList[index]['wind_speed']+','+(this.riskTypeId.conditionList[index].compare==1?'>':'<')+','+this.riskTypeId.conditionList[index].speed
       }
 
-      for(let index in this.tableData){
-        if(this.tableData[index].email){
-          noticemails +=(noticemails=="")?this.tableData[index].id:','+this.tableData[index].id
+      for(let index in this.riskTypeId.tableData){
+        if(this.riskTypeId.tableData[index].email){
+          noticemails +=(noticemails=="")?this.riskTypeId.tableData[index].id:','+this.riskTypeId.tableData[index].id
         }
-        if(this.tableData[index].message){
-          noticephones +=(noticephones=="")?this.tableData[index].id:','+this.tableData[index].id
+        if(this.riskTypeId.tableData[index].message){
+          noticephones +=(noticephones=="")?this.riskTypeId.tableData[index].id:','+this.riskTypeId.tableData[index].id
         }
       }
 
       let submitItem={
-        name:this.name,
-        site:this.site,
-        remark:this.remark,
-        severity:this.conditionsLevel,
+        name:this.riskTypeId.name,
+        site:this.riskTypeId.site,
+        remark:this.riskTypeId.remark,
+        severity:this.riskTypeId.conditionsLevel,
         source:"runwayHistoryData",
         timespan:"2880000",
         queryitems:queryitems,
-        prenoticehour:this.minutes,
-        prenoticemin:this.second,
+        prenoticehour:this.riskTypeId.minutes,
+        prenoticemin:this.riskTypeId.second,
         noticemails:noticemails,
-        noticephones:noticephones
+        noticephones:noticephones,
+        isactive:this.riskTypeId.status
       }
       console.log(JSON.stringify(submitItem));
-      this.submitCreateRiskConfig(submitItem)
+      if(this.riskTypeId.id<0){
+        this.submitCreateRiskConfig(submitItem)
+      }else{
+        submitItem.id=this.riskTypeId.id
+        this.submitUpdateRiskConfig(submitItem)
+      }
 
     }
   },
@@ -345,6 +298,10 @@ export default {
     noticeVisible: {
       default: false,
       type: Boolean
+    },
+    riskTypeId:{
+      default:-1,
+      type: Object
     }
   }
 }
