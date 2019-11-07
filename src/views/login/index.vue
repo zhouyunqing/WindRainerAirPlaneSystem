@@ -172,13 +172,13 @@ $cursor: #000;
     width: 85%;
 
     input {
-      background: transparent;
+      // background: transparent;
       border: 0px;
       -webkit-appearance: none;
       border-radius: 0px;
-      padding: 12px 5px 12px 15px;
+      // padding: 12px 5px 12px 15px;
       // color: $light_gray;
-      height: 47px;
+      height: 3rem;
       caret-color: $cursor;
 
       &:-webkit-autofill {
@@ -193,10 +193,20 @@ $cursor: #000;
     background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     color: #454545;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-content: middle;
     width: 70%;
     .el-input{
-      width: 32rem;
+      width: 88%;
     } 
+    // .el-form-item__content
+    // {
+    //   line-height: 3rem;
+    // }
+  
+  
   }
 }
 </style>
@@ -237,7 +247,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
         justify-content: space-around
       };
     .login-outer {
-      @include wh(102rem,56rem);
+      @include wh(70%,56rem);
       @include align-middle-between;
       display: flex;
       flex-flow: row nowrap;
@@ -249,9 +259,15 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
       // padding: 2.7rem 4rem;
       z-index: 999;
       .login-airbg{
+        @media screen and (max-width: $width-medium){
+          display: none
+
+        }
+                
         @include wh(45.4rem,100%);
         background:$bgimgair;
         display: flex;
+        border-radius: 1.6rem 0rem 0rem 1.6rem;
         @include align-center-middle;
         // background:$bgimgair;
         .login-border{
@@ -281,7 +297,6 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
                 
 
           }
-
           .minor-slogan{
             @include font-color-pos(1.2rem,$grip-color,left);
               @media screen and (max-width: $width-medium){
@@ -289,15 +304,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
               }
                          
           }
-         
-          
-                      
         }
-       
-
-        
-
-       
       }
 
       .login-formcontainer{
@@ -346,10 +353,11 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
     position: relative;
 
     .title {
+      font-family: "Noto Sans SC";
       font-size: 3.6rem;
       color: rgba(51,51,51,1);
       text-align: center;
-      font-weight: 500;
+      font-weight: 550;
     }
   }
 

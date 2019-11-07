@@ -107,7 +107,7 @@ export const constantRoutes = [
     children: [{
       path: 'forecast',
       name: 'forecast',
-      // component: () => import('@/views/dashboard/index'),
+      component: () => import('@/views/forecast/Forecast'),
       meta: { title: '预警', icon: 'yujing' }
     }]
   },
