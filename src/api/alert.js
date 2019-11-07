@@ -2,8 +2,9 @@ import request from '../utils/request1'
 const base_url = 'http://161.189.11.216:8090'
 export function getRiskConfigList(params) {
   return request({
-    url: base_url + '/gis/riskConfig/getRiskConfigList?isActive=1&pageSize=10&skipped=20',
-    method: 'get'
+    url: base_url + '/gis/riskConfig/getRiskConfigList',
+    method: 'get',
+    params
   })
 }
 
