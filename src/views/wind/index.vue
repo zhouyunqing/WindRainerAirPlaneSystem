@@ -45,16 +45,16 @@
         </div>
       </div>
 
-      <div id="menu1">
+      <div id="menu1" :class="{move_in2:!isShow,move_out2:isShow}">
         <li class="nearmenu">临近预报</li>
       </div>
-      <div id="menu11">
+      <div id="menu11" :class="{move_in2:!isShow,move_out2:isShow}">
         <li class="nearmenu">临近预报</li>
       </div>
-      <div id="menu2">
+      <div id="menu2" :class="{move_in2:!isShow,move_out2:isShow}">
         <li class="nearmenu">短时预报</li>
       </div>
-      <div id="menu22">
+      <div id="menu22" :class="{move_in2:!isShow,move_out2:isShow}">
         <li class="nearmenu">短时预报</li>
       </div>
 
@@ -142,15 +142,17 @@
 
     </article>
 
+    <!--<transition name="slide-fade"> 动画测试-->
     <article v-if="activeWind=='sectionwind'" class="wind_content">
-      <div v-if="activeWind=='sectionwind'" class="wind_header_icon">
+      <div v-if="activeWind=='sectionwind'" class="wind_header_icon" v-show="isLegendChange">
         <div class="pic_icon"></div>
         <span>详细</span>
       </div>
       <div id="body">
-        <div ref="canvas" id="canvas" class="canvas"></div>
+        <div ref="canvas" id="canvas" class="canvas" v-show="isLegendChange"></div>
       </div>
     </article>
+    <!--</transition>-->
 
     <article v-if="activeWind=='sectionwind'" class="wind_footer">
       <div class="wind_footer_header">
@@ -237,12 +239,14 @@
         initLeft: 0,
         runType: 'runway1',
         activeWind: 'planewind',
-        isShow: true,
+        isShow: false,
         isHoverShow: false, //悬浮数据框显示控制
         windInfo: [], // 风数据,按高度获取
         otherInfo: [], // 其他数据,只有地面2米数据
         nowHour: 12, // 当前时间
         showHour: 12, // 数据展示时间
+        isLegendChange: true,
+        pointName: ["18L", "MID1", "36R", "18R", "MID2", "36L", "19", "MID3", "01"], //九站点名
         infoType: ["DIR", "SPD", "SLP", "T2", "RH", "T"], // 展示数据类型
         windColor: ['#0BD3A7', "#FFBE3A", "#FF2C55"], //跑道色值
         labelColor: ["#DDFBF5", "#FFF1D4", "#FFD8DF"], //站点框色值
@@ -275,15 +279,15 @@
         params.endtime = "2019-11-04 18:00:00"
         params.resolution = "1000M"
         params.hight = "0010m"
-        let url = "http://161.189.11.216:8090/gis/BJPEK/RunwaysHistory"
+        let url = "http://161.189.11.216:8090/gis/BJPEK/RunwaysForecast"
         info.url = url
         info.params = params
         this.$store.dispatch("station/getRankInfo", info).then((res) => { // 按高度获取风数据
           if (res.data.returnCode == 0) {
             this.windInfo = res.data.runways
-            this.changeColor(0, 12, "18R", "MID1", "36L")
-            this.changeColor(1, 12, "18L", "MID2", "36R")
-            this.changeColor(2, 12, "19", "MID3", "01")
+//            this.changeColor(0, 12, "18R", "MID1", "36L")
+//            this.changeColor(1, 12, "18L", "MID2", "36R")
+//            this.changeColor(2, 12, "19", "MID3", "01")
           } else {
             this.$message.error(res.data.returnMessage)
           }
@@ -338,6 +342,7 @@
       drawPoint(text, lat, lng, runway) {
         var r = '<table style="width: 200px;"><tr><th scope="col" colspan="4"  style="text-align:center;font-size:15px;">' + '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"></td></tr></table>';
         this.viewer.entities.add({
+          show: true,
           id: text.replace(/^\s*|\s*$/g, ""),
           name: text,
           type: "station",
@@ -418,6 +423,17 @@
             let Echarts1 = this._initEcharts1()
             this.potail(Echarts1, pick.id.id, pick.id.runway)
             this.stationname = pick.id.id;
+          }
+        }
+      },
+      /**
+       * 剖面风点击
+       */
+      wallHandler: function (click) {
+        var pick = this.viewer.scene.pick(click.position);
+        if (pick) {
+          if (pick.id.name == "windWall") {
+            this.changeRunway(pick.id.type)
           }
         }
       },
@@ -749,11 +765,57 @@
           this.activeWind = "sectionwind"
           this.$el.querySelector("#planewind").classList.remove('active')
           this.$el.querySelector("#sectionwind").classList.add('active')
+          this.isLegendChange = false
+          for (let i = 0; i < this.pointName.length; i++) {
+            let entity = this.viewer.entities.getById(this.pointName[i]);
+            entity.show = this.isLegendChange
+          }
+          let entity1 = this.viewer.entities.getById("wall1");
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById("wall2");
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById("wall3");
+          entity1.show = !this.isLegendChange
+          this.viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(
+              116.481554, 40.013338,
+              6961.9883961571
+            ),
+            orientation: {
+              heading: Cesium.Math.toRadians(400.668148999818),
+              pitch: Cesium.Math.toRadians(-30.8329210486802),
+              roll: Cesium.Math.toRadians(0)
+            }
+          });
         } else {
+          this.isLegendChange = true
           this.activeWind = "planewind"
           this.$el.querySelector("#sectionwind").classList.remove('active')
           this.$el.querySelector("#planewind").classList.add('active')
-          changeRunway('runway1')
+          for (let i = 0; i < this.pointName.length; i++) {
+            let entity = this.viewer.entities.getById(this.pointName[i]);
+            entity.show = this.isLegendChange
+          }
+          let entity1 = this.viewer.entities.getById("wall1");
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById("wall2");
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById("wall3");
+          entity1.show = !this.isLegendChange
+          this.viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(
+              116.603738, 39.944974,
+              4961.9883961571
+            ),
+            orientation: {
+//          heading: Cesium.Math.toRadians(359.668148999818),
+//          pitch: Cesium.Math.toRadians(-88.8329210486802),
+//          roll: Cesium.Math.toRadians(0)
+              heading: Cesium.Math.toRadians(359.668148999818),
+              pitch: Cesium.Math.toRadians(-20.8329210486802),
+              roll: Cesium.Math.toRadians(0)
+            }
+          });
         }
       },
 
@@ -979,13 +1041,13 @@
         sceneModePicker: false,
         timeline: false,
         navigationHelpButton: false,
-        imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-          url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer',
-          enablePickFeatures: false
-        }),
-//     imageryProvider : new Cesium.UrlTemplateImageryProvider({
-//                 url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
-//             })
+//        imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
+//          url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer',
+//          enablePickFeatures: false
+//        }),
+        imageryProvider: new Cesium.UrlTemplateImageryProvider({
+          url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+        })
       });
       this.viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
         url: "http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8",
@@ -1000,6 +1062,7 @@
           roll: 0.0
         }
       });
+      this.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
       //定位北京首都机场
       this.viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(
@@ -1078,6 +1141,7 @@
           let wind3D = new Wind3D(this.viewer, windDataMap, particleSystemOptionsMap)
 
           this.viewer.entities.add({
+            show: this.isLegendChange,
             id: "runway1",
             name: 'Runway',
             station: 'runway1',
@@ -1091,6 +1155,23 @@
             }
           });
           this.viewer.entities.add({
+            show: !this.isLegendChange,
+            id: "wall1",
+            name: 'windWall',
+            type: "runway1",
+            wall: {
+              positions: Cesium.Cartesian3.fromDegreesArrayHeights([116.575473, 40.10303, 2100, 116.580113, 40.074035, 2100]),
+              material: new Cesium.ImageMaterialProperty({
+                image: "/images/windImg.png"
+              }),
+              outline: true,
+//              outlineColor:Cesium.Color.fromCssColorString('#FF2C55'), //边框颜色
+//              outlineWidth:15, //边框宽度
+              minimumHeights: [100, 100],
+            }
+          });
+          this.viewer.entities.add({
+            show: this.isLegendChange,
             id: "runway2",
             name: 'Runway',
             station: 'runway2',
@@ -1104,6 +1185,21 @@
             }
           });
           this.viewer.entities.add({
+            show: !this.isLegendChange,
+            id: "wall2",
+            name: 'windWall',
+            type: "runway2",
+            wall: {
+              positions: Cesium.Cartesian3.fromDegreesArrayHeights([116.600573, 40.089862, 2100, 116.605809, 40.056497, 2100]),
+              material: new Cesium.ImageMaterialProperty({
+                image: "/images/windImg.png"
+              }),
+              outline: true,
+              minimumHeights: [100, 100],
+            }
+          });
+          this.viewer.entities.add({
+            show: this.isLegendChange,
             id: "runway3",
             name: 'Runway',
             station: 'runway3',
@@ -1117,6 +1213,20 @@
               shadows: Cesium.ShadowMode.ENABLED
             }
           });
+          this.viewer.entities.add({
+            show: !this.isLegendChange,
+            id: "wall3",
+            name: 'windWall',
+            type: "runway3",
+            wall: {
+              positions: Cesium.Cartesian3.fromDegreesArrayHeights([116.617997, 40.094787, 2100, 116.623469, 40.059059, 2100]),
+              material: new Cesium.ImageMaterialProperty({
+                image: "/images/windImg.png"
+              }),
+              outline: true,
+              minimumHeights: [100, 100],
+            }
+          });
           this.drawPoint(" 18R ", 116.575473, 40.10303, 0)
           this.drawPoint("MID1", 116.577925, 40.088623, 0)
           this.drawPoint(" 36L ", 116.580113, 40.074035, 0)
@@ -1128,9 +1238,36 @@
           this.drawPoint("  01  ", 116.623469, 40.059059, 2)
           var handlerVideo = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
           var that = this
+          /**
+           * 鼠标移动事件
+           */
           handlerVideo.setInputAction(function (movement) {
             that.pointHandler(movement)
           }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+          /**
+           * 鼠标左键点击事件
+           */
+          handlerVideo.setInputAction(function (click) {
+            that.wallHandler(click)
+          }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+          /**
+           * 相机高度监听事件
+           */
+          this.viewer.scene.camera.moveEnd.addEventListener(function () {
+            //获取当前相机高度
+            let height = Math.ceil(that.viewer.camera.positionCartographic.height);
+            if(height>60000){
+              for (let i = 0; i < that.pointName.length; i++) {
+                let entity = that.viewer.entities.getById(that.pointName[i]);
+                entity.show = false
+              }
+            }else{
+              for (let i = 0; i < that.pointName.length; i++) {
+                let entity = that.viewer.entities.getById(that.pointName[i]);
+                entity.show = true
+              }
+            }
+          })
           this.getStationInfo()
 
           function loadColorTable() {
@@ -1982,7 +2119,59 @@
       bottom: -28%;
     }
   }
+  .move_in2 {
+    -webkit-animation: move2 0.5s linear 1;
+    -moz-animation: move2 0.5s linear 1;
+    -ms-animation: move2 0.5s linear 1;
+    -o-animation: move2 0.5s linear 1;
+    animation: move2 0.5s linear 1;
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-fill-mode: forwards;
+    -ms-animation-fill-mode: forwards;
+    -o-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+  }
 
+  .move_out2 {
+    -webkit-animation: moveOut2 0.5s linear 1;
+    -moz-animation: moveOut2 0.5s linear 1;
+    -ms-animation: moveOut2 0.5s linear 1;
+    -o-animation: moveOut2 0.5s linear 1;
+    animation: moveOut2 0.5s linear 1;
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-fill-mode: forwards;
+    -ms-animation-fill-mode: forwards;
+    -o-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes move2 {
+    from {
+      bottom: 43%;
+    }
+    to {
+      bottom: 15%;
+    }
+  }
+
+  @keyframes moveOut2 {
+    from {
+      bottom: 15%;
+    }
+    to {
+      bottom: 43%;
+    }
+  }
+  /* 测试 */
+  .slide-fade-enter-active {
+    transition: all .3s ease;
+  }
+
+  .slide-fade-leave-active {
+    transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+
+  /* 测试 */
   .wind {
     width: 100%;
     height: 100%;
