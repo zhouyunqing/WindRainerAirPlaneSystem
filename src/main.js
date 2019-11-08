@@ -14,6 +14,7 @@ import router from './router'
 import '@/utils/rem.js'
 import '@/icons' // icon
 import '@/permission' // permission control
+import moment from 'moment'
 
 /**
  * If you don't want to use mock-server
@@ -35,7 +36,7 @@ if (process.env.NODE_ENV === 'production') {
 Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
-
+Vue.prototype.$moment = moment
 // new Vue({
 //   el: '#app',
 //   router,
@@ -53,4 +54,3 @@ new Vue({
   // }
 
 }).$mount('#app')
-
