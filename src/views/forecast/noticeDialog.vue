@@ -44,9 +44,9 @@
                          v-model="riskTypeId.conditionsLevel"
                          placeholder="请选择">
                 <el-option v-for="item in riskTypeId.conditionsOptions"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value"
+                           :key="item.key"
+                           :label="item.value"
+                           :value="item.key"
                            >
                 </el-option>
               </el-select>

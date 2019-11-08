@@ -30,30 +30,35 @@
                   style="width: 100%">
           <el-table-column property="name"
                            label="名称"
-                           :width="noticeWidth" :key="Math.random()">
+                           :key="Math.random()">
           </el-table-column>
           <el-table-column property="site"
                            label="地点"
                            :width="noticeWidth" :key="Math.random()">
           </el-table-column>
-          <el-table-column property="dealuser"
+          <el-table-column property="createtime"
                            :width="noticeWidth"
-                           label="发件人" :key="Math.random()">
+                           label="记录时间" :key="Math.random()">
           </el-table-column>
           <el-table-column property="severity"
-                           :width="noticeWidth"
+                           :width="noticeWidth" 
                            label="预警级别" :key="Math.random()">
           </el-table-column>
-          <el-table-column property="status"
+          <el-table-column property="state"
                            :width="noticeWidth"
                            label="执行情况" :key="Math.random()">
           </el-table-column>
-          <el-table-column class="button-right"
+          <!-- <el-table-column class="button-right"
                            property="status"
                            label="" :key="Math.random()">
             <el-button>删除</el-button >
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
+         <pagination 
+            :total="riskInfoPage.total"
+            :page.sync="riskInfoPage.listQuery.page"
+            :limit.sync="riskInfoPage.listQuery.limit"
+            @pagination="riskinfoList" />
       </div>
     </div>
 
@@ -111,9 +116,9 @@
         </el-table>
        
           <pagination 
-            :total="total"
-            :page.sync="listQuery.page"
-            :limit.sync="listQuery.limit"
+            :total="riskConfigPage.total"
+            :page.sync="riskConfigPage.listQuery.page"
+            :limit.sync="riskConfigPage.listQuery.limit"
             @pagination="RiskConfigList" />
        
       </div>
@@ -125,17 +130,26 @@
 <script>
 import Pagination from '@/components/Pagination'
 import noticeDialog from './noticeDialog'
-import {getRiskConfigList,deleteRiskConfig,getRiskInfoes,getRiskServerity,getRunwayHistoryData,getGroupList,getRiskConfig} from '../../api/alert.js'
+import {getOptions,getRiskConfigList,deleteRiskConfig,getRiskInfoes,getGroupList,getRiskConfig,timestampToTime} from '../../api/alert.js'
 import { constants } from 'fs';
 export default {
   name: 'forecast',
   data () {
     return {
       //分页控制
-      total: 0,
-      listQuery: {
-        page: 1,
-        limit: 8
+      riskInfoPage:{
+        total: 0,
+        listQuery: {
+          page: 1,
+          limit: 8
+        }
+      },
+      riskConfigPage:{
+        total: 0,
+        listQuery: {
+          page: 1,
+          limit: 8
+        }
       },
       
 
@@ -150,9 +164,9 @@ export default {
       tableData: [],
       runwayHistoryData:[],
       riskServerity:[],
-      conditionsOptions:[],
       wind_speed_options:[],
-      groupList:[]
+      groupList:[],
+      riskStateDic:[]
       
     }
   },
@@ -176,18 +190,40 @@ export default {
       this.noticeVisible = false
     },
     riskinfoList(){
-      getRiskInfoes().then(rs=>{
-         console.log(rs['data']);
-         console.log('update riskinfo')
+        // params={
+        //   configId:-1,
+        //   isActive:-1,
+        //   pageSize:10,
+        //   skipped:0,
+        //   state:-1
+        // }
+
+      let params={
+        configId:-1,
+        isActive:-1,
+        state:-1,
+        pageSize:this.riskInfoPage.listQuery.limit,
+        skipped:0
+        }
+      if(this.riskInfoPage.total>0){
+        params.skipped=(this.riskInfoPage.listQuery.page-1)*this.riskInfoPage.listQuery.limit
+      }
+      getRiskInfoes(params).then(rs=>{
+         console.log(rs);
           this.tableData=[]
+           this.riskInfoPage.total= rs['data'].totalSize
         for(let id in rs['data']['pagedList']){
+          let severity=this.findObjByKey(this.riskServerity,rs['data']['pagedList'][id].severity);
+          let riskstate=this.findObjByKey(this.riskStateDic,rs['data']['pagedList'][id].state);
           let item={
             id:rs['data']['pagedList'][id].id,
             name:rs['data']['pagedList'][id].name,
             site:'ZABB',
-            dealuser:rs['data']['pagedList'][id].dealuser,
-            severity:rs['data']['pagedList'][id].severity,
-            state:rs['data']['pagedList'][id].state
+            createtime:timestampToTime(rs['data']['pagedList'][id].createtime/1000),
+            severityId:rs['data']['pagedList'][id].severity,
+            severity:(typeof(severity) =='undefined')?this.riskServerity[0].value:severity.value,
+            stateId:rs['data']['pagedList'][id].state,
+            state:(typeof(riskstate) =='undefined')?this.riskStateDic[0].value:riskstate.value
           }
           this.tableData.push(item)
           console.log(item)
@@ -197,23 +233,36 @@ export default {
     RiskConfigList(){
       let params={
         isActive:-1,
-        pageSize:this.listQuery.limit,
+        pageSize:this.riskConfigPage.listQuery.limit,
         skipped:0
         }
-      if(this.total>0){
-        params.skipped=(this.listQuery.page-0)*this.listQuery.limit
+      if(this.riskConfigPage.total>0){
+        params.skipped=(this.riskConfigPage.listQuery.page-1)*this.riskConfigPage.listQuery.limit
       }
       
       getRiskConfigList(params).then(rs=>{
-        console.log(rs['data']);
-        this.total=rs['data'].totalSize
+        this.riskConfigPage.total=rs['data'].totalSize
         this.tableDataConfig=[]
         for(let id in rs['data']['data']){
+          let noticemails=''          
+          let t=rs['data']['data'][id].noticemails.split(",")
+          for(let i=0;i<t.length;i++){            
+            let obj=this.groupList.find(function(x) {
+                return x.id == t[i];
+              }) 
+            if(obj.name.length>0){
+              if(noticemails.length>0){
+                noticemails +=','
+              }
+              noticemails +=obj.name
+            }
+          }
+                   
           let item={
             id:rs['data']['data'][id].id,
             name:rs['data']['data'][id].name,
-            site:'ZBAA',
-            creater:rs['data']['data'][id].noticemails,
+            site:rs['data']['data'][id].site,
+            creater:noticemails,
             isactive:rs['data']['data'][id].isactive
           }
           this.tableDataConfig.push(item)
@@ -223,22 +272,22 @@ export default {
       })
     }
     ,RiskServerity(){
-       getRiskServerity().then(rs=>{
-        this.conditionsOptions=[];
+       getOptions({catagory:'RiskServerity'}).then(rs=>{
+        this.riskServerity=[]
         if(rs['data']['data'].length>0){
           this.conditionsLevel=rs['data']['data'][0].value
         }
         for(let id in rs['data']['data']){
-          this.conditionsOptions.push({
-             value:rs['data']['data'][id].key,
-             label:rs['data']['data'][id].value
+          this.riskServerity.push({
+             key:rs['data']['data'][id].key,
+             value:rs['data']['data'][id].value
              })
         }
       })
     }
     ,RunwayHistoryData(){
       let that=this
-      getRunwayHistoryData().then(rs=>{
+      getOptions({catagory:'runwayHistoryData'}).then(rs=>{
         this.wind_speed_options=[];
         if(rs['data']['data'].length>0){
           this.wind_speed=rs['data']['data'][0].key;
@@ -250,8 +299,19 @@ export default {
              label:rs['data']['data'][id].value
              })
         }
-        this.addCondition()
         
+        
+      })
+    },getRiskStateDic(){
+      let that=this
+      getOptions({catagory:'RiskState'}).then(rs=>{
+        this.riskStatDic=[];
+        for(let id in rs['data']['data']){
+          this.riskStateDic.push({
+             key:rs['data']['data'][id].key,
+             value:rs['data']['data'][id].value
+             })
+        }
       })
     }
     ,GroupList(){
@@ -278,37 +338,6 @@ export default {
 
       }
     },
-    riskServerityFun(){
-      getRiskServerity().then(rs=>{
-        this.conditionsOptions=[];
-        if(rs['data']['data'].length>0){
-          this.conditionsLevel=rs['data']['data'][0].value
-        }
-        for(let id in rs['data']['data']){
-          this.conditionsOptions.push({
-             value:rs['data']['data'][id].key,
-             label:rs['data']['data'][id].value
-             })
-        }
-      })
-    },
-    RunwayHistoryData(){
-      let that=this
-      getRunwayHistoryData().then(rs=>{
-        this.wind_speed_options=[];
-        if(rs['data']['data'].length>0){
-          this.wind_speed=rs['data']['data'][0].key;
-        }
-        for(let id in rs['data']['data']){
-         
-          this.wind_speed_options.push({
-             value:rs['data']['data'][id].key,
-             label:rs['data']['data'][id].value
-             })
-        }
-      
-      })
-    },
     initRiskTypeId(id){
       //init item
       let conditionList=[]
@@ -333,7 +362,7 @@ export default {
         name:'',
         site:'ZABB',
         status:true,
-        conditionsLevel:1,
+        conditionsLevel:this.riskServerity[0].key,
         conditionList:conditionList,
         remark:'',
         minutes:0,
@@ -341,7 +370,8 @@ export default {
         tableData:groupItems,
         conditionListLength:conditionList.length,
         wind_speed_options: this.wind_speed_options,
-        id:-1
+        id:-1,
+        conditionsOptions:this.riskServerity
       }
       if(id>-1){
         getRiskConfig(id).then(rs=>{
@@ -396,49 +426,62 @@ export default {
       
     }
     
+    ,findObjByKey(objs,key){
+      return objs.find(function(x) {return x.key == key;})
+     }
+
+     ,popWindow(){
+        this.$notify({
+              title: '1个新的预警',
+              message:
+                `<div class="tips">
+                <div class= "wind_forecast" >
+                  <div class="wind_forecast_tittle">大风预警</div>
+                  <div class="wind_forecast_body">
+                    <div>ZBAA</div>
+                    <div>1小时前</div>
+                  </div>
+                </div>
+                <div class="happen_time">
+                  <div class="happen_time_tittle">发生时间</div>
+                  <div class="happen_time_body">
+                    <span>10:20</span>
+                    <span>2019.09.20</span>
+                  </div>
+                </div>
+                <div class="happen_time">
+                  <div class="happen_time_tittle">预警规则</div>
+                  <div class="happen_time_body">
+                    <div>头风分量 大于5m/s</div>
+                    <div>侧风分量 大于3m/s</div>
+                  </div>
+                </div>
+                <div class="happen_time">
+                  <div class="happen_time_tittle">备注规则</div>
+                  <div class="happen_time_body">
+                    大风预警
+                  </div>
+                </div>
+            </div > `,
+              duration: 0,
+              dangerouslyUseHTMLString: true,
+              position: 'bottom-right'
+            })
+     }
   },
-  mounted () {
+  beforeMount(){
     this.RunwayHistoryData()
-    this.RiskConfigList()
     this.GroupList()
+    this.RiskServerity()
+    this.getRiskStateDic()
+  }
+  ,
+  mounted () {
+    
+    this.RiskConfigList()
     this.riskinfoList()
     //预警通知 暂时注释下一步实现
-    // this.$notify({
-    //   title: '1个新的预警',
-    //   message:
-    //     `<div class="tips">
-    //     <div class= "wind_forecast" >
-    //       <div class="wind_forecast_tittle">大风预警</div>
-    //       <div class="wind_forecast_body">
-    //         <div>ZBAA</div>
-    //         <div>1小时前</div>
-    //       </div>
-    //     </div>
-    //     <div class="happen_time">
-    //       <div class="happen_time_tittle">发生时间</div>
-    //       <div class="happen_time_body">
-    //         <span>10:20</span>
-    //         <span>2019.09.20</span>
-    //       </div>
-    //     </div>
-    //     <div class="happen_time">
-    //       <div class="happen_time_tittle">预警规则</div>
-    //       <div class="happen_time_body">
-    //         <div>头风分量 大于5m/s</div>
-    //         <div>侧风分量 大于3m/s</div>
-    //       </div>
-    //     </div>
-    //     <div class="happen_time">
-    //       <div class="happen_time_tittle">备注规则</div>
-    //       <div class="happen_time_body">
-    //         大风预警
-    //       </div>
-    //     </div>
-    // </div > `,
-    //   duration: 0,
-    //   dangerouslyUseHTMLString: true,
-    //   position: 'bottom-right'
-    // })
+    this.popWindow()
   }
 }
 </script>
@@ -537,6 +580,10 @@ export default {
         font-weight: 500;
         color: rgba(255, 255, 255, 1);
         line-height: 20px;
+      }
+
+      .pagination-container{
+        background-color: #242236;
       }
     }
   }

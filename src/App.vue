@@ -10,7 +10,7 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="scss">
   html, body, #cesiumContainer {
     width: 100%;
     height: 100%;

@@ -1,6 +1,8 @@
 import request from '../utils/request1'
 const base_url = 'http://161.189.11.216:8090'
+//获得风险配置
 export function getRiskConfigList(params) {
+  console.log(params)
   return request({
     url: base_url + '/gis/riskConfig/getRiskConfigList',
     method: 'get',
@@ -8,20 +10,14 @@ export function getRiskConfigList(params) {
   })
 }
 
-// 获得预警级别
-// {"returnCode":0,"data":[{"value":"一般","key":"1"},{"value":"紧急","key":"2"},{"value":"严重","key":"3"}],"returnMessage":"success"}
-export function getRiskServerity(params) {
+//获得数据字典
+//catagory=['RiskServerity','isActive','RiskSource','RiskState','runwanHistoryData']
+//RiskServerity:// {"returnCode":0,"data":[{"value":"一般","key":"1"},{"value":"紧急","key":"2"},{"value":"严重","key":"3"}],"returnMessage":"success"}
+export function getOptions(params) {
   return request({
-    url: base_url + '/gis/dictionary/getOptions?catagory=RiskServerity',
-    method: 'get'
-  })
-}
-
-// 获得预警条件
-export function getRunwayHistoryData(params) {
-  return request({
-    url: base_url + '/gis/dictionary/getOptions?catagory=runwayHistoryData',
-    method: 'get'
+    url: base_url + '/gis/dictionary/getOptions',
+    method: 'get',
+    params
   })
 }
 
@@ -71,9 +67,34 @@ export function updateRiskConfig(params) {
 
 //  获得报警记录
 export function getRiskInfoes(params) {
+  // params={
+  //   configId:-1,
+  //   isActive:-1,
+  //   pageSize:10,
+  //   skipped:0,
+  //   state:-1
+  // }
   return request({
-    url: base_url + '/gis/riskInfoes/getRiskInfoes?configId=2&isActive=-1&pageSize=3&skipped=1&state=1',
-    method: 'get'
+    url: base_url + '/gis/riskInfoes/getRiskInfoes',
+    method: 'get',
+    params 
+  })
+}
+
+
+//  删除报警记录
+export function deleteRiskInfoes(params) {
+  // params={
+  //   configId:-1,
+  //   isActive:-1,
+  //   pageSize:10,
+  //   skipped:0,
+  //   state:-1
+  // }
+  return request({
+    url: base_url + '/gis/riskInfoes/deleteRiskInfoes',
+    method: 'get',
+    params 
   })
 }
 
@@ -82,4 +103,16 @@ export function getRiskConfig(id) {
     url: base_url + '/gis/riskConfig/getRiskConfig?id='+id,
     method: 'get'
   })
+}
+
+//时间戳转日期格式化
+export function timestampToTime(timestamp) {
+  var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+ var Y = date.getFullYear() + '-';
+ var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+ var D = (date.getDate() < 10 ? '0'+date.getDate() : date.getDate()) + ' ';
+ var h = (date.getHours() < 10 ? '0'+date.getHours() : date.getHours()) + ':';
+ var m = (date.getMinutes() < 10 ? '0'+date.getMinutes() : date.getMinutes()) + ':';
+ var s = (date.getSeconds() < 10 ? '0'+date.getSeconds() : date.getSeconds());
+  return Y+M+D+h+m+s;
 }
