@@ -23,9 +23,14 @@ export function getOptions(params) {
 
 // 获得系统群组
 export function getGroupList(params) {
+  // params={
+  //   isActive:1
+  // }
+  console.log(params)
   return request({
-    url: base_url + '/gis/group/getGroupList?isActive=1',
-    method: 'get'
+    url: base_url + '/gis/group/getGroupList',
+    method: 'get',
+    params
   })
 }
 

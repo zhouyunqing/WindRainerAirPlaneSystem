@@ -148,7 +148,7 @@ export default {
         total: 0,
         listQuery: {
           page: 1,
-          limit: 8
+          limit: 5
         }
       },
       
@@ -166,6 +166,7 @@ export default {
       riskServerity:[],
       wind_speed_options:[],
       groupList:[],
+      allGroupList:[],
       riskStateDic:[]
       
     }
@@ -226,7 +227,6 @@ export default {
             state:(typeof(riskstate) =='undefined')?this.riskStateDic[0].value:riskstate.value
           }
           this.tableData.push(item)
-          console.log(item)
         }
       })
     },
@@ -247,7 +247,7 @@ export default {
           let noticemails=''          
           let t=rs['data']['data'][id].noticemails.split(",")
           for(let i=0;i<t.length;i++){            
-            let obj=this.groupList.find(function(x) {
+            let obj=this.allGroupList.find(function(x) {
                 return x.id == t[i];
               }) 
             if(obj.name.length>0){
@@ -315,11 +315,29 @@ export default {
       })
     }
     ,GroupList(){
-      getGroupList().then(rs=>{
-        this.groupList=[]
+      this.allGroupList=[]
+      this.groupList=[]
+      getGroupList({isActive:1}).then(rs=>{
         for(let id in rs['data']['data']){
          
           this.groupList.push({
+            name: rs['data']['data'][id].name,
+            id:rs['data']['data'][id].id
+          })
+
+          this.allGroupList.push({
+            name: rs['data']['data'][id].name,
+            id:rs['data']['data'][id].id
+          })
+        }
+
+      })
+
+      getGroupList({isActive:0}).then(rs=>{
+        
+        for(let id in rs['data']['data']){
+         
+          this.allGroupList.push({
             name: rs['data']['data'][id].name,
             id:rs['data']['data'][id].id
           })
@@ -329,7 +347,6 @@ export default {
     },
     deleteRiskConfigItem(id){
       console.log('deleteRiskConfigid='+id)
-      console.log(id)
       if(id!='undefined'){
         deleteRiskConfig({id:id}).then(rs=>{
           console.log(rs)
