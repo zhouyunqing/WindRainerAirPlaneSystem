@@ -48,28 +48,28 @@ class Wind3D {
   // drawWindLayer(data){//绘制风向图
   //   if(this.overlayer != Overlayers.wind)
   //     return;
-    
+
   //   var that=this;
   //   var points = [];
   //   var max = 0;
   //   var width = 1000;
-  //   var height = 1000;		
-    
+  //   var height = 1000;
+
   //   var longdata = data.lon.array;
   //   var latdata = data.lat.array;
   //   var udata = data.U.array;
   //   var vdata = data.V.array;
-    
+
   //   var minLat = data.lat.min;
   //   var minLong = data.lon.min;
   //   var maxLat = data.lat.max;
   //   var maxLong = data.lon.max;
   //   var minSpeed= 1000000;
   //   var maxSpeed = 0;
-  
-    
+
+
   //   var extent = [minLong,minLat,maxLong,maxLat];
-    
+
   //   if(that.colorImage){
   //     that.colorImage.redraw(that.viewer, extent, data,that.gradientWind);
   //   }
@@ -80,18 +80,18 @@ class Wind3D {
   drawWindHeatLayer(data){//绘制风场热力图
     // if(this.overlayer != Overlayers.wind)
     //   return;
-    
+
     var that=this;
     var points = [];
     var max = 0;
     var width = 1000;
-    var height = 1000;		
-    
+    var height = 1000;
+
     var longdata = data.lon.array;
     var latdata = data.lat.array;
     var udata = data.U.array;
     var vdata = data.V.array;
-    
+
     var minLat = data.lat.min;
     var minLong = data.lon.min;
     var maxLat = data.lat.max;
@@ -100,29 +100,29 @@ class Wind3D {
     var maxSpeed = 0;
     var max = 0;
     var speeds = [];
-    for(var i=0;i<data.lat.array.length;i++){	
+    for(var i=0;i<data.lat.array.length;i++){
       var speed = Math.sqrt(udata[i]*udata[i]+vdata[i]*vdata[i]);
       speeds.push(speed);
-      minSpeed = Math.min(minSpeed, speed);	
+      minSpeed = Math.min(minSpeed, speed);
       maxSpeed = Math.max(maxSpeed, speed);
     }
     //minSpeed = 0;
     //maxSpeed = 100;
-    for(var i=0;i<data.lat.array.length;i++){	
+    for(var i=0;i<data.lat.array.length;i++){
       //var speed = Math.sqrt(udata[i]*udata[i]+vdata[i]*vdata[i]);
-      var value=(speeds[i]-minSpeed)*(1/(maxSpeed-minSpeed));	
-      max = Math.max(max, value);			
+      var value=(speeds[i]-minSpeed)*(1/(maxSpeed-minSpeed));
+      max = Math.max(max, value);
       var point = {
         x:(longdata[i]-minLong)*(1000/(maxLong-minLong)),
         y:(maxLat - latdata[i])*(1000/(maxLat-minLat)),
-        value:value	
+        value:value
       };
       points.push(point);
-        
+
     }
     //max = 4;
     var coordinate3 = [minLong,minLat,maxLong,maxLat];
-    
+
     if(that.colorImage){
       that.colorImage.redraw(that.viewer, coordinate3,max, points,that.gradientWind);
     }
@@ -193,10 +193,10 @@ class Wind3D {
     )
     var lonLatRange = Util.viewRectangleToLonLatRange(viewRectangle)
     if(this.data){
-      this.viewerParameters.lonRange.x = this.data.lon.min 
-      this.viewerParameters.lonRange.y = this.data.lon.max 
+      this.viewerParameters.lonRange.x = this.data.lon.min
+      this.viewerParameters.lonRange.y = this.data.lon.max
       this.viewerParameters.latRange.x = this.data.lat.min
-      this.viewerParameters.latRange.y = this.data.lat.max  
+      this.viewerParameters.latRange.y = this.data.lat.max
     }
     else{
       this.viewerParameters.lonRange.x = lonLatRange.lon.min

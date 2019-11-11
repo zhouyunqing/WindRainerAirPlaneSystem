@@ -18,6 +18,7 @@
     <!---->
     <div
       class="station_hover_info"
+      id="hover_info"
       v-if="activeWind=='planewind'"
       v-show="isHoverShow"
     >
@@ -226,7 +227,7 @@
       >(高度：m)<div class="close-button" @click="closeWindow">
         <i class="el-icon-close"></i>
       </div></div>
-      
+
       <div id="body">
         <div
           ref="canvas"
@@ -560,26 +561,27 @@ export default {
       //      if (!pick) {
       if (
         this.entity &&
-        this.entity.id.label.scale != 1 &&
-        this.entity.id.id != pick.id.id
+        this.entity.id.label.scale != 1
       ) {
-        this.entity.id.label.scale = 1;
-        this.entity.id.label.fillColor = Cesium.Color.fromCssColorString(
-          this.entity.id.textColor
-        );
-        this.entity.id.label.backgroundColor = Cesium.Color.fromCssColorString(
-          this.entity.id.backColor
-        );
-        if (pick.id.type == "station") {
-          this.entity = pick;
-        } else {
-          this.entity = undefined;
+        if( !pick || this.entity.id.id != pick.id.id) {
+          this.entity.id.label.scale = 1;
+          this.entity.id.label.fillColor = Cesium.Color.fromCssColorString(
+            this.entity.id.textColor
+          );
+          this.entity.id.label.backgroundColor = Cesium.Color.fromCssColorString(
+            this.entity.id.backColor
+          );
+          if (pick && pick.id.type == "station") {
+            this.entity = pick;
+          } else {
+            this.entity = undefined;
+          }
+          this.isHoverShow = false;
         }
-        this.isHoverShow = false;
       }
       //    return
       // }
-      if (pick.id.type == "point") {
+      if (pick && pick.id.type == "point") {
         let index = this.showHour - this.nowHour + 7; // 获取数据在数组中位值
         let wind = this.windInfo[pick.id.runway][
           pick.id.name.replace(/^\s*|\s*$/g, "")
@@ -608,6 +610,9 @@ export default {
             pick.id.label.backgroundColor = Cesium.Color.fromCssColorString(
               pick.id.textColor
             );
+            let hover = document.getElementById("hover_info");
+            hover.style.top=movement.endPosition.y + "px";
+            hover.style.left=(movement.endPosition.x+50) + "px";
             this.isHoverShow = true;
             let Echarts1 = this._initEcharts1();
             this.potail(Echarts1, pick.id.id, pick.id.runway);
@@ -620,6 +625,9 @@ export default {
           pick.id.label.backgroundColor = Cesium.Color.fromCssColorString(
             pick.id.textColor
           );
+          let hover = document.getElementById("hover_info");
+          hover.style.top=movement.endPosition.y + "px";
+          hover.style.left=(movement.endPosition.x+50) + "px";
           this.isHoverShow = true;
           let Echarts1 = this._initEcharts1();
           this.potail(Echarts1, pick.id.id, pick.id.runway);
