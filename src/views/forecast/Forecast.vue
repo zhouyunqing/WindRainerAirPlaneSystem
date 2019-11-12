@@ -243,21 +243,26 @@ export default {
       getRiskConfigList(params).then(rs=>{
         this.riskConfigPage.total=rs['data'].totalSize
         this.tableDataConfig=[]
+          
         for(let id in rs['data']['data']){
-          let noticemails=''          
+          let noticemails=''
           let t=rs['data']['data'][id].noticemails.split(",")
-          for(let i=0;i<t.length;i++){            
-            let obj=this.allGroupList.find(function(x) {
-                return x.id == t[i];
-              }) 
-            if(obj.name.length>0){
-              if(noticemails.length>0){
-                noticemails +=','
+          if(rs['data']['data'][id].noticemails!=''){
+            for(let i=0;i<t.length;i++){            
+              let obj=this.allGroupList.find(function(x) {
+                  return x.id == t[i];
+                }) 
+                
+              if(obj.name.length>0){
+                if(noticemails.length>0){
+                  noticemails +=','
+                }
+                noticemails +=obj.name
               }
-              noticemails +=obj.name
             }
           }
-                   
+         
+          
           let item={
             id:rs['data']['data'][id].id,
             name:rs['data']['data'][id].name,
