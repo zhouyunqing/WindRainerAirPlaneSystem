@@ -1,4 +1,5 @@
-import h337 from './heatmap'
+// import h337 from './heatmap'
+import Heatmap from 'heatmap.js'
 import Cesium from 'cesium/Cesium'
 class ColorImage {
 	constructor (viewer,extent,max, points,gradient) {
@@ -17,7 +18,7 @@ class ColorImage {
 			document.body.appendChild(this.heatDoc);
 		}
 		// 创建热力图对象
-		var heatmap = h337.create({
+		var heatmap = Heatmap.create({
 			container: this.heatDoc,
 			radius: 15,
 			maxOpacity: 0.5,

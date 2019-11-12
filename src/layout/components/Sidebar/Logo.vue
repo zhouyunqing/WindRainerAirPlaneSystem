@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import mainpageLogo from '../../../assets/images/mainpage-logo.png'
 export default {
   name: 'SidebarLogo',
   props: {
@@ -25,7 +26,7 @@ export default {
   data() {
     return {
       title: '风雨者航空气象服务系统',
-      logo: '/images/mainpage-logo.png'
+      logo: mainpageLogo
     }
   }
 }

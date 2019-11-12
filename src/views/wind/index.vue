@@ -322,7 +322,21 @@ import Wind3D from "@/components/wind/wind3D.js";
 import sectionwind from "./sectionwind";
 import data from "@/assets/data/j1.json";
 import request from "@/utils/request1";
+import windImgUrl from '../../assets/images/windImg.png'
+import windImgUrl1 from '../../assets/images/wind1.png'
+import windImgUrl2 from '../../assets/images/wind2.png'
+import windImgUrl3 from '../../assets/images/wind3.png'
+import windImgUrl4 from '../../assets/images/wind4.png'
+import windImgUrl5 from '../../assets/images/wind5.png'
+import windImgUrl6 from '../../assets/images/wind6.png'
+import windImgUrl7 from '../../assets/images/wind7.png'
+import windImgUrl8 from '../../assets/images/wind8.png'
+import windImgUrl9 from '../../assets/images/wind9.png'
+import windImgUrl10 from '../../assets/images/wind10.png'
+import windImgUrl11 from '../../assets/images/wind11.png'
+import windImgUrl12 from '../../assets/images/wind12.png'
 
+// import config from "../../../vue.config.js"
 export default {
   name: "cesiumContainer",
   data() {
@@ -858,84 +872,84 @@ export default {
                   width: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x.png`
+                    image: windImgUrl1
                   }
                 },
                 60: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x-30.png`
+                    image: windImgUrl2
                   }
                 },
                 90: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x-60.png`
+                    image: windImgUrl3
                   }
                 },
                 120: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x-90.png`
+                    image: windImgUrl4
                   }
                 },
                 150: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x-120.png`
+                    image: windImgUrl5
                   }
                 },
                 180: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x-150.png`
+                    image: windImgUrl6
                   }
                 },
                 210: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x-180.png`
+                    image: windImgUrl7
                   }
                 },
                 240: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x-210.png`
+                    image:windImgUrl8
                   }
                 },
                 270: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x-240.png`
+                    image:windImgUrl9
                   }
                 },
                 300: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x-270.png`
+                    image: windImgUrl10
                   }
                 },
                 330: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x-300.png`
+                    image: windImgUrl11
                   }
                 },
                 360: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image: `/images/风向箭头@2x-330.png`
+                    image: windImgUrl12
                   }
                 }
               }
@@ -1494,7 +1508,7 @@ export default {
               2100
             ]),
             material: new Cesium.ImageMaterialProperty({
-              image: "/images/windImg.png"
+              image: windImgUrl
             }),
             outline: true,
             //              outlineColor:Cesium.Color.fromCssColorString('#FF2C55'), //边框颜色
@@ -1542,7 +1556,7 @@ export default {
               2100
             ]),
             material: new Cesium.ImageMaterialProperty({
-              image: "/images/windImg.png"
+              image: windImgUrl
             }),
             outline: true,
             minimumHeights: [100, 100]
@@ -1591,7 +1605,7 @@ export default {
               2100
             ]),
             material: new Cesium.ImageMaterialProperty({
-              image: "/images/windImg.png"
+              image: windImgUrl
             }),
             outline: true,
             minimumHeights: [100, 100]

@@ -1,4 +1,4 @@
-
+// const userImgUrl = require('../src/assets/images/user.png')
 const tokens = {
   admin: {
     token: 'admin-token'
@@ -12,13 +12,13 @@ const users = {
   'admin-token': {
     roles: ['admin'],
     introduction: 'I am a super administrator',
-    avatar: '/images/user.png',
+    avatar: 'images/user.png',
     name: '风向图'
   },
   'editor-token': {
     roles: ['editor'],
     introduction: 'I am an editor',
-    avatar: '/images/user.png',
+    avatar: 'images/user.png',
     name: 'Normal Editor'
   }
 }
