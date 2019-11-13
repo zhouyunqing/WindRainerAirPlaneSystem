@@ -197,6 +197,12 @@
     </article>
     <div class="shadow" v-show="activeWind=='sectionwind' && sectionwindDetail">
       <article v-show="activeWind=='sectionwind' && sectionwindDetail" class="wind_content">
+        <div class="myScroll_btn_div">
+          <div class="myScroll_btn el-icon-arrow-left" @click="moveMyScroll('left')">
+          </div>
+          <div class="myScroll_btn el-icon-arrow-right" @click="moveMyScroll('right')">
+          </div>
+        </div>
         <div ref="height_dom" class="height_font">
           (高度：m)
           <div class="close-button" @click="closeWindow">
@@ -429,6 +435,9 @@ export default {
     };
   },
   methods: {
+    moveMyScroll(type){
+
+    },
     detail(type){
       this.isDetail = type
     },
@@ -593,11 +602,8 @@ export default {
     pointHandler: function(movement) {
       var pick = this.viewer.scene.pick(movement.endPosition);
       //      if (!pick) {
-      if (
-        this.entity &&
-        this.entity.id.label.scale != 1
-      ) {
-        if( !pick || this.entity.id.id != pick.id.id) {
+      if (this.entity && this.entity.id.label.scale != 1) {
+        if (!pick || this.entity.id.id != pick.id.id) {
           this.entity.id.label.scale = 1;
           this.entity.id.label.fillColor = Cesium.Color.fromCssColorString(
             this.entity.id.textColor
@@ -1259,6 +1265,9 @@ export default {
       if (finList.length < 1) {
         return;
       }
+      //calc(105vh + 1050px);
+      let stylestr = 'width : calc(' + (finList[0].length * 3) + 'vh + ' + (finList[0].length * 30) +'px)'
+      body.setAttribute('style',stylestr)
       for (let len = finList.length, j = len - 1; j >= 0; j--) {
         var div_0 = document.createElement("div");
         div_0.setAttribute(
@@ -2693,6 +2702,29 @@ export default {
     width: 91vw;
   }
   .wind_content {
+    .myScroll_btn_div {
+      padding-left: 90px;
+      padding-right: 20px;
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      width: 91vw;
+      z-index: 1002;
+      top: 30%;
+      [class*=" el-icon-"], [class^=el-icon-] {
+        font-size: 20px;
+        line-height: 54px;
+      }
+      .myScroll_btn {
+        cursor: pointer;
+        width: 20px;
+        height: 54px;
+        background: rgba(5, 137, 42, 1);
+        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.5);
+        border-radius: 2px;
+      }
+    }
+
     .unit {
       font-size: 16px;
       font-family: DINMittelschriftStd;
@@ -2751,12 +2783,16 @@ export default {
     }
     .scroll_parent {
       margin-left: 65px;
-      width: 100% !important;
       height: 56vh;
-
+      div:nth-child(3) {
+        // display: none;
+      }
       // #body::-webkit-scrollbar{
       //   width: 0%!important
       // }
+      /deep/.el-scrollbar__wrap {
+        overflow-y: hidden;
+      }
       /deep/.el-scrollbar__wrap::-webkit-scrollbar {
         display: none;
       }
@@ -2769,7 +2805,7 @@ export default {
       }
 
       #body {
-        width: calc(105vh + 1050px);
+        width: calc(105vh + 1100px);
       }
       #canvas {
         // overflow-x: scroll
