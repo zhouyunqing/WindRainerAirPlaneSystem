@@ -2751,9 +2751,8 @@ export default {
     }
     .scroll_parent {
       margin-left: 65px;
+      width: 100% !important;
       height: 56vh;
-      overflow-x:scroll; 
-      overflow-y: hidden;
 
       // #body::-webkit-scrollbar{
       //   width: 0%!important
