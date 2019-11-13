@@ -42,52 +42,52 @@ export default {
     background: #2e2b47;
     padding: 0;
     text-align: left;
-    width: 335px !important;
+    width: 3.35rem !important;
   }
   /deep/.el-dialog__header {
     text-align: left;
-    padding: 16px 20px;
+    padding: 0.16rem 0.2rem;
     .el-dialog__title {
-      font-size: 20px;
+      font-size: 0.20rem;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 1);
-      line-height: 28px;
+      line-height: 0.28rem;
     }
   }
   /deep/.el-dialog__body {
-    padding: 0 20px;
+    padding: 0 0.2rem;
   }
   .content {
-    margin-top: 32px;
-    font-size: 14px;
+    margin-top: 0.32rem;
+    font-size: 0.14rem;
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
     color: rgba(255, 255, 255, 1);
-    line-height: 20px;
+    line-height: 0.20rem;
   }
   .footer {
     text-align: right;
-    padding-top: 30px;
-    padding-bottom: 25px;
+    padding-top: 0.30rem;
+    padding-bottom: 0.25rem;
     .span_foot {
-      font-size: 14px;
+      font-size: 0.14rem;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 1);
-      line-height: 20px;
-      margin-right: 30px;
+      line-height: 0.20rem;
+      margin-right: 0.30rem;
     }
     /deep/.el-button {
-      width: 120px;
-      height: 40px;
+      width: 1.20rem;
+      height: 0.40rem;
       background: rgba(237, 34, 60, 1);
-      border-radius: 4px;
-      font-size: 14px;
+      border-radius: 0.04rem;
+      font-size: 0.14rem;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 1);
-      line-height: 20px;
+      line-height: 0.20rem;
       border: none;
     }
   }

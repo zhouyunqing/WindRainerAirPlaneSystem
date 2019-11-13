@@ -317,50 +317,50 @@ export default {
   }
   /deep/.el-dialog__header {
     text-align: left;
-    padding: 16px 20px;
+    padding: 0.16rem 0.20rem;
     .el-dialog__title {
-      font-size: 32px;
+      font-size: 0.32rem;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 1);
-      line-height: 45px;
+      line-height: 0.45rem;
     }
   }
   /deep/.el-dialog__body {
     padding: 0;
   }
   .name_font {
-    font-size: 20px;
+    font-size: 0.20rem;
     font-family: PingFangSC-Medium, PingFang SC;
     font-weight: 500;
     color: rgba(221, 221, 221, 1);
-    line-height: 28px;
+    line-height: 0.28rem;
   }
   .content {
-    padding: 16px 20px;
+    padding: 0.16rem 0.20rem;
     height: 50vh;
     overflow: auto;
     .config {
       .name {
-        margin-top: 50px;
+        margin-top: 0.50rem;
         /deep/.el-input__inner {
-          margin-top: 11px;
+          margin-top: 0.11rem;
           background-color: #242236;
           color: #888888;
-          font-size: 12px;
-          border-radius: 4px;
-          border: 1px solid rgba(68, 68, 68, 1);
+          font-size: 0.12rem;
+          border-radius: 0.4rem;
+          border: 0.01rem solid rgba(68, 68, 68, 1);
         }
         /deep/.el-input__inner::-webkit-input-placeholder {
           color: #666666;
         }
       }
       .address {
-        margin-top: 40px;
+        margin-top: 0.40rem;
         .address_select {
-          width: 90px;
-          height: 40px;
-          margin-top: 11px;
+          width: 0.90rem;
+          height: 0.40rem;
+          margin-top: 0.11rem;
         }
         /deep/.el-input__inner {
           background-color: #3b3757;
@@ -368,28 +368,28 @@ export default {
         }
       }
       .status {
-        margin-top: 40px;
+        margin-top: 0.40rem;
         .status_font {
-          font-size: 14px;
+          font-size: 0.14rem;
           font-family: PingFangSC-Medium, PingFang SC;
           font-weight: 500;
           color: rgba(255, 255, 255, 1);
-          line-height: 20px;
+          line-height: 0.20rem;
         }
         .status_body {
-          margin-top: 11px;
+          margin-top: 0.11rem;
         }
       }
       .conditions {
         .list {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 16px;
+          margin-bottom: 0.16rem;
         }
         .clear_margin {
-          margin-bottom: 0px;
+          margin-bottom: 0rem;
         }
-        margin-top: 40px;
+        margin-top: 0.40rem;
         /deep/.el-input__inner {
           background-color: #3b3757;
           border: none;
@@ -400,114 +400,114 @@ export default {
         }
         .conditions_body {
           background: #232038;
-          padding: 16px;
-          margin-top: 5px;
+          padding: 0.16rem;
+          margin-top: 0.05rem;
           .wind_speed_width {
-            width: 152px;
-            height: 40px;
+            width: 1.52rem;
+            height: 0.40rem;
             /deep/.el-input__inner {
               color: #ffffff;
             }
           }
           .compare_width {
-            width: 96px;
-            height: 40px;
+            width: 0.96rem;
+            height: 0.40rem;
             /deep/.el-input__inner {
               color: #ffffff;
             }
           }
           .el-input {
-            width: 56px;
+            width: 0.56rem;
             /deep/.el-input__inner {
               background-color: #232038;
-              font-size: 14px;
+              font-size: 0.14rem;
               font-family: PingFangSC-Medium, PingFang SC;
               font-weight: 500;
               color: rgba(255, 255, 255, 1);
-              line-height: 20px;
+              line-height: 0.20rem;
               border: 1px solid rgba(68, 68, 68, 1);
             }
           }
           .speed_font {
-            font-size: 14px;
+            font-size: 0.14rem;
             font-family: PingFangSC-Medium, PingFang SC;
             font-weight: 500;
             color: rgba(255, 255, 255, 1);
-            line-height: 20px;
+            line-height: 0.20rem;
           }
           .el-button {
             background: rgba(59, 55, 87, 1);
             border: none;
-            font-size: 14px;
+            font-size: 0.14rem;
             font-family: PingFangSC-Medium, PingFang SC;
             font-weight: 500;
             color: rgba(255, 255, 255, 1);
-            line-height: 20px;
-            height: 40px;
+            line-height: 0.20rem;
+            height: 0.40rem;
           }
         }
       }
       .note {
-        margin-top: 40px;
+        margin-top: 0.40rem;
         textarea {
           width: 100%;
-          height: 128px;
-          margin-top: 11px;
+          height: 1.28rem;
+          margin-top: 0.11rem;
           background: rgba(35, 32, 56, 1);
-          border-radius: 4px;
-          border: 1px solid rgba(68, 68, 68, 1);
-          font-size: 14px;
+          border-radius: 0.04rem;
+          border: 0.01rem solid rgba(68, 68, 68, 1);
+          font-size: 0.14rem;
           font-family: PingFangSC-Regular, PingFang SC;
           font-weight: 400;
           color: rgba(102, 102, 102, 1);
-          line-height: 20px;
+          line-height: 0.20rem;
         }
         textarea::-webkit-input-placeholder {
-          font-size: 14px;
+          font-size: 0.14rem;
           font-family: PingFangSC-Regular, PingFang SC;
           font-weight: 400;
           color: rgba(102, 102, 102, 1);
-          line-height: 20px;
+          line-height: 0.20rem;
         }
       }
       .notice {
-        margin-top: 40px;
+        margin-top: 0.40rem;
         .notice_body {
-          margin-top: 16px;
+          margin-top: 0.16rem;
           background: #232038;
-          padding: 26px 16px;
-          font-size: 14px;
+          padding: 0.26rem 0.16rem;
+          font-size: 0.14rem;
           font-family: PingFangSC-Regular, PingFang SC;
           font-weight: 400;
           color: rgba(221, 221, 221, 1);
-          line-height: 20px;
+          line-height: 0.20rem;
           /deep/.el-input__inner {
             background-color: #3b3757;
-            font-size: 14px;
+            font-size: 0.14rem;
             font-family: PingFangSC-Medium, PingFang SC;
             font-weight: 500;
             color: rgba(255, 255, 255, 1);
-            line-height: 20px;
-            width: 64px;
+            line-height: 0.20rem;
+            width: 0.64rem;
             border: none;
           }
         }
       }
       .sendMessage {
-        margin-top: 40px;
+        margin-top: 0.40rem;
         .sendMessage_body {
-          margin-top: 11px;
+          margin-top: 0.11rem;
           background: #232038;
           /deep/.el-table th,
           /deep/.el-table tr {
             background-color: #242236;
           }
           /deep/.el-table th {
-            font-size: 14px;
+            font-size: 0.14rem;
             font-family: PingFangSC-Medium, PingFang SC;
             font-weight: 500;
             color: #686868;
-            line-height: 20px;
+            line-height: 0.20rem;
           }
 
           /deep/.el-table--enable-row-hover .el-table__body tr:hover > td {
@@ -526,20 +526,20 @@ export default {
             text-align: right;
           }
           .table_font {
-            font-size: 14px;
+            font-size: 0.14rem;
             font-family: PingFangSC-Regular, PingFang SC;
             font-weight: 400;
             color: rgba(255, 255, 255, 1);
-            line-height: 20px;
+            line-height: 0.20rem;
           }
         }
       }
     }
   }
   .footer {
-    padding-top: 2.5rem;
+    padding-top: 0.1rem;
     text-align: right;
-    padding-right: 20px;
+    padding-right: 0.20rem;
     .save {
       background: #05892a;
     }
@@ -547,14 +547,14 @@ export default {
       background: #736ef7;
     }
     .el-button {
-      font-size: 14px;
+      font-size: 0.14rem;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 1);
-      line-height: 20px;
+      line-height: 0.20rem;
       border: none;
-      width: 96px;
-      height: 40px;
+      width: 0.96rem;
+      height: 0.40rem;
     }
   }
 }
