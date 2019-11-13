@@ -3,10 +3,10 @@
     <!-- <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" /> -->
 
     <!-- <breadcrumb class="breadcrumb-container" /> -->
-    <div class="infor">
+    <!-- <div class="infor">
       <img src="../../assets/images/infor.png" alt="" class="inforimage">
       <span class="inforSpan">信息</span>
-    </div>
+    </div> -->
     <div class="settings">
        <img src="../../assets/images/settings.png" alt="" class="inforimage">
       <span class="settingsSpan">设置</span>
@@ -69,36 +69,37 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
+  padding-top:0.4rem;
   .infor{
     width:100%;
-    height:8.8rem;
+    height:0.88rem;
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
     align-items: center;
     span{
     // width:1.4rem;
-    height:2rem;
-    font-size:1.4rem;
+    height:0.2rem;
+    font-size:0.14rem;
     font-weight:500;
     color:rgba(255,255,255,1);
-    line-height:20px;
+    line-height:0.2rem;
   }
   };
   .settings{
     width:100%;
-    height:8.8rem;
+    height:0.88rem;
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
     align-items: center;
     span{
     // width:1.4rem;
-    height:2rem;
-    font-size:1.4rem;
+    height:0.2rem;
+    font-size:0.14rem;
     font-weight:500;
     color:rgba(255,255,255,1);
-    line-height:20px;
+    line-height:0.2rem;
   }
    
   };
@@ -109,7 +110,7 @@ export default {
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
 
   .hamburger-container {
-    line-height: 46px;
+    line-height: 0.46rem;
     height: 100%;
     float: left;
     cursor: pointer;
@@ -126,10 +127,10 @@ export default {
   }
 
   .right-menu {
-    padding-top:1rem;
+    padding-top:0.1rem;
     float: right;
     height: 100%;
-    line-height: 50px;
+    line-height: 0.5rem;
 
     &:focus {
       outline: none;
@@ -137,9 +138,9 @@ export default {
 
     .right-menu-item {
       display: inline-block;
-      padding: 0 8px;
+      padding: 0 0.08rem;
       height: 100%;
-      font-size: 18px;
+      font-size: 0.18rem;
       color: #5a5e66;
       vertical-align: text-bottom;
 
@@ -162,15 +163,15 @@ export default {
         position: relative;
         display: flex;
         flex-flow: column nowrap;
-        height:8.8rem;
+        height:0.88rem;
         justify-content: center;
         align-items: center;
         span{
-          height:2rem;
-          font-size:1.4rem;
+          height:0.2rem;
+          font-size:0.14rem;
           font-weight:500;
           color:#fff;
-          line-height:20px;
+          line-height:0.20rem;
         }
 
         .user-avatar {

@@ -459,6 +459,9 @@
 </script>
 
 <style>
+  .a{
+    font-size:0.12rem;
+  }
   #closename {
     float: right;
     position: absolute;
@@ -985,6 +988,7 @@
   }
 
   #centrename {
+    font-size:0.12rem;
     float: right;
     margin-right: 10%;
     margin-top: 10%;
@@ -1002,6 +1006,8 @@
   }
 
   #bigname {
+    
+    font-size:0.12rem;
     float: right;
     margin-right: 15px;
     margin-top: 10%;

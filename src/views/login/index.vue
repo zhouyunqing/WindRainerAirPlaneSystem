@@ -7,8 +7,8 @@
       <div class="login-outer">
         <div class="login-airbg">
           <div class="slogan-panel">
-            <div class="slogan">风雨者航空气象服务</div>
-            <hr align="center"  color="#FFFFFF" width="100%" size="0.1rem"> 
+            <!-- <div class="slogan">风雨者航空气象服务</div>
+            <hr align="center"  color="#FFFFFF" width="100%" size="0.01rem">  -->
           </div>
         </div>
 
@@ -155,12 +155,12 @@ $cursor: #000;
 .login-container {
   .login-button
   {
-    margin-top: 3rem;
+    margin-top: 0.3rem;
     width:70%;
     background:rgba(5,137,42,1);
     box-shadow:0px 10px 22px 2px rgba(14,21,68,0.12);
-    border-radius:0.4rem;
-    font-size:1.6rem;
+    border-radius:0.04rem;
+    font-size:0.16rem;
     font-family:PingFangSC-Medium,PingFang SC;
     font-weight:500;
     color:rgba(255,255,255,1);
@@ -178,7 +178,7 @@ $cursor: #000;
       border-radius: 0px;
       // padding: 12px 5px 12px 15px;
       // color: $light_gray;
-      height: 3rem;
+      height: 0.3rem;
       caret-color: $cursor;
 
       &:-webkit-autofill {
@@ -227,13 +227,13 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
   overflow: hidden;
   .login-head{
     @include align-middle;
-    flex: 0 0 3rem;
+    flex: 0 0 0.3rem;
     justify-content: flex-start;
-    padding: 4.4rem 5.9rem;
+    padding: 0.44rem 0.59rem;
     z-index: 999;
     .customer-logo{
-      @include wh(13.5rem,3.5rem);
-      @media screen and (max-width: $width-medium){  width: 6rem;}
+      @include wh(1.35rem,0.35rem);
+      @media screen and (max-width: $width-medium){  width: 0.6rem;}
     }
   }
 
@@ -247,7 +247,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
         justify-content: space-around
       };
     .login-outer {
-      @include wh(70%,56rem);
+      @include wh(70%,5.6rem);
       @include align-middle-between;
       display: flex;
       flex-flow: row nowrap;
@@ -255,7 +255,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
       font-size: $fontsize-s;
       background:rgba(255,255,255,1);
       box-shadow:0px 0px 20px 6px rgba(0,87,33,0.09);
-      border-radius:1.6rem;
+      border-radius:0.16rem;
       // padding: 2.7rem 4rem;
       z-index: 999;
       .login-airbg{
@@ -264,10 +264,10 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
 
         }
                 
-        @include wh(45.4rem,100%);
+        @include wh(4.54rem,100%);
         background:$bgimgair;
         display: flex;
-        border-radius: 1.6rem 0rem 0rem 1.6rem;
+        border-radius: 0.16rem 0rem 0rem 0.16rem;
         @include align-center-middle;
         // background:$bgimgair;
         .login-border{
@@ -280,25 +280,25 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
           flex-flow: column nowrap;
           // min-width: 20rem
           z-index: 999;
-          height: 10rem;
+          height: 1rem;
 
           @media screen and (max-width: $width-medium){
-            height: 6rem
+            height: 0.6rem
           }
           
           .slogan{
-            @include font-color-pos(2.4rem,$active-ft,left);
-            padding-bottom: 2rem;
+            @include font-color-pos(0.24rem,$active-ft,left);
+            padding-bottom: 0.2rem;
             @media screen and (max-width: $width-medium)
             {
-              font-size: 1.4rem;
-              padding-bottom: 1rem
+              font-size: 0.14rem;
+              padding-bottom: 0.1rem
             }
                 
 
           }
           .minor-slogan{
-            @include font-color-pos(1.2rem,$grip-color,left);
+            @include font-color-pos(0.12rem,$grip-color,left);
               @media screen and (max-width: $width-medium){
                 font-size: $fontsize-s
               }
@@ -309,7 +309,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
 
       .login-formcontainer{
         position: relative;
-        @include wh(56.6rem,100%);
+        @include wh(5.66rem,100%);
          .login-form {
           display: flex;
           @include align-middle;
@@ -317,7 +317,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
           // position: relative;
           // width: 52rem;
           // max-width: 100%;
-          padding-top: 10rem;
+          padding-top: 1rem;
           // margin: 0 auto;
           // overflow: hidden;
       }
@@ -342,7 +342,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
   }
 
   .svg-container {
-    padding: 6px 5px 6px 15px;
+    // padding: 6px 5px 6px 15px;
     color: $dark_gray;
     vertical-align: middle;
     width: 30px;
@@ -354,7 +354,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
 
     .title {
       font-family: "Noto Sans SC";
-      font-size: 3.6rem;
+      font-size: 0.36rem;
       color: rgba(51,51,51,1);
       text-align: center;
       font-weight: 550;

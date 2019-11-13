@@ -405,28 +405,28 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .station_hover_info {
-    width: 33.33rem;
-    height: 15.08rem;
+    width: 3.333rem;
+    height: 1.508rem;
     background: rgba(36, 34, 54, 1);
-    box-shadow: 0rem 1rem 2.67rem 0.08rem rgba(16, 15, 23, 0.15);
-    border-radius: 0.33rem;
+    box-shadow: 0rem 0.1rem 0.267rem 0.008rem rgba(16, 15, 23, 0.15);
+    border-radius: 0.033rem;
     position: absolute;
-    top: 16.08rem;
-    left: 8.25rem;
+    top: 1.608rem;
+    left: 0.825rem;
     z-index: 9999;
     display: flex;
     flex-direction: column;
   }
 
   .station_hover_header {
-    height: 3.5rem;
+    height: 0.35rem;
     display: flex;
     flex-direction: row;
     align-items: center;
   }
 
   .station_hover_line {
-    height: 0.17rem;
+    height: 0.017rem;
     background-color: #45416F;
   }
 
@@ -441,64 +441,64 @@
     min-width: 40%;
     /*min-height: 33.33333%;*/
     flex-shrink: 1;
-    margin-left: 1rem;
+    margin-left: 0.1rem;
     display: flex;
     align-items: center;
   }
 
   .station_hover_container div span:nth-child(odd) {
-    font-size: 1.25rem;
+    font-size: 0.125rem;
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 800;
     color: rgba(170, 170, 170, 1);
-    line-height: 1.75rem;
+    line-height: 0.175rem;
     text-align: left;
   }
 
   .station_hover_container div span:nth-child(even) {
-    font-size: 1.25rem;
+    font-size: 0.125rem;
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 800;
     color: rgba(255, 255, 255, 1);
-    line-height: 1.75rem;
+    line-height: 0.175rem;
     text-align: left;
   }
 
   .station_hover_footer {
-    height: 3.5rem;
+    height: 0.35rem;
     display: flex;
     flex-direction: row;
     align-items: center;
   }
 
   .header_icon {
-    width: 0.33rem;
-    height: 1.33rem;
+    width: 0.033rem;
+    height: 0.133rem;
     background: rgba(0, 255, 71, 1);
-    border-radius: 0.08rem;
-    margin-left: 1rem;
+    border-radius: 0.008rem;
+    margin-left: 0.1rem;
   }
 
   .header_title {
-    width: 3.83rem;
-    height: 2.33rem;
-    font-size: 1.67rem;
+    width: 0.383rem;
+    height: 0.233rem;
+    font-size: 0.167rem;
     font-family: PingFangSC-Medium, PingFang SC;
     font-weight: 500;
     color: rgba(255, 255, 255, 1);
-    line-height: 2.34rem;
-    margin-left: 0.5rem;
+    line-height: 0.234rem;
+    margin-left: 0.05rem;
   }
 
   .footer_time {
-    width: 17.5rem;
-    height: 1.42rem;
-    font-size: 1rem;
+    width: 1.75rem;
+    height: 0.142rem;
+    font-size: 0.1rem;
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
     color: rgba(170, 170, 170, 1);
-    line-height: 1.42rem;
-    margin-left: 1rem;
+    line-height: 0.142rem;
+    margin-left: 0.1rem;
   }
 </style>
 

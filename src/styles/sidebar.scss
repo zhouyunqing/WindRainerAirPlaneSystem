@@ -65,8 +65,8 @@
   
       .svg-icon {
         // margin-right: 1.6rem;
-        width:2.2rem;
-        height: 3.4rem;
+        width:0.4rem;
+        height:0.4rem;
       }
   
       .el-menu {
@@ -91,8 +91,8 @@
       & .el-submenu .el-menu-item {
         display: flex;
         flex-flow: column nowrap;
-        width:8rem;
-        height:8.8rem;
+        width:0.8rem;
+        height:0.88rem;
       
         min-width: $sideBarWidth !important;
         background-color: $subMenuBg !important;
@@ -200,21 +200,21 @@
   }
 }
 .el-menu-item {
-  width:8rem;
-  height:8.8rem;
+  width:0.8rem;
+  height:0.88rem;
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
  
   svg{
-    width: 2.2rem;
-    height: 3.4rem;
+    width: 0.4rem;
+    height: 0.4rem;
   }
   span{
     // width:1.4rem;
-    height:2rem;
-    font-size:1.4rem;
+    height:0.2rem;
+    font-size:0.14rem;
     font-weight:500;
     color:rgba(255,255,255,1);
     line-height:20px;
@@ -234,8 +234,8 @@
 
     display: flex;
     flex-flow: column nowrap;
-    width:8rem;
-    height:8.8rem;
+    width:0.8rem;
+    height:0.88rem;
    
     &:hover {
       // you can use $subMenuHover

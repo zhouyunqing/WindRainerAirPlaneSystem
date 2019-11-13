@@ -105,7 +105,7 @@ export default {
     width: 100%;
   }
   .sidebar-container{
-    height: 50rem;
+    height: 5rem;
   }
 
 
