@@ -13,8 +13,19 @@
       ></i>
     </el-input>
 
+    <el-slider
+      v-model="heightLevel"
+      :min="1"
+      :max="16"
+      :step="1"
+      :show-tooltip="true"
+      vertical
+      class="windheightcontroller">
+      >
+    </el-slider>
+     
     <div id="cesiumContainer"></div>
-
+  
     <!---->
     <div
       class="station_hover_info"
@@ -375,6 +386,7 @@ export default {
       activeWind: "planewind",
       sliderTime: new Date(new Date().toLocaleDateString()),
       runwayTime: 1,
+      heightLevel: [1,2,3,4,5],
       isShow: false,
       isHoverShow: false, //悬浮数据框显示控制
       windInfo: [], // 风数据,按高度获取
@@ -1470,11 +1482,11 @@ export default {
         };
         let windDataMap = this.windData;
         let particleSystemOptionsMap = particleSystemOptions;
-        let wind3D = new Wind3D(
-          this.viewer,
-          windDataMap,
-          particleSystemOptionsMap
-        );
+        // let wind3D = new Wind3D(
+        //   this.viewer,
+        //   windDataMap,
+        //   particleSystemOptionsMap
+        // );
 
         this.viewer.entities.add({
           show: this.isLegendChange,
@@ -2578,6 +2590,23 @@ export default {
     width: 2.56rem;
     height: 0.4rem;
     z-index: 999;
+  }
+  .windheightcontroller{
+    // background:rgba(0,0,0,1);
+    // opacity:0.37;
+    position: absolute;
+    top: 2.29rem;
+    right: 0.37rem;
+    width: 0.08rem;
+    height: 1.72rem;
+    z-index: 999;
+    .el-slider__button-wrapper{
+      height: auto;
+    }
+    .el-slider__bar{
+      background-color: rgba(0,0,0,1);
+      opacity:0.37;
+    }
   }
   .wind_header {
     display: flex;
