@@ -47,45 +47,45 @@ export default {
 }
 .tips {
   .wind_forecast {
-    padding: 12px 20px 6px;
-    width: 462px;
+    padding: 0.12rem 0.20rem 0.06rem;
+    width: 4.62rem;
     background-color: #D92D39;
     .wind_forecast_tittle {
-      font-size: 18px;
+      font-size: 0.18rem;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 1);
-      line-height: 25px;
+      line-height: 0.25rem;
       text-align: left;
     }
     .wind_forecast_body {
-      margin-top: 5px;
+      margin-top: 0.05rem;
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
+      font-size: 0.12rem;
       font-family: PingFangSC-Regular, PingFang SC;
       font-weight: 400;
       color: rgba(255, 255, 255, 1);
-      line-height: 17px;
+      line-height: 0.17rem;
     }
   }
   .happen_time {
-    padding: 12px 20px 6px;
+    padding: 0.12rem 0.20rem 0.06rem;
     text-align: left;
     .happen_time_tittle {
-      font-size: 14px;
+      font-size: 0.14rem;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(187, 187, 187, 1);
-      line-height: 20px;
-      margin-bottom: 5px;
+      line-height: 0.20rem;
+      margin-bottom: 0.05rem;
     }
     .happen_time_body {
-      font-size: 16px;
+      font-size: 0.16rem;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 1);
-      line-height: 22px;
+      line-height: 0.22rem;
     }
   }
 }

@@ -1,16 +1,7 @@
 <template>
-
   <div class="wind">
-
-    <el-input
-      class="search"
-      v-model="searchInput"
-      placeholder="输入查询机场名称或拼音"
-    >
-      <i
-        slot="prefix"
-        class="el-input__icon el-icon-search"
-      ></i>
+    <el-input class="search" v-model="searchInput" placeholder="输入查询机场名称或拼音">
+      <i slot="prefix" class="el-input__icon el-icon-search"></i>
     </el-input>
 
     <el-slider
@@ -52,10 +43,7 @@
     </div>
 
     <!-- <div id="windEcharts" ref="chart"></div> -->
-    <div
-      id="menu"
-      v-if="activeWind=='planewind'"
-    >
+    <div id="menu" v-if="activeWind=='planewind'">
       <!-- <div class="input" id="search">
         <img src="../../../public/images/icon_sousuo@2x.png" id="search-icon">
         <a id="search-input">输入查询的机场名称或拼音</a>
@@ -207,110 +195,126 @@
     </div>
 
     <article class="wind_header">
-      <div>
-        <el-button
-          id="planewind"
-          type="primary"
-          @click="windToggle('plane')"
-        >平面风展示</el-button>
-        <el-button
-          id="sectionwind"
-          type="primary"
-          @click="windToggle('section')"
-        >剖面风展示</el-button>
+      <div class="wind_header_btn">
+        <el-button id="planewind" type="primary" @click="windToggle('plane')">平面风展示</el-button>
+        <el-button id="sectionwind" type="primary" @click="windToggle('section')">剖面风展示</el-button>
       </div>
-      <div
+      <div v-if="activeWind=='sectionwind' && sectionwindDetail" class="wind_header_icon">
+        <img v-if="!isDetail" src="../../assets/images/profileIcon.png" />
+        <span @click="detail(true)" v-if="!isDetail">详细</span>
+        <img v-if="isDetail" src="../../assets/images/reduction.png" />
+        <span @click="detail(false)" v-if="isDetail">还原</span>
+      </div>
+    </article>
+    <div class="shadow" v-show="activeWind=='sectionwind' && sectionwindDetail">
+      <article v-show="activeWind=='sectionwind' && sectionwindDetail" class="wind_content">
+        <div ref="height_dom" class="height_font">
+          (高度：m)
+          <div class="close-button" @click="closeWindow">
+            <i class="el-icon-close"></i>
+          </div>
+          <div class="height_value">
+            <div>2000</div>
+            <div></div>
+            <div></div>
+            <div>1500</div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div>1000</div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div>500</div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div>0</div>
+          </div>
+        </div>
+        <el-scrollbar class="scroll_parent" :native="false" :noresize="false">
+          <!-- <GeminiScrollbar ref="mycom" class="scroll_parent"> -->
+          <div id="body">
+            <div ref="canvas" id="canvas" class="canvas" v-show="isLegendChange"></div>
+          </div>
+        </el-scrollbar>
+        <!-- </GeminiScrollbar> -->
+        <!-- <div class="scroll_parent">
+           <div id="body">
+              <div ref="canvas" id="canvas" class="canvas" v-show="isLegendChange"></div>
+            </div>
+        </div>-->
+        <div class="unit">
+          <span class="length_font">(长度:KM)</span>
+        </div>
+      </article>
+      <!--</transition>-->
+
+      <article
         v-if="activeWind=='sectionwind' && sectionwindDetail"
-        class="wind_header_icon"
+        class="wind_footer"
+        ref="wind_footer"
       >
-        <img src="../../assets/images/profileIcon.png" />
-        <!--<transition name="slide-fade"> 动画测试-->
-        <span>详细</span>
-      </div>
-    </article>
-    <article
-      v-show="activeWind=='sectionwind' && sectionwindDetail"
-      class="wind_content"
-    >
-      <div
-        ref="height_dom"
-        class="height_font"
-      >(高度：m)<div class="close-button" @click="closeWindow">
-        <i class="el-icon-close"></i>
-      </div></div>
-
-      <div id="body">
-        <div
-          ref="canvas"
-          id="canvas"
-          class="canvas"
-          v-show="isLegendChange"
-        ></div>
-      </div>
-      <ul class="progress_bar">
-        <li>-12</li>
-        <li>-10</li>
-        <li>-8</li>
-        <li>-6</li>
-        <li>-4</li>
-        <li>-2</li>
-        <li>0</li>
-        <li>2</li>
-        <li>4</li>
-        <li>6</li>
-        <li>8</li>
-        <li>10</li>
-        <li>12</li>
-      </ul>
-      <div class="unit">
-        <span>18L</span>
-        <span>MID2</span>
-        <span>36R</span>
-        <span class="length_font">(长度:KM)</span>
-      </div>
-    </article>
-    <!--</transition>-->
-
-    <article
-      v-if="activeWind=='sectionwind' && sectionwindDetail"
-      class="wind_footer"
-      ref="wind_footer"
-    >
-      <div class="wind_footer_header">
-        <el-button
-          :class="{ 'select_color': runType=='runway1' }"
-          @click="changeRunway('runway1')"
-        >跑道1</el-button>
-        <el-button
-          :class="{ 'select_color': runType=='runway2' }"
-          @click="changeRunway('runway2')"
-        >跑道2</el-button>
-        <el-button
-          :class="{ 'select_color': runType=='runway3' }"
-          @click="changeRunway('runway3')"
-        >跑道3</el-button>
-      </div>
-      <div class="wind_footer_body">
-        <div>
+        <div class="wind_footer_header">
+          <el-button
+            :class="{ 'select_color': runType=='runway1' }"
+            @click="changeRunway('runway1')"
+          >跑道1</el-button>
+          <el-button
+            :class="{ 'select_color': runType=='runway2' }"
+            @click="changeRunway('runway2')"
+          >跑道2</el-button>
+          <el-button
+            :class="{ 'select_color': runType=='runway3' }"
+            @click="changeRunway('runway3')"
+          >跑道3</el-button>
+        </div>
+        <div class="wind_footer_body">
           <div class="title">
             <div class="title_icon"></div>
             <span>跑道一</span>
           </div>
-          <ul class="progress_bar">
-            <li>0h</li>
-            <li>2h</li>
-            <li>4h</li>
-            <li>6h</li>
-            <li>8h</li>
-            <li>10h</li>
-            <li>12h</li>
-            <li>14h</li>
-            <li>16h</li>
-            <li>18h</li>
-            <li>20h</li>
-            <li>22h</li>
-            <li>24h</li>
-          </ul>
+          <div class="progress_bar_div">
+            <ul class="progress_bar">
+              <li>
+                <span>0h</span>
+              </li>
+              <li>
+                <span class="span_normal">2h</span>
+              </li>
+              <li>
+                <span class="span_normal">4h</span>
+              </li>
+              <li>
+                <span class="span_normal">6h</span>
+              </li>
+              <li>
+                <span class="span_normal">8h</span>
+              </li>
+              <li>
+                <span class="span_normal">10h</span>
+              </li>
+              <li>
+                <span class="span_normal">12h</span>
+              </li>
+              <li>
+                <span class="span_normal">14h</span>
+              </li>
+              <li>
+                <span class="span_normal">16h</span>
+              </li>
+              <li>
+                <span class="span_normal">18h</span>
+              </li>
+              <li>
+                <span class="span_normal">20h</span>
+              </li>
+              <li>
+                <span class="span_normal">22h</span>
+                <span class="span_last">24h</span>
+              </li>
+            </ul>
+          </div>
           <el-slider
             @input="changeTime"
             v-model="runwayTime"
@@ -318,12 +322,10 @@
             @change="changeTimeToPic"
             :format-tooltip="getTime"
           ></el-slider>
-          <!-- <div class="time_font">{{$moment(sliderTime).format("YYYY.MM.DD HH:mm")}}</div> -->
         </div>
-      </div>
-    </article>
+      </article>
+    </div>
   </div>
-
 </template>
 <script>
 import Cesium from "cesium/Cesium";
@@ -353,7 +355,22 @@ export default {
   name: "cesiumContainer",
   data() {
     return {
+      isDetail: false,
       data: Object,
+      ops: {
+        vuescroll: {},
+        scrollPanel: {},
+        rail: {
+          background: "#01a99a",
+          opacity: 0,
+          size: "6px",
+          specifyBorderRadius: false,
+          gutterOfEnds: null,
+          gutterOfSide: "2px",
+          keepShow: false
+        },
+        bar: {}
+      },
       colorTable: {
         type: Object,
         default: () => {
@@ -424,8 +441,11 @@ export default {
     };
   },
   methods: {
-    closeWindow(){
-      this.sectionwindDetail = false
+    detail(type){
+      this.isDetail = type
+    },
+    closeWindow() {
+      this.sectionwindDetail = false;
     },
     changeTimeToPic() {
       let self = this;
@@ -1158,6 +1178,7 @@ export default {
       var v = data["data"]["V"];
       var w = data["data"]["W"];
       var xlat = data["data"]["XLAT"];
+      this.height_num = Math.ceil(data["data"]["count"] / 16);
       var sortList = [];
 
       //每行数据按纬度xlat排序
@@ -1252,37 +1273,40 @@ export default {
       }
       for (let len = finList.length, j = len - 1; j >= 0; j--) {
         var div_0 = document.createElement("div");
-        div_0.setAttribute("style", "text-align:center;display:flex;");
+        div_0.setAttribute(
+          "style",
+          "text-align:center;display:flex;padding-left: 5px;background: linear-gradient(180deg,rgba(242, 247, 255, 1) 0%,rgba(250, 252, 255, 1) 100%);"
+        );
         for (let i = 0, len1 = finList[0].length; i < len1; i++) {
           var div_1 = document.createElement("div");
           div_1.setAttribute("class", "demo");
-          if (i == 13) {
-            div_1.style = "border-left:2px dashed red;";
+          if (i == 14) {
+            div_1.style = "border-left:2px dashed red;box-shadow:inset 15px 0px  10px -15px red;";
           }
-          if (i == 13 && j == finList.length - 1) {
+          if (i == 14 && j == finList.length - 1) {
             div_1.style =
-              "border-left:2px dashed red;border-top:2px dashed red;";
+              "border-left:2px dashed red;border-top:2px dashed red;box-shadow:inset 8px 8px 9px -8px red;";
           }
-          if (j == finList.length - 1 && i > 13 && i < 19) {
-            div_1.style = "border-top:2px dashed red";
+          if (j == finList.length - 1 && i > 14 && i < 20) {
+            div_1.style = "border-top:2px dashed red;box-shadow:inset -1px 11px 13px -15px red";
           }
-          if (i == 19) {
-            div_1.style = "border-right:2px dashed red";
+          if (i == 20) {
+            div_1.style = "border-right:2px dashed red;box-shadow:inset -15px 0px  10px -15px red";
           }
-          if (i == 19 && j == finList.length - 1) {
+          if (i == 20 && j == finList.length - 1) {
             div_1.style =
-              "border-right:2px dashed red;border-top:2px dashed red;";
+              "border-right:2px dashed red;border-top:2px dashed red;box-shadow:inset -8px 8px  9px -8px red";
           }
-          if (j == 0 && i > 13 && i < 19) {
-            div_1.style = "border-bottom:2px dashed red";
+          if (j == 0 && i > 14 && i < 20) {
+            div_1.style = "border-bottom:2px dashed red;box-shadow:inset -1px -11px 13px -15px red";
           }
-          if (j == 0 && i == 13) {
+          if (j == 0 && i == 14) {
             div_1.style =
-              "border-bottom:2px dashed red; border-left:2px dashed red";
+              "border-bottom:2px dashed red; border-left:2px dashed red;box-shadow:inset 8px -8px 9px -8px red;";
           }
-          if (j == 0 && i == 19) {
+          if (j == 0 && i == 20) {
             div_1.style =
-              "border-bottom:2px dashed red; border-right:2px dashed red";
+              "border-bottom:2px dashed red; border-right:2px dashed red;box-shadow:inset -8px -8px 9px -8px red;";
           }
           var b_1 = document.createElement("b");
 
@@ -1295,24 +1319,6 @@ export default {
             "transform: rotate(" + Math.round(finList[j][i][4]) + "deg)" + color
           );
           div_1.appendChild(b_1);
-          if (i == 13 && (j == 0 || j == 4 || j == 8 || j == 12 || j == 15)) {
-            var height_div = document.createElement("div");
-            if (j == 15) {
-              height_div.innerHTML = "2000";
-            } else if (j == 12) {
-              height_div.innerHTML = "1500";
-            } else if (j == 8) {
-              height_div.innerHTML = "1000";
-            } else if (j == 4) {
-              height_div.innerHTML = "500";
-            } else {
-              height_div.innerHTML = "0";
-            }
-            height_div.setAttribute("class", "div_height");
-            height_div.style =
-              "left:" + ((window.innerHeight / 100) * 12 * 3 + 360) + "px;";
-            div_0.appendChild(height_div);
-          }
           div_0.appendChild(div_1);
         }
         var div_sp = document.createElement("div");
@@ -1320,6 +1326,53 @@ export default {
         canvas.appendChild(div_sp);
         canvas.appendChild(div_0);
       }
+      let value_num = -16;
+      let hang = document.createElement("div");
+      hang.setAttribute(
+        "style",
+        "text-align:center;display:flex;width: fit-content;padding-left:5px;font-size: 16px;font-family: DINMittelschriftStd;color: rgba(255,255,255,1);line-height: 19px;margin-top: 0.20rem;"
+      );
+      for (let k = 0; k < 35; k++) {
+        let div_child = document.createElement("div");
+        div_child.setAttribute("class", "demo");
+        if (k % 2 == 1) {
+          div_child.innerHTML = value_num;
+          value_num = value_num + 2;
+        }
+        hang.appendChild(div_child);
+      }
+      value_num = -16;
+      let hang2 = document.createElement("div");
+      hang2.setAttribute(
+        "style",
+        "text-align:center;display:flex;width: fit-content;padding-left:5px;font-size: 16px;font-family: DINMittelschriftStd;color: rgba(0, 255, 71, 1);;line-height: 19px;"
+      );
+      for (let k = 0; k < 35; k++) {
+        let div_child = document.createElement("div");
+        div_child.setAttribute("class", "demo");
+        if (value_num == 1 ) {
+          if(this.runType === 'runway1'){
+            div_child.innerHTML = 'MID1';
+          }else if(this.runType === 'runway2'){
+            div_child.innerHTML = 'MID2';
+          }else {
+            div_child.innerHTML = 'MID3';
+          }
+        } else if (value_num === -2 ) {
+          div_child.innerHTML = '18L';
+        } else if ( value_num === 4) {
+          div_child.innerHTML = '36R';
+        } else {
+          div_child.innerHTML = '';
+        }
+        value_num = value_num + 1
+        hang2.appendChild(div_child);
+      }
+      var div_sp1 = document.createElement("div");
+      div_sp1.setAttribute("class", "clear");
+      canvas.appendChild(div_sp1);
+      canvas.appendChild(hang);
+      canvas.appendChild(hang2);
     },
     startSlider(event) {
       this.flag = true;
@@ -1347,8 +1400,9 @@ export default {
     }
   },
   mounted() {
-    this.$refs.height_dom.style =
-      "margin-left:" + ((window.innerHeight / 100) * 12 * 3 + 360) + "px;";
+    // this.$refs.height_dom.style =
+    //   "margin-left:" + ((window.innerHeight / 100) * 12 * 3 + 360) + "px;";
+    console.log("GeminiScrollbar", this);
     this.$el.querySelector("#planewind").classList.add("active");
     let self = this;
     // request({
@@ -2613,7 +2667,10 @@ export default {
     justify-content: center;
     position: absolute;
     top: 5%;
-
+    z-index: 1000;
+    .wind_header_btn{
+      display: flex;
+    }
     .el-button {
       font-size: 15px;
       font-family: PingFangSC-Medium, PingFang SC;
@@ -2637,6 +2694,7 @@ export default {
       right: 20px;
       display: flex;
       span {
+        cursor: pointer;
         line-height: 40px;
         font-size: 15px;
         font-family: PingFangSC-Medium, PingFang SC;
@@ -2648,62 +2706,58 @@ export default {
       }
     }
   }
+  .shadow {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 998;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: block;
+  }
   .wind_content {
     position: absolute;
     top: 15%;
     width: 91vw;
   }
   .wind_content {
-    .progress_bar {
-      display: inline-block;
-      font-size: 0;
-      padding: 0;
-      margin: 0;
-      width: 100%;
-      height: 25px;
-      user-select: none;
-      list-style: none;
-      display: inline-block;
-      vertical-align: top;
-      li {
-        display: inline-block;
-        text-align: left;
-        font-size: 16px;
-        font-family: DINMittelschriftStd;
-        color: rgba(255, 255, 255, 1);
-        line-height: 19px;
-        width: 8%;
-      }
-      li:last-child {
-        width: 3%;
-      }
-    }
     .unit {
       font-size: 16px;
       font-family: DINMittelschriftStd;
       color: rgba(0, 255, 71, 1);
       line-height: 19px;
+      text-align: right;
+      position: relative;
+      bottom: 3vh;
       span:nth-child(2) {
-        margin-left: 30px;
-        margin-right: 30px;
+        margin-left: 0.03rem;
+        margin-right: 0.03rem;
       }
       .length_font {
         font-size: 16px;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(255, 255, 255, 1);
-        line-height: 22px;
-        position: fixed;
-        right: 8px;
+        line-height: 0.022rem;
       }
     }
     .height_font {
-      // margin-left: 515px;
+      // margin-left: calc(100vh - 100px);
       font-size: 16px;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 1);
       text-align: left;
+      margin-left: 20px;
+    }
+    .height_value {
+      position: absolute;
+      z-index: 1000;
+      div {
+        height: 3vh;
+        width: 3vh;
+      }
     }
     .close-button {
       display: inline;
@@ -2724,234 +2778,307 @@ export default {
         color: white;
       }
     }
-    #canvas {
-      overflow-x: scroll;
-      width: 100%;
-      height: 52vh;
-      background: linear-gradient(
-        180deg,
-        rgba(242, 247, 255, 1) 0%,
-        rgba(250, 252, 255, 1) 100%
-      );
-      padding-left: 10px;
-    }
-    .demo {
-      width: 3vh;
-      height: 3vh;
-      b {
-        display: block;
+    .scroll_parent {
+      margin-left: 65px;
+      height: 56vh;
+      overflow-x:scroll; 
+      overflow-y: hidden;
+
+      // #body::-webkit-scrollbar{
+      //   width: 0%!important
+      // }
+      /deep/.el-scrollbar__wrap::-webkit-scrollbar {
+        display: none;
+      }
+      /deep/.el-scrollbar__bar {
+        bottom: 6vh;
+        background: #14122e;
+        /deep/.el-scrollbar__thumb {
+          background: #dddddd;
+        }
+      }
+
+      #body {
+        width: calc(105vh + 1050px);
+      }
+      #canvas {
+        // overflow-x: scroll
+        // width: 2000px;
+        padding-left: 10px;
+      }
+      .bottom_div {
+        width: 3vh;
+        margin-right: 30px;
+      }
+      .demo {
         width: 3vh;
         height: 3vh;
+        b {
+          display: block;
+          width: 3vh;
+          height: 3vh;
+        }
+        margin-right: 30px;
       }
-      margin-right: 30px;
-    }
-    .div_height {
-      z-index: 6;
-      position: absolute;
-      font-size: 16px;
-      font-family: DINMittelschriftStd;
-      color: rgba(0, 0, 0, 1);
-      line-height: 19px;
-      text-align: right;
-      width: 31px;
-    }
-    .demo_border_left {
-      border-left: 2px dashed red;
-    }
-    .demo_border_top {
-      border-top: 2px dashed red;
-    }
-    .demo_border_right {
-      border-right: 2px dashed red;
-    }
-    [class^="icon-"],
-    [class*=" icon-"] {
-      /* use !important to prevent issues with browser extensions that change fonts */
-      font-family: "icomoon" !important;
-      font-style: normal;
-      font-weight: normal;
-      font-variant: normal;
-      text-transform: none;
-      line-height: 1;
+      .div_height {
+        z-index: 6;
+        position: absolute;
+        font-size: 16px;
+        font-size: 16px;
+        font-family: DINMittelschriftStd;
+        color: rgba(255, 255, 255, 1);
+        line-height: 19px;
+        text-align: left;
+        width: 31px;
+        left: 20px;
+      }
+      .demo_border_left {
+        border-left: 2px dashed red;
+      }
+      .demo_border_top {
+        border-top: 2px dashed red;
+      }
+      .demo_border_right {
+        border-right: 2px dashed red;
+      }
+      [class^="icon-"],
+      [class*=" icon-"] {
+        /* use !important to prevent issues with browser extensions that change fonts */
+        font-family: "icomoon" !important;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
 
-      /* Better Font Rendering =========== */
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+        /* Better Font Rendering =========== */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
 
-      font-size: 3vh;
-    }
+        font-size: 3vh;
+      }
 
-    .icon-0:before {
-      content: "\e900";
-      color: #1200a9;
-      font-size: 10px;
-      position: relative;
-      top: 0px;
-    }
-    .icon-2:before {
-      content: "\e901";
-      color: #1739e7;
-      position: relative;
-      // top: 5px;
-    }
-    .icon-4:before {
-      content: "\e902";
-      color: #1266e8;
-      position: relative;
-      // top: 5px;
-    }
-    .icon-6:before {
-      content: "\e903";
-      color: #00dae3;
-      position: relative;
-      // top: 5px;
-    }
-    .icon-8:before {
-      content: "\e904";
-      color: #00e5cb;
-      position: relative;
-      // top: 5px;
-    }
-    .icon-10:before {
-      content: "\e905";
-      color: #02e7af;
-      position: relative;
-      // top: 5px;
-    }
-    .icon-12:before {
-      content: "\e906";
-      color: #1ee77e;
-      position: relative;
-      // top: 5px;
-    }
-    .icon-14:before {
-      content: "\e907";
-      color: #3be84d;
-      position: relative;
-      // top: 5px;
-    }
-    .icon-16:before {
-      content: "\e908";
-      color: #61e80b;
-    }
-    .icon-20:before {
-      content: "\e909";
-      color: #8ce800;
-      position: relative;
-      // top: 5px;
-    }
-    .icon-24:before {
-      content: "\e90a";
-      color: #c2e800;
-      position: relative;
-      // top: 5px;
-    }
-    .icon-28:before {
-      content: "\e90b";
-      color: #e5d600;
-      position: relative;
-      // top: 5px;
-    }
-    .icon-32:before {
-      content: "\e90c";
-      color: #e6b000;
-      position: relative;
-      // top: 5px;
-    }
-    .icon-36:before {
-      content: "\e90d";
-      color: #e62408;
-      position: relative;
-      // top: 5px;
-    }
+      .icon-0:before {
+        content: "\e900";
+        color: #1200a9;
+        font-size: 10px;
+        position: relative;
+        top: 0px;
+      }
+      .icon-2:before {
+        content: "\e901";
+        color: #1739e7;
+        position: relative;
+        // top: 5px;
+      }
+      .icon-4:before {
+        content: "\e902";
+        color: #1266e8;
+        position: relative;
+        // top: 5px;
+      }
+      .icon-6:before {
+        content: "\e903";
+        color: #00dae3;
+        position: relative;
+        // top: 5px;
+      }
+      .icon-8:before {
+        content: "\e904";
+        color: #00e5cb;
+        position: relative;
+        // top: 5px;
+      }
+      .icon-10:before {
+        content: "\e905";
+        color: #02e7af;
+        position: relative;
+        // top: 5px;
+      }
+      .icon-12:before {
+        content: "\e906";
+        color: #1ee77e;
+        position: relative;
+        // top: 5px;
+      }
+      .icon-14:before {
+        content: "\e907";
+        color: #3be84d;
+        position: relative;
+        // top: 5px;
+      }
+      .icon-16:before {
+        content: "\e908";
+        color: #61e80b;
+      }
+      .icon-20:before {
+        content: "\e909";
+        color: #8ce800;
+        position: relative;
+        // top: 5px;
+      }
+      .icon-24:before {
+        content: "\e90a";
+        color: #c2e800;
+        position: relative;
+        // top: 5px;
+      }
+      .icon-28:before {
+        content: "\e90b";
+        color: #e5d600;
+        position: relative;
+        // top: 5px;
+      }
+      .icon-32:before {
+        content: "\e90c";
+        color: #e6b000;
+        position: relative;
+        // top: 5px;
+      }
+      .icon-36:before {
+        content: "\e90d";
+        color: #e62408;
+        position: relative;
+        // top: 5px;
+      }
 
-    .clear {
-      clear: both;
-    }
+      .clear {
+        clear: both;
+      }
 
-    .hidden {
-      /* display:none; */
-      width: 20px;
-      height: 30px;
+      .hidden {
+        /* display:none; */
+        width: 20px;
+        height: 30px;
+      }
     }
   }
   .wind_footer {
+     position: absolute;
+      bottom: 0.2rem;
+      left: 0.2rem;
+      right: 0.2rem;
     .wind_footer_header {
       text-align: left;
-      margin-bottom: 8px;
+      margin-bottom: 0.08rem;
+      height: 0.92rem;
       .select_color {
         background: #242236 !important;
         color: rgba(255, 255, 255, 1) !important;
       }
       /deep/.el-button {
-        width: 80px !important;
-        height: 28px !important;
+        width: 0.8rem !important;
+        height: 0.28rem !important;
         background: rgba(227, 222, 255, 1);
-        border-radius: 4px;
-        width: 37px;
-        height: 20px;
-        font-size: 14px;
+        border-radius: 0.04rem;
+        font-size: 0.14rem;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
-        color: rgba(255, 255, 255, 1);
-        line-height: 5px;
+        color: rgba(36, 34, 54, 1);
+        line-height: 0.05rem;
+        border: none;
       }
     }
     .wind_footer_body {
-      padding: 10px 16px 17px 16px;
+      height: 1.28rem;
+      padding: 0.1rem 0.16rem 0.17rem 0.1rem;
       background: #242236;
+      /deep/.el-slider__button-wrapper {
+        /deep/.el-tooltip {
+          vertical-align: middle;
+          display: block;
+        }
+      }
+      /deep/.el-slider__runway {
+        background-color: transparent;
+      }
+      /deep/.el-slider__bar {
+        height: 0.06rem;
+        background-color: transparent;
+      }
+      /deep/.el-slider__button {
+        position: relative;
+        top: 0.15rem;
+        margin-left:0.15rem;
+        width: 0.12rem;
+        border-width: 0.12rem 0 0;
+        border-radius: 0%;
+        border-style: solid;
+        height: 0.1rem;
+        border-color: #fff2f2f2 transparent;
+      }
+      /deep/.el-slider__button:before {
+        content: "";
+        position: absolute;
+        height: 0;
+        width: 0;
+        top: -0.24rem;
+        left: 0;
+        border-left: 0.06rem solid transparent;
+        border-right: 0.06rem solid transparent;
+        border-bottom: 0.12rem solid #fff2f2f2;
+      }
       .title {
         display: flex;
-        font-size: 22px;
+        font-size: 0.22rem;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(255, 255, 255, 1);
-        line-height: 30px;
+        line-height: 0.3rem;
         .title_icon {
-          width: 4px;
-          height: 20px;
+          width: 0.04rem;
+          height: 0.2rem;
           background: rgba(0, 255, 71, 1);
-          border-radius: 1px;
-          margin-top: 5px;
-          margin-right: 5px;
+          border-radius: 0.01rem;
+          margin-top: 0.05rem;
+          margin-right: 0.05rem;
         }
       }
 
-      .progress_bar {
-        box-shadow: 0 0 2px 0 #ff242236;
-        display: inline-block;
-        user-select: none;
-        list-style: none;
-        display: inline-block;
-        vertical-align: top;
-        font-size: 0;
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        li {
-          background: #242236;
-          vertical-align: top;
+      .progress_bar_div {
+        height: 0.3rem;
+        .progress_bar {
+          box-shadow: 0 0 2px 0 #ff242236;
           display: inline-block;
-          font-size: 14px;
-          font-family: DINMittelschriftStd;
-          color: rgba(187, 187, 187, 1);
-          height: 28px;
-          line-height: 28px;
-          cursor: pointer;
-          box-sizing: border-box;
+          user-select: none;
+          list-style: none;
+          display: inline-block;
+          vertical-align: top;
+          font-size: 0;
+          padding: 0;
           margin: 0;
-          width: 8%;
-          text-align: left;
-        }
-        li:last-child {
-          width: 3%;
+          width: 100%;
+          .span_normal {
+            position: relative;
+            left: -0.05rem;
+          }
+          .span_last {
+            position: absolute;
+            right: 0.2rem;
+          }
+          li {
+            background: #242236;
+            vertical-align: top;
+            display: inline-block;
+            font-size: 14px;
+            font-family: DINMittelschriftStd;
+            color: rgba(187, 187, 187, 1);
+            height: 0.28rem;
+            line-height: 0.28rem;
+            cursor: pointer;
+            box-sizing: border-box;
+            margin: 0;
+            width: 8.3333%;
+            text-align: left;
+          }
         }
       }
+
       .pentagon {
-        margin-top: 14px;
+        margin-top: 0.14rem;
         position: relative;
-        width: 12px;
-        border-width: 12px 0px 0;
+        width: 0.12rem;
+        border-width: 0.12rem 0rem 0;
         border-style: solid;
         border-color: #fff2f2f2 transparent;
       }
@@ -2960,24 +3087,20 @@ export default {
         position: absolute;
         height: 0;
         width: 0;
-        top: -18px;
+        top: -0.18rem;
         left: 0px;
-        border-width: 0px 6px 6px;
+        border-width: 0rem 0.06rem 0.06rem;
         border-style: solid;
         border-color: transparent transparent #fff2f2f2;
       }
       .time_font {
-        font-size: 15px;
+        font-size: 0.15rem;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: rgba(255, 255, 255, 1);
-        line-height: 21px;
+        line-height: 0.21rem;
       }
     }
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
   }
 }
 </style>

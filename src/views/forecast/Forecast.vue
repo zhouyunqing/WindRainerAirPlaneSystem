@@ -511,13 +511,13 @@ export default {
 .forecast {
   background: #242236;
   height: 100vh;
-  padding: 31px 58px 0px 58px;
+  padding: 0.31rem 0.58rem 0rem 0.58rem;
   .title-font {
-    font-size: 32px;
+    font-size: 0.32rem;
     font-family: PingFangSC-Medium, PingFang SC;
     font-weight: 500;
     color: rgba(255, 255, 255, 1);
-    line-height: 45px;
+    line-height: 0.45rem;
     margin: 0;
     text-align: left;
   }
@@ -529,11 +529,11 @@ export default {
   }
   .el-menu--horizontal > .el-menu-item.is-active {
     border-bottom: 1px solid #05892a;
-    font-size: 14px;
+    font-size: 0.14rem;
     font-family: PingFangSC-Medium, PingFang SC;
     font-weight: 500;
     color: rgba(255, 255, 255, 1);
-    line-height: 20px;
+    line-height: 0.20rem;
   }
   .el-menu-item:focus,
   .el-menu-item:hover {
@@ -548,26 +548,26 @@ export default {
       width: 100%;
       display: flex;
       justify-content: space-between;
-      padding-top: 28px;
+      padding-top: 0.28rem;
       .el-input {
-        width: 370px;
-        height: 40px;
+        width: 3.70rem;
+        height: 0.40rem;
         /deep/.el-input__inner {
           background-color: #242236;
           color: #888888;
-          font-size: 12px;
-          border-radius: 4px;
+          font-size: 0.12rem;
+          border-radius: 0.04rem;
           border: 1px solid rgba(68, 68, 68, 1);
         }
       }
       .el-button {
         background-color: #242236;
         color: #888888;
-        font-size: 12px;
+        font-size: 0.12rem;
       }
     }
     .notice-table {
-      margin-top: 37px;
+      margin-top: 0.37rem;
       /deep/.el-table th,
       /deep/.el-table tr {
         background-color: #242236;
@@ -577,14 +577,14 @@ export default {
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(136, 136, 136, 1);
-        line-height: 20px;
+        line-height: 0.20rem;
       }
       /deep/.el-table td {
-        font-size: 14px;
+        font-size: 0.14rem;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(255, 255, 255, 1);
-        line-height: 20px;
+        line-height: 0.20rem;
       }
       /deep/.el-table__row {
         td:last-child {
@@ -597,11 +597,11 @@ export default {
       .el-button {
         background: rgba(59, 55, 87, 1);
         border: none;
-        font-size: 14px;
+        font-size: 0.14rem;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(255, 255, 255, 1);
-        line-height: 20px;
+        line-height: 0.20rem;
       }
 
       .pagination-container{
