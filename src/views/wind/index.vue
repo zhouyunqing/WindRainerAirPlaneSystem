@@ -436,7 +436,7 @@ export default {
   },
   methods: {
     moveMyScroll(type){
-
+      console.log('test')
     },
     detail(type){
       this.isDetail = type
@@ -2782,14 +2782,14 @@ export default {
       }
     }
     .scroll_parent {
-      margin-left: 65px;
+      margin-left: 0.65rem;
       height: 56vh;
-      div:nth-child(3) {
-        // display: none;
-      }
       // #body::-webkit-scrollbar{
       //   width: 0%!important
       // }
+      /deep/.is-vertical{
+        display: none
+      }
       /deep/.el-scrollbar__wrap {
         overflow-y: hidden;
       }
