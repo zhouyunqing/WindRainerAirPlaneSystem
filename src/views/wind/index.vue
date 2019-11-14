@@ -1261,6 +1261,9 @@ export default {
       if (finList.length < 1) {
         return;
       }
+      //calc(105vh + 1050px);
+      let stylestr = 'width : calc(' + (finList[0].length * 3) + 'vh + ' + (finList[0].length * 30) +'px)'
+      body.setAttribute('style',stylestr)
       for (let len = finList.length, j = len - 1; j >= 0; j--) {
         var div_0 = document.createElement("div");
         div_0.setAttribute(
@@ -2711,6 +2714,7 @@ export default {
       z-index: 1002;
       top: 30%;
       [class*=" el-icon-"], [class^=el-icon-] {
+        color:white;        
         font-size: 0.2rem;
         line-height: 0.54rem;
       }
