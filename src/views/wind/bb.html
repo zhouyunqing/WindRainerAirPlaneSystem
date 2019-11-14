@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style type="text/css">
+        #d1{
+            height:400px;
+            border: 1px solid #000;
+            width: 500px;
+            overflow-y: hidden;
+            position: relative;
+            margin: 100px auto;
+            padding: 10px;
+        }
+        #d3{
+            position: relative;
+            top:0px;
+            padding-right:8px;
+        }
+        .out{
+            width: 15px;
+            height:100%;
+            position: absolute;
+            top:0px;
+            right:0px;
+            background-color: #ddd;
+            border-radius: 8px;
+
+        }
+        .in{
+            width: 10px;
+            border-radius: 8px;
+            background: blue;
+            position: absolute;
+            top:6px;
+            right:2px;
+        }
+        #d4{
+            height: 0px;
+        }
+        img{
+            width: 485px;
+            height:500px;
+        }
+    </style>
+</head>
+<body>
+    <div>以下是滚动条测试</div>
+    <div id ="d1">
+        <div id = 'd3'>
+            <img src="img/timg.jpg">
+            <img src="img/timg1.jpg">
+            <img src="img/timg2.jpg">
+            <img src="img/timg3.jpg">
+            <img src="img/timg4.jpg">
+            <img src="img/timg5.jpg">
+            <img src="img/timg6.jpg">
+        </div>
+        <div class="out">
+            <div class="in" style="cursor: default;"></div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var a = 0;
+        var b = 0;
+        var out = document.querySelector('.out')//滚动条外面的容器
+        var parent = out.parentNode;//滚动条外面的容器的父元素
+        var child = parent.children[0];//包裹超出内容长度的容器
+        height2 = getComputedStyle(child).height.slice(0,-2);
+        var height1 = parseFloat(getComputedStyle(parent).height.slice(0,-2)); //外面的容器高度
+        //var height2 = getComputedStyle(child).height.slice(0,-2);//里面的过长的被隐藏的容器的高度
+        var height =  height2-height1;//里面的容器和外面的容器的高度差，也就是里面容器的top值的改变
+        var scroll = document.querySelector('.in');//滚动条
+        scroll.style.height = height1*0.2 + 'px';//设置滚动条的高度
+        var sheight = getComputedStyle(scroll).height.slice(0,-2);//获得滚动条的高度
+        var speed = sheight/8;
+        var x = (height*speed)/(height1-sheight);//获得里面被隐藏的容器的top改变速度，外面的改变速度是6px
+        var c = true;
+        //判断滚动条存在不存在
+        // if(height1 > height2){
+        //  scope.scrollShow = false;
+        // }else{
+        //  scope.scrollShow = true;
+        // }
+        // 取消默认滚动事件
+        // 恢复默认滚动事件
+        parent.onmouseleave = function(){
+            c = true;
+        }
+        parent.onmousemove = function(){
+            c = false;
+        }
+        var cancelChorme = function(){
+            parent.addEventListener('mousewheel',function(e){
+                document.addEventListener('mousewheel', function(event){
+                    if(c == false){
+                        event.preventDefault();
+                    }
+                }, false);
+            })
+        }
+        cancelChorme();
+
+        var cancelFox = function(){
+            parent.addEventListener('DOMMouseScroll',function(e){
+                document.addEventListener('DOMMouseScroll', function(event){
+                    if(c == false){
+                        event.preventDefault();
+                    }
+                }, false);
+            })
+        }
+        cancelFox();
+        //chorme、IE的滚动条
+        parent.addEventListener('mousewheel',function(event){
+                if(event.wheelDelta > 0){//向上滚动
+                    if(a > 6 && b <= height){
+                        a -= speed;
+                        b -= x;
+                    }else{
+                        a = 6;
+                        b = -4;
+                        c = true;
+                    }
+                }else{
+                    if(a <= height1-sheight && b < height){//向下滚动
+                        a += speed;
+                        b += x;
+                    }else{
+                        a = height1-sheight
+                        b = height
+                        c = true;
+                    }
+                }
+                scroll.style.top = a+'px';
+                child.style.top = -b+'px';
+        })
+        var p1;
+        var p2;
+        var p3;
+        var scrollTop;
+        var speed2;
+        var move = function(event){
+            p2 = event.clientY;
+            p3 = parseFloat(p2 - p1);
+            console.log('p3',p3);
+            console.log('scroll.style.top',scrollTop);
+            speed2 = (height*(scrollTop + p3))/(height1-sheight);
+            if((scrollTop+p3) > 6 && speed2 <= height){
+                scroll.style.top = (scrollTop + p3) +'px';
+                a = (scrollTop + p3);
+                b = speed2;
+                child.style.top = -speed2+'px';
+            }else{
+                scroll.style.top = '6px';
+                speed2 = -4;
+                c = true;
+            }
+            if((scrollTop + p3) <= height1-sheight && speed2 < height){//向下滚动
+                if((scrollTop + p3) > 6)
+                scroll.style.top = (scrollTop + p3) +'px';
+                a = (scrollTop + p3);
+                b = speed2;
+                child.style.top = -speed2+'px';
+            }else{
+                scroll.style.top = (height1-sheight) + 'px';
+                speed2 = height;
+                c = true;
+            }
+        }
+        //利用mousedown mousemove mouseup使滚动条能够拖拽
+         scroll.addEventListener("mousedown",function(event){
+            console.log("mousedown事件")
+            console.log(event.offsetY);
+            p1 = event.clientY
+            scrollTop = parseFloat(getComputedStyle(scroll).top.slice(0,-2))
+            scroll.addEventListener("mousemove",move)
+         })
+         scroll.addEventListener("mouseup",function(){
+            scroll.removeEventListener("mousemove",move)
+         })
+         scroll.addEventListener("mouseleave",function(){
+            scroll.removeEventListener("mousemove",move)
+            scrollState = false;
+         })
+        parent.addEventListener('DOMMouseScroll',function(event){//火狐
+            console.log(event.detail);
+            if(event.detail > 0){//向下滚动
+                if(a <= height1-sheight && b < height){
+                    a += 6;
+                    b += x;
+                }else{
+                    a = height1-sheight
+                    b = height
+                }       
+            }else{//向下滚动
+                if(a > 6 && b <= height){
+                    a -= 6;
+                    b -= x;
+                }else{
+                    a = 6;
+                    b = -4;
+                }
+            }
+            scroll.style.top = a+'px';
+            child.style.top = -b+'px';
+        })
+        //利用click事件来可以让滚动条点击滚动
+        //定义状态看是不是在滚动条内
+        var scrollState = false;
+        scroll.addEventListener("mouseenter",function(){
+            scrollState = true;
+         })
+        out.addEventListener("click",function(event){
+            if(scrollState == false){
+                console.log(event.offsetY)
+                var clientHeight = event.offsetY -sheight/2
+                if(clientHeight < 6){
+                    clientHeight = 6;
+                }
+                console.log(height);
+                var y = height2 * (clientHeight/(height1-sheight/2))
+                if(y > height){
+                    y = height;
+                    clientHeight = height1-sheight
+                }
+                scroll.style.top = clientHeight + 'px';
+                a = clientHeight;
+                child.style.top = -y +'px';
+                b = y;
+            }
+        })
+    </script>
+</body>
+</html>
