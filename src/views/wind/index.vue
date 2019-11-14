@@ -2803,6 +2803,7 @@ export default {
         display: none;
       }
       /deep/.el-scrollbar__bar {
+        opacity: 1;
         bottom: 6vh;
         background: #14122e;
         /deep/.el-scrollbar__thumb {
