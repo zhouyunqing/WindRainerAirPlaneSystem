@@ -38,7 +38,7 @@
         </div>
         <div>
           <span>一小时降水量：</span>
-          <span>{{parseFloat(info.T2).toFixed(1)}}MM</span>
+          <span>{{parseFloat(info.RAIN).toFixed(1)}}mm</span>
         </div>
         <div>
           <span>地面风向：</span>
@@ -94,7 +94,7 @@
       <div class>
         <div id="back" :class="{move_in1:isShow,move_out1:!isShow}">
           <div style="text-align:left;">
-            <a id="string"></a>&nbsp;
+            <a id="string"></a>
             <a id="pointname">{{stationname}}</a>
           </div>
           <div
@@ -112,45 +112,59 @@
 
           <div id="airport">
             <img src="../../../public/images/icon_jichang@2x.png" id="airporticon" />
-            <a id="airportname">机场名称</a>
-            <a id="airportBJ">北京首都机场</a>
+            <div id="airname" class="menunamelong">
+              <a id="airportname">机场名称</a>
+              <a id="airportBJ">北京首都机场</a>
+            </div>
           </div>
 
           <div id="windspeed">
             <img src="../../../public/images/icon_fengsu@2x.png" id="windspeedicon" />
-            <a id="windspeedname">地面风速</a>
-            <a id="windspeedBJ">{{parseFloat(info.SPD).toFixed(2)}}m/s</a>
+            <div class="menunameshort">
+              <a id="windspeedname">地面风速</a>
+              <a id="windspeedBJ">{{parseFloat(info.SPD).toFixed(2)}}m/s</a>
+            </div>
           </div>
 
           <div id="winddirection">
             <img src="../../../public/images/icon_fengxiang@2x.png" id="winddirectionicon" />
-            <a id="winddirectionname">地面风向</a>
-            <a id="winddirectionBJ">{{parseInt(info.DIR)}}°</a>
+            <div class="menunameshort">
+              <a id="winddirectionname">地面风向</a>
+              <a id="winddirectionBJ">{{parseInt(info.DIR)}}°</a>
+            </div>
           </div>
 
           <div id="airpressure">
             <img src="../../../public/images/icon_qiya@2x.png" id="airpressureicon" />
-            <a id="airpressurename">修正海平面气压</a>
-            <a id="airpressureBJ">{{parseInt(info.SLP)}}hPa</a>
+            <div class="menunamelong" @click="pressure()">
+              <a id="airpressurename">修正海平面气压</a>
+              <a id="airpressureBJ">{{parseInt(info.SLP)}}hPa</a>
+            </div>
           </div>
 
           <div id="T">
             <img src="../../../public/images/icon_wendu@2x.png" id="Ticon" />
-            <a id="Tname">温度</a>
-            <br />
-            <a id="TBJ">{{parseInt(info.T - 272.15)}}℃</a>
+            <div class="menunameT">
+              <a id="Tname">温度</a>
+              <br />
+              <a id="TBJ">{{parseInt(info.T - 272.15)}}℃</a>
+            </div>
           </div>
 
           <div id="rain">
             <img src="../../../public/images/icon_jiangyu@2x.png" id="rainicon" />
-            <a id="rainname">一小时降水量</a>
-            <a id="rainBJ">{{parseFloat(info.T2).toFixed(1)}}MM</a>
+            <div class="menunamelong">
+              <a id="rainname">一小时降水量</a>
+              <a id="rainBJ">{{parseFloat(info.RAIN).toFixed(1)}}mm</a>
+            </div>
           </div>
 
           <div id="humidity">
             <img src="../../../public/images/icon_shidu@2x.png" id="humidityicon" />
-            <a id="humidityname">相对湿度</a>
-            <a id="humidityBJ">{{parseInt(info.RH)}}%</a>
+            <div class="menunameshort">
+              <a id="humidityname">相对湿度</a>
+              <a id="humidityBJ">{{parseInt(info.RH)}}%</a>
+            </div>
           </div>
           <div id="tag" v-show="isShow">
             <div id="windEcharts" style="width: 100%;height:100%;"></div>
@@ -160,7 +174,7 @@
 
       <div id="tone">
         <div id="tonenameback">
-          <a id="stringR"></a>&nbsp;
+          <a id="stringR"></a>
           <a id="pointgroundname">机场跑道地面风速</a>
         </div>
         <hr id="ruletwo" />
@@ -172,7 +186,7 @@
           <a id="centrename">轻度 5-17 m/s</a>
           <br />
           <a id="big"></a>
-          <a id="bigname">严重 ㄒ17 m/s</a>
+          <a id="bigname">严重 ≧17 m/s</a>
           <br />
         </div>
       </div>
@@ -423,7 +437,7 @@ export default {
         "MID3",
         "01"
       ], //九站点名
-      infoType: ["DIR", "SPD", "SLP", "T2", "RH", "T"], // 展示数据类型
+      infoType: ["DIR", "SPD", "SLP", "RAIN", "RH", "T"], // 展示数据类型
       windColor: ["#0BD3A7", "#FFBE3A", "#FF2C55"], //跑道色值
       labelColor: ["#DDFBF5", "#FFF1D4", "#FFD8DF"], //站点框色值
       runLists: ["runway1", "runway2", "runway3"], //跑道
@@ -433,7 +447,7 @@ export default {
         DIR: "0",
         SPD: "0",
         SLP: "0",
-        T2: "0",
+        RAIN: "0",
         RH: "0",
         T: "0"
       },
@@ -939,7 +953,7 @@ export default {
       params.starttime = "2019-11-04 06:00:00";
       params.endtime = "2019-11-04 18:00:00";
       params.resolution = "1000M";
-      params.dataset = "SLP,T2,RH,T,PSFC";
+      params.dataset = "SLP,RH,T,PSFC";
       params.hight = "0002m";
       info.params = params;
       info.url = url;
@@ -947,6 +961,87 @@ export default {
         // 获取两米高度其他数据
         if (res.data.returnCode == 0) {
           this.otherInfo = res.data.runways;
+        } else {
+          this.$message.error(res.data.returnMessage);
+        }
+      });
+      info = {};
+      params = {};
+      params.datacode = "ZBAA";
+      params.airport = "ZBAA";
+      params.runway = "runway1,runway2,runway3";
+      params.starttime = "2019-11-09 06:00:00";
+      params.endtime = "2019-11-09 18:00:00";
+      params.resolution = "1000M";
+      params.dataset = "RAIN";
+      params.hight = "0000m";
+      info.params = params;
+      info.url = url;
+      this.$store.dispatch("station/getRankInfo", info).then(res => {
+        // 获取零米高度其他数据
+        if (res.data.returnCode == 0) {
+          this.rainInfo = res.data.runways;
+        } else {
+          this.$message.error(res.data.returnMessage);
+        }
+      });
+      //36小时数据
+      info = {};
+      params = {};
+      params.datacode = "ZBAA";
+      params.airport = "ZBAA";
+      params.runway = "runway1,runway2,runway3";
+      params.dataset = "U,V,DIR,SPD";
+      params.starttime = "2019-11-04 06:00:00";
+      params.endtime = "2019-11-06 06:00:00";
+      params.resolution = "1000M";
+      params.hight = "0010m";
+      info.url = url;
+      info.params = params;
+      this.$store.dispatch("station/getRankInfo", info).then(res => {
+        // 按高度获取风数据
+        if (res.data.returnCode == 0) {
+          this.wind36Info = res.data.runways;
+        } else {
+          this.$message.error(res.data.returnMessage);
+        }
+      });
+      info = {};
+      params = {};
+      params.datacode = "ZBAA";
+      params.airport = "ZBAA";
+      params.runway = "runway1,runway2,runway3";
+      params.starttime = "2019-11-04 06:00:00";
+      params.endtime = "2019-11-06 06:00:00";
+      params.resolution = "1000M";
+      params.dataset = "SLP,RH,T,PSFC";
+      params.hight = "0002m";
+      info.params = params;
+      info.url = url;
+      this.$store.dispatch("station/getRankInfo", info).then(res => {
+        // 获取两米高度其他数据
+        if (res.data.returnCode == 0) {
+          this.other36Info = res.data.runways;
+        } else {
+          this.$message.error(res.data.returnMessage);
+        }
+      });
+      info = {};
+      params = {};
+      params.datacode = "ZBAA";
+      params.airport = "ZBAA";
+      params.runway = "runway1,runway2,runway3";
+      params.starttime = "2019-11-09 06:00:00";
+      params.endtime = "2019-11-11 06:00:00";
+      params.resolution = "1000M";
+      params.dataset = "RAIN";
+      params.hight = "0000m";
+      info.params = params;
+      info.url = url;
+      this.$store.dispatch("station/getRankInfo", info).then(res => {
+        // 获取零米高度其他数据
+        if (res.data.returnCode == 0) {
+          this.rain36Info = res.data.runways;
         } else {
           this.$message.error(res.data.returnMessage);
         }
@@ -1044,12 +1139,37 @@ export default {
         let other = this.otherInfo[pick.id.runway][
           pick.id.name.replace(/^\s*|\s*$/g, "")
         ];
+        let rain = this.rainInfo[pick.id.runway][
+          pick.id.name.replace(/^\s*|\s*$/g, "")
+        ];
+        let wind36 = this.wind36Info[pick.id.runway][
+          pick.id.name.replace(/^\s*|\s*$/g, "")
+        ];
+        let other36 = this.other36Info[pick.id.runway][
+          pick.id.name.replace(/^\s*|\s*$/g, "")
+        ];
+        let rain36 = this.rain36Info[pick.id.runway][
+          pick.id.name.replace(/^\s*|\s*$/g, "")
+        ];
+
         for (let i = 0; i < this.infoType.length; i++) {
           if (wind[this.infoType[i]] != undefined) {
             this.info[this.infoType[i]] = wind[this.infoType[i]][index];
           }
           if (other[this.infoType[i]] != undefined) {
             this.info[this.infoType[i]] = other[this.infoType[i]][index];
+          }
+          if (rain[this.infoType[i]] != undefined) {
+            this.info[this.infoType[i]] = rain[this.infoType[i]][index];
+          }
+          if (wind36[this.infoType[i]] != undefined) {
+            this.info[this.infoType[i]] = wind36[this.infoType[i]][index];
+          }
+          if (other36[this.infoType[i]] != undefined) {
+            this.info[this.infoType[i]] = other36[this.infoType[i]][index];
+          }
+          if (rain36[this.infoType[i]] != undefined) {
+            this.info[this.infoType[i]] = rain36[this.infoType[i]][index];
           }
         }
         this.infoTime = "2019-11-04 " + this.showHour + ":00:00";
@@ -1070,7 +1190,9 @@ export default {
             hover.style.left = movement.endPosition.x + 50 + "px";
             this.isHoverShow = true;
             let Echarts1 = this._initEcharts1();
+            //let Echarts36 = this._initEcharts36();
             this.potail(Echarts1, pick.id.id, pick.id.runway);
+            //this.potail36(Echarts36, pick.id.id, pick.id.runway);
             this.stationname = pick.id.id;
           }
         } else {
@@ -1085,7 +1207,9 @@ export default {
           hover.style.left = movement.endPosition.x + 50 + "px";
           this.isHoverShow = true;
           let Echarts1 = this._initEcharts1();
+          //let Echarts36 = this._initEcharts36();
           this.potail(Echarts1, pick.id.id, pick.id.runway);
+          //this.potail36(Echarts36, pick.id.id, pick.id.runway);
           this.stationname = pick.id.id;
         }
       }
@@ -1206,6 +1330,7 @@ export default {
       }
       return existInstance;
     },
+    
     windDen(wind) {
       if (wind > 0 && wind <= 30) {
         return "30";
@@ -1266,12 +1391,18 @@ export default {
           "+6h"
         ],
         windxData: this.windInfo[runway][id].DIR,
+        rhData: this.otherInfo[runway][id].RH,
+        slpData: this.otherInfo[runway][id].SLP,
+        tData: this.otherInfo[runway][id].T,
+        rainData: this.rainInfo[runway][id].RAIN,
         // windsData: ["2.8/2", "1.4/1", "2.7/2", "3/2", "2.2/2", "1.4/1", "1.5/1", "1.9/2", "1.4/1", "1.8/2", "2/2", "3.4/3", "3/2"],
         temData: this.windInfo[runway][id].SPD
         //rainData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         //humData: [59, 67, 70, 74, 77, 77, 65, 63, 60, 47, 40, 36, 38],
       };
-      let option = {
+      let colors = ['#FF6863','#6EAB40'];
+      let SLPoption = {
+        color:colors,
         backgroundColor: "transparent",
         color: "rgba(136,136,136,1)",
         tooltip: {
@@ -1279,9 +1410,10 @@ export default {
           axisPointer: { type: "cross" },
           formatter: function(params, ticket, callback) {
             let index = params[0].dataIndex;
-            let Htm = `${Data.times[index]}<br>
-                    风速:${Data.temData[index]}m/s <br>
-                    风向:${Data.windxData[index]}°`;
+            let Htm =  `${(Data.times[index]).substring(0,16)}<br>
+                    海平面气压:${parseInt(Data.slpData[index])}hPa<br/>
+                    风速:${parseFloat(Data.temData[index]).toFixed(1)}m/s&nbsp;&nbsp;
+                    风向:${parseInt(Data.windxData[index])}°`; 
             return Htm;
           }
         },
@@ -1292,10 +1424,22 @@ export default {
         },
         xAxis: [
           {
+            name: " ",
+            type: "category",
+            position: "bottom",
+            offset: 0,
+            nameTextStyle: { color: "#BBBBBB" },
+            axisLabel: { color: "#BBBBBB" },
+            axisTick: { show: false },
+            data: Data.timeData
+          },
+
+          {
             name: "风向",
             type: "category",
             position: "bottom",
             offset: 20,
+            nameGap:35,
             axisTick: { show: false },
             axisLine: { show: false },
             axisLabel: {
@@ -1425,24 +1569,29 @@ export default {
         yAxis: [
           {
             type: "value",
-            name: "风速(°C)",
+            name: "风速 m/s                                ",
             scale: true,
             position: "left",
-            offset: 0,
-            axisTick: { show: false },
-            nameTextStyle: { color: "#BBBBBB", align: "right" },
-            axisLabel: { color: "#BBBBBB" },
+            offset: -20,
+            nameLocation:"end",
+            nameGap:-15,
+          
+            axisTick: {lineStyle: { color: colors[0] }, inside: true},
+            nameTextStyle: { color: colors[0] },
+            axisLabel: { color: colors[0] },
             splitLine: { show: false }
           },
           {
             type: "value",
-            name: "(单位：m/s)",
+            name: "海平面气压  hPa",
             scale: true,
             position: "right",
-            offset: 0,
-            nameTextStyle: { color: "#BBBBBB", align: "right" },
-            axisLabel: { color: "#BBBBBB" },
-            splitLine: { show: false }
+            offset: -20,
+            axisTick: {lineStyle: { color: colors[1] }, inside: true},
+            nameTextStyle: {color: colors[1],align:""  },
+            axisLabel: { color: colors[1] },
+            splitLine: { show: false },
+            data: Data.slpData
           }
         ],
         series: [
@@ -1450,19 +1599,26 @@ export default {
             name: "风速",
             type: "line",
             step: false,
-            label: { normal: { show: false, position: "top" } },
-            lineStyle: {
-              color: "#fff"
-            },
-            itemStyle: {
-              opacity: 0
-            },
+            color: colors[0],
+           // label: { normal: { show: false, position: "top" } },
+           // lineStyle: { color: "#fff" },
+           // itemStyle: { opacity: 0  },
             smooth: true,
             data: Data.temData
+          },
+          {
+            name: '海平面气压',
+            type: 'line',
+            step: false,
+            yAxisIndex: 1,
+            color: colors[1],
+            //label: { normal: { show: true, position: 'top' } },
+            smooth: true,
+            data: Data.slpData
           }
         ]
       };
-      Echarts1.setOption(option);
+      Echarts1.setOption(SLPoption);
       window.addEventListener("resize", function(event) {
         Echarts1.resize();
       });
@@ -1959,10 +2115,11 @@ export default {
   font-size: 0.12rem;
 }
 #closename {
-  float: right;
   position: absolute;
-  right: 1%;
-  top: 3%;
+  right: 0.1rem;
+  top: 0.1rem;
+  width: 0.28rem;
+  height: 0.28rem;
 }
 #menu {
   border-radius: 3px;
@@ -1973,8 +2130,8 @@ export default {
   z-index: 10;
   bottom: 43%;
   left: 1%;
-  width: 6%;
-  height: 4%;
+  width: 0.8rem;
+  height: 0.28rem;
   background-color: #242236;
   border-radius: 5px;
 }
@@ -1984,8 +2141,8 @@ export default {
   z-index: 10;
   bottom: 43%;
   left: 1%;
-  width: 6%;
-  height: 4%;
+  width: 0.8rem;
+  height: 0.28rem;
   background: rgba(227, 222, 255, 1);
   border-radius: 4px;
   border: 1px solid rgba(59, 55, 87, 1);
@@ -1995,8 +2152,8 @@ export default {
   z-index: 10;
   bottom: 43%;
   left: 8%;
-  width: 6%;
-  height: 4%;
+  width: 0.8rem;
+  height: 0.28rem;
   background-color: #242236;
   border-radius: 5px;
 }
@@ -2006,8 +2163,8 @@ export default {
   z-index: 10;
   bottom: 43%;
   left: 8%;
-  width: 6%;
-  height: 4%;
+  width: 0.8rem;
+  height: 0.28rem;
   background: rgba(227, 222, 255, 1);
   border-radius: 4px;
   border: 1px solid rgba(59, 55, 87, 1);
@@ -2028,13 +2185,13 @@ export default {
 }
 #string {
   position: absolute;
-  z-index: 10;
-  width: 4px;
-  height: 22px;
-  background: rgba(0, 255, 71, 1);
-  border-radius: 1px;
-  left: 1%;
-  top: 3%;
+    z-index: 10;
+    width: 0.04rem;
+    height: 0.22rem;
+    border-radius: 2px;
+    left: 0.16rem;
+    top: 0.15rem;
+    background: rgba(0,255,71,1);
 }
 #search {
   top: 2%;
@@ -2045,14 +2202,16 @@ export default {
 }
 #pointname {
   position: absolute;
+  width: 0.63rem;
+  height: 0.3rem;
   z-index: 10;
-  left: 2%;
-  top: 2%;
-  font-size: 20px;
+  left: 0.28rem;
+  top: 0.11rem;
+  font-size: 0.22rem;
   font-family: PingFangSC-Medium, PingFang SC;
   font-weight: 500;
-  color: rgba(255, 255, 255, 1);
-  line-height: 30px;
+  color: rgba(255,255,255,1);
+  line-height: 0.3rem;
 }
 #search-input {
   width: 70%;
@@ -2069,22 +2228,28 @@ export default {
   margin: 3px;
 }
 #date {
-  top: 20%;
-  text-align: left;
-  margin-left: 1%;
-  color: white;
-  width: 10%;
-  float: left;
+  float:left;
+  width: 1.5rem;
+  height: 0.4rem;
+  font-family: PingFangSC-Medium,PingFang SC;
+    font-weight: 500;
+    color: rgba(255,255,255,1);
+    line-height: 0.22rem;
+    text-align: left;
+    margin-left: 0.16rem;
+    top: 0.7rem;
 }
 #dateshow {
-  width: 100px;
-  font-size: 14px;
+  width: 1rem;
+  font-size: 0.16rem;
+  
 }
 #back {
-  bottom: 0%;
+  font-size:0.01rem;
+  margin-bottom: 1%;
   left: 1%;
   width: 98%;
-  height: 42%;
+  height: 40%;
   background-color: rgba(36, 34, 54, 1);
   position: absolute;
   z-index: 10;
@@ -2093,20 +2258,20 @@ export default {
 }
 #rule {
   width: 100%;
-  height: 2px;
-  margin-top: 24px;
+  height: 0.02rem;
+  margin-top: 0.51rem;
   border: none;
   border-top: 2px solid #555555;
 }
 #airport {
-  margin-left: 2%;
+  margin-left: 0.2rem;
   float: left;
-  width: 12%;
+  width: 1.4rem;
 }
 #airporticon {
   float: left;
-  width: 25%;
-  height: 25%;
+  width: 0.32rem;
+  height: 0.32rem;
 }
 #airportname {
   font-size: 12px;
@@ -2125,14 +2290,14 @@ export default {
   float: left;
 }
 #windspeed {
-  margin-left: 1%;
+  margin-left: 0.02rem;
   float: left;
-  width: 10%;
+  width: 1.2rem;
 }
 #windspeedicon {
   float: left;
-  width: 35%;
-  height: 35%;
+  width: 0.32rem;
+  height: 0.32rem;
 }
 #windspeedname {
   font-size: 12px;
@@ -2151,14 +2316,14 @@ export default {
   float: left;
 }
 #winddirection {
-  margin-left: 1%;
+  margin-left: 0.02rem;
   float: left;
-  width: 9%;
+  width: 1.2rem;
 }
 #winddirectionicon {
   float: left;
-  width: 40%;
-  height: 40%;
+  width: 0.32rem;
+  height: 0.32rem;
 }
 #winddirectionname {
   font-size: 12px;
@@ -2177,14 +2342,14 @@ export default {
   float: left;
 }
 #airpressure {
-  margin-left: 2%;
+  margin-left: 0.02rem;
   float: left;
-  width: 13%;
+  width: 1.5rem;
 }
 #airpressureicon {
   float: left;
-  width: 25%;
-  height: 25%;
+  width: 0.32rem;
+  height: 0.32rem;
 }
 #airpressurename {
   font-size: 12px;
@@ -2203,13 +2368,14 @@ export default {
   float: left;
 }
 #T {
+  width:1.0rem;
   float: left;
-  width: 7%;
+  margin-left: 0.02rem;
 }
 #Ticon {
   float: left;
-  width: 55%;
-  height: 55%;
+  width: 0.32rem;
+  height: 0.32rem;
 }
 #Tname {
   font-size: 12px;
@@ -2220,22 +2386,23 @@ export default {
   float: left;
 }
 #TBJ {
-  font-size: 14px;
+  font-size: 0.14rem;
   font-family: DINMittelschriftStd;
   font-weight: 500;
   color: rgba(255, 255, 255, 1);
-  line-height: 22px;
+  line-height: 0.22rem;
   float: left;
+  margin-left:0.02rem;
 }
 #rain {
-  margin-left: 3%;
+  margin-left: 0.02rem;
   float: left;
-  width: 10%;
+  width: 1.4rem;
 }
 #rainicon {
   float: left;
-  width: 35%;
-  height: 35%;
+  width: 0.32rem;
+  height: 0.32rem;
 }
 #rainname {
   font-size: 12px;
@@ -2254,14 +2421,14 @@ export default {
   float: left;
 }
 #humidity {
-  margin-left: 2%;
+  margin-left: 0.02rem;
   float: left;
-  width: 8%;
+  width: 1.2rem;
 }
 #humidityicon {
   float: left;
-  width: 50%;
-  height: 50%;
+  width: 0.32rem;
+  height: 0.32rem;
 }
 #humidityname {
   font-size: 12px;
@@ -2280,12 +2447,12 @@ export default {
   float: left;
 }
 #tag {
-  top: 30%;
+  top: 35%;
   left: 1%;
   position: absolute;
   z-index: 12;
   width: 100%;
-  height: 71%;
+  height: 70%;
 }
 #Y {
   font-size: 14px;
@@ -2363,13 +2530,13 @@ export default {
 #tone {
   position: absolute;
   z-index: 10;
-  top: 3%;
-  right: 3%;
+  top: 5%;
+  right: 1%;
   background: rgba(36, 34, 54, 1);
   box-shadow: 0px 12px 32px 1px rgba(16, 15, 23, 0.15);
   border-radius: 4px;
-  width: 10%;
-  height: 20%;
+  width: 1.62rem;
+  height: 1.64rem;
 }
 #tonenameback {
   float: left;
@@ -2377,22 +2544,27 @@ export default {
   height: 20%;
 }
 #stringR {
-  width: 2%;
-  height: 15%;
-  position: absolute;
-  background: rgba(5, 137, 42, 1);
-  border-radius: 1px;
-  margin-top: 3%;
+    margin-top: 0.12rem;
+    width: 0.02rem;
+    height: 0.16rem;
+    background: #05892a;
+    border-radius: 2px;
+    left: 0.2rem;
+    position: absolute;
+    float:left;
 }
 #pointgroundname {
-  font-size: 13px;
-  font-family: PingFangSC-Medium, PingFang SC;
-  font-weight: 500;
-  color: rgba(225, 225, 225, 1);
-  line-height: 21px;
-  padding: 3px;
-  float: right;
-  margin-right: 6%;
+  width:1.25rem;
+  height:0.25rem;
+  font-size:14px;
+  font-family:PingFangSC-Medium,PingFang SC;
+  font-weight:500;
+  color:rgba(225,225,225,1);
+  line-height:21px;
+  padding: 4px;
+  float: left;
+  margin-left: 0.25rem;
+  margin-top: 0.05rem;
 }
 #ruletwo {
   width: 100%;
@@ -2402,8 +2574,8 @@ export default {
   border-top: 2px solid #555555;
 }
 #small {
-  width: 10%;
-  height: 20%;
+  width: 0.16rem;
+  height: 0.32rem;
   position: absolute;
   float: left;
   left: 10%;
@@ -2412,14 +2584,18 @@ export default {
   top: 30%;
 }
 #smallname {
-  font-size: 0.12rem;
-  float: right;
-  margin-right: 15%;
-  margin-top: 6%;
+  font-size: 0.14rem;
+  float: left;
+  margin-left: 0.5rem;
+  margin-top: -0.35rem;
+  font-family:PingFangSC-Medium,PingFang SC;
+  font-weight:500;
+  color:#888;
+  line-height:18px;
 }
 #centre {
-  width: 10%;
-  height: 20%;
+  width: 0.16rem;
+  height: 0.32rem;
   position: absolute;
   float: left;
   left: 10%;
@@ -2428,14 +2604,18 @@ export default {
   top: 50%;
 }
 #centrename {
-  font-size: 0.12rem;
-  float: right;
-  margin-right: 10%;
-  margin-top: 10%;
+  font-size: 0.14rem;
+  float: left;
+  margin-left: 0.5rem;
+  margin-top: -1.18rem;
+  font-family:PingFangSC-Medium,PingFang SC;
+  font-weight:500;
+  color:#888;
+  line-height:18px;
 }
 #big {
-  width: 10%;
-  height: 20%;
+  width: 0.16rem;
+  height: 0.32rem;
   position: absolute;
   float: left;
   left: 10%;
@@ -2444,10 +2624,14 @@ export default {
   top: 70%;
 }
 #bigname {
-  font-size: 0.12rem;
-  float: right;
-  margin-right: 15px;
-  margin-top: 10%;
+  font-size: 0.14rem;
+  float: left;
+  margin-left: 0.5rem;
+  margin-top:-2rem;
+  font-family:PingFangSC-Medium,PingFang SC;
+  font-weight:500;
+  color:#888;
+  line-height:18px;
 }
 .tag {
   display: flex;
@@ -2491,6 +2675,24 @@ export default {
   margin-left: 0.1rem;
   display: flex;
   align-items: center;
+}
+.menunameT{
+  width:0.8rem;
+  height:0.8rem;
+  top:0.05rem;
+  left:0.05rem;
+}
+.menunameshort{
+  width:1rem;
+  height:1rem;
+  top:0.05rem;
+  left:0.05rem;
+}
+.menunamelong{
+  widows:1.2rem;
+  height:1.2rem;
+  top:0.05rem;
+  left:0.05rem;
 }
 .station_hover_container div span:nth-child(odd) {
   font-size: 0.125rem;
@@ -2597,7 +2799,7 @@ export default {
 }
 @keyframes move1 {
   from {
-    bottom: -28%;
+    bottom: -25%;
   }
   to {
     bottom: 0px;
@@ -2608,7 +2810,7 @@ export default {
     bottom: 0%;
   }
   to {
-    bottom: -28%;
+    bottom: -25%;
   }
 }
 .move_in2 {
@@ -2640,12 +2842,12 @@ export default {
     bottom: 43%;
   }
   to {
-    bottom: 15%;
+    bottom: 18%;
   }
 }
 @keyframes moveOut2 {
   from {
-    bottom: 15%;
+    bottom: 18%;
   }
   to {
     bottom: 43%;
