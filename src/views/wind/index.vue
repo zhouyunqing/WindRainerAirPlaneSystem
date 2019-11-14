@@ -688,6 +688,8 @@ export default {
             shadows: Cesium.ShadowMode.ENABLED
           }
         });
+
+
         this.viewer.entities.add({
           show: !this.isLegendChange,
           id: "wall3",
@@ -709,6 +711,35 @@ export default {
             minimumHeights: [100, 100]
           }
         });
+
+        // this.viewer.entities.add({
+        //     id:'SDJCoutline',
+        //     name : 'SDJCoutline',
+        //     position: Cesium.Cartesian3.fromDegrees( 116.600573,40.089862,0),
+        //     box : {
+        //         dimensions : new Cesium.Cartesian3(10000.0, 10000.0, 10000.0),
+        //         fill : Cesium.Color.RED.withAlpha(0.2),
+        //         outline : true,
+        //         outlineColor : Cesium.Color.RED
+        //     }
+        // });
+
+        // this.viewer.entities.add({
+        //     id:'SDJCoutline',
+        //     name : 'SDJCoutline',
+        //     polygon : {
+        //         hierarchy : Cesium.Cartesian3.fromDegreesArray([116.55550573,40.020862,
+        //                                                         116.645573, 40.020862,
+        //                                                         116.645573, 40.129862,
+        //                                                         116.55550573, 40.129862]),
+        //         extrudedHeight: 5000,
+        //         // material : Cesium.Color.RED.withAlpha(0.05),
+        //         fill : false,
+        //         outline : true,
+        //         outlineColor : Cesium.Color.RED.withAlpha(0.8),
+        //     }
+        // });
+
         this.drawPoint(" 18R ", 116.575473, 40.10303, 0);
         this.drawPoint("MID1", 116.577925, 40.088623, 0);
         this.drawPoint(" 36L ", 116.580113, 40.074035, 0);
@@ -1511,6 +1542,8 @@ export default {
         entity1.show = !this.isLegendChange;
         entity1 = this.viewer.entities.getById("wall3");
         entity1.show = !this.isLegendChange;
+        // entity1 = this.viewer.entities.getById("SDJCoutline");
+        // entity1.show = !this.isLegendChange;
         this.viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(
             116.603738,
