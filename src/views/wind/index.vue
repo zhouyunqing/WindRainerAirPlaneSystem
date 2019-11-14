@@ -1113,7 +1113,8 @@ export default {
     },
 
     changeRunway(type) {
-      this.runType = type;
+      this.runType = type
+      this.runwayTime = 1
       let self = this;
       this.$refs.canvas.innerHTML = "";
       request({
