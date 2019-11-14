@@ -3,8 +3,7 @@
     <el-input class="search" v-model="searchInput" placeholder="输入查询机场名称或拼音">
       <i slot="prefix" class="el-input__icon el-icon-search"></i>
     </el-input>
-
-    <el-slider
+     <el-slider
       v-model="heightLevel"
       :min="0"
       :max="15"
@@ -17,8 +16,9 @@
       >
     </el-slider>
      
+
     <div id="cesiumContainer"></div>
-  
+
     <!---->
     <div
       class="station_hover_info"
@@ -32,12 +32,30 @@
       </div>
       <div class="station_hover_line"></div>
       <div class="station_hover_container">
-        <div><span>地面风速：</span><span>{{parseFloat(info.SPD).toFixed(2)}}m/s</span></div>
-        <div><span>一小时降水量：</span><span>{{parseFloat(info.T2).toFixed(1)}}MM</span></div>
-        <div><span>地面风向：</span><span>{{parseInt(info.DIR)}}°</span></div>
-        <div><span>相对湿度：</span><span>{{parseInt(info.RH)}}%</span></div>
-        <div><span>温度：</span><span>{{parseInt(info.T - 272.15)}}℃</span></div>
-        <div><span>修正海平面气压：</span><span>{{parseInt(info.SLP)}}hPa</span></div>
+        <div>
+          <span>地面风速：</span>
+          <span>{{parseFloat(info.SPD).toFixed(2)}}m/s</span>
+        </div>
+        <div>
+          <span>一小时降水量：</span>
+          <span>{{parseFloat(info.T2).toFixed(1)}}MM</span>
+        </div>
+        <div>
+          <span>地面风向：</span>
+          <span>{{parseInt(info.DIR)}}°</span>
+        </div>
+        <div>
+          <span>相对湿度：</span>
+          <span>{{parseInt(info.RH)}}%</span>
+        </div>
+        <div>
+          <span>温度：</span>
+          <span>{{parseInt(info.T - 272.15)}}℃</span>
+        </div>
+        <div>
+          <span>修正海平面气压：</span>
+          <span>{{parseInt(info.SLP)}}hPa</span>
+        </div>
       </div>
       <div class="station_hover_footer">
         <div class="footer_time">数据时间(UTC)：{{infoTime}}</div>
@@ -49,7 +67,7 @@
       <!-- <div class="input" id="search">
         <img src="../../../public/images/icon_sousuo@2x.png" id="search-icon">
         <a id="search-input">输入查询的机场名称或拼音</a>
-      </div> -->
+      </div>-->
 
       <div>
         <div id="flat">
@@ -60,47 +78,30 @@
         </div>
       </div>
 
-      <div
-        id="menu1"
-        :class="{move_in2:!isShow,move_out2:isShow}"
-      >
+      <div id="menu1" :class="{move_in2:!isShow,move_out2:isShow}">
         <li class="nearmenu">临近预报</li>
       </div>
-      <div
-        id="menu11"
-        :class="{move_in2:!isShow,move_out2:isShow}"
-      >
+      <div id="menu11" :class="{move_in2:!isShow,move_out2:isShow}">
         <li class="nearmenu">临近预报</li>
       </div>
-      <div
-        id="menu2"
-        :class="{move_in2:!isShow,move_out2:isShow}"
-      >
+      <div id="menu2" :class="{move_in2:!isShow,move_out2:isShow}">
         <li class="nearmenu">短时预报</li>
       </div>
-      <div
-        id="menu22"
-        :class="{move_in2:!isShow,move_out2:isShow}"
-      >
+      <div id="menu22" :class="{move_in2:!isShow,move_out2:isShow}">
         <li class="nearmenu">短时预报</li>
       </div>
 
-      <div class="">
-        <div
-          id="back"
-          :class="{move_in1:isShow,move_out1:!isShow}"
-        >
+      <div class>
+        <div id="back" :class="{move_in1:isShow,move_out1:!isShow}">
           <div style="text-align:left;">
-            <a id="string"></a>&nbsp;<a id="pointname">{{stationname}}</a>
+            <a id="string"></a>&nbsp;
+            <a id="pointname">{{stationname}}</a>
           </div>
           <div
             id="closename"
             v-bind:class="{reverseenteractive : !isShow, reverseleaveactive : isShow}"
           >
-            <img
-              src="../../../public/images/icon_xiangxia@2x.png"
-              @click="closename()"
-            >
+            <img src="../../../public/images/icon_xiangxia@2x.png" @click="closename()" />
           </div>
 
           <hr id="rule" />
@@ -110,88 +111,69 @@
           </div>
 
           <div id="airport">
-            <img
-              src="../../../public/images/icon_jichang@2x.png"
-              id="airporticon"
-            >
+            <img src="../../../public/images/icon_jichang@2x.png" id="airporticon" />
             <a id="airportname">机场名称</a>
             <a id="airportBJ">北京首都机场</a>
           </div>
 
           <div id="windspeed">
-            <img
-              src="../../../public/images/icon_fengsu@2x.png"
-              id="windspeedicon"
-            >
+            <img src="../../../public/images/icon_fengsu@2x.png" id="windspeedicon" />
             <a id="windspeedname">地面风速</a>
             <a id="windspeedBJ">{{parseFloat(info.SPD).toFixed(2)}}m/s</a>
           </div>
 
           <div id="winddirection">
-            <img
-              src="../../../public/images/icon_fengxiang@2x.png"
-              id="winddirectionicon"
-            >
+            <img src="../../../public/images/icon_fengxiang@2x.png" id="winddirectionicon" />
             <a id="winddirectionname">地面风向</a>
             <a id="winddirectionBJ">{{parseInt(info.DIR)}}°</a>
           </div>
 
           <div id="airpressure">
-            <img
-              src="../../../public/images/icon_qiya@2x.png"
-              id="airpressureicon"
-            >
+            <img src="../../../public/images/icon_qiya@2x.png" id="airpressureicon" />
             <a id="airpressurename">修正海平面气压</a>
             <a id="airpressureBJ">{{parseInt(info.SLP)}}hPa</a>
           </div>
 
           <div id="T">
-            <img
-              src="../../../public/images/icon_wendu@2x.png"
-              id="Ticon"
-            >
-            <a id="Tname">温度</a><br />
+            <img src="../../../public/images/icon_wendu@2x.png" id="Ticon" />
+            <a id="Tname">温度</a>
+            <br />
             <a id="TBJ">{{parseInt(info.T - 272.15)}}℃</a>
           </div>
 
           <div id="rain">
-            <img
-              src="../../../public/images/icon_jiangyu@2x.png"
-              id="rainicon"
-            >
+            <img src="../../../public/images/icon_jiangyu@2x.png" id="rainicon" />
             <a id="rainname">一小时降水量</a>
             <a id="rainBJ">{{parseFloat(info.T2).toFixed(1)}}MM</a>
           </div>
 
           <div id="humidity">
-            <img
-              src="../../../public/images/icon_shidu@2x.png"
-              id="humidityicon"
-            >
+            <img src="../../../public/images/icon_shidu@2x.png" id="humidityicon" />
             <a id="humidityname">相对湿度</a>
             <a id="humidityBJ">{{parseInt(info.RH)}}%</a>
           </div>
-          <div
-            id="tag"
-            v-show="isShow"
-          >
-            <div
-              id="windEcharts"
-              style="width: 100%;height:100%;"
-            ></div>
+          <div id="tag" v-show="isShow">
+            <div id="windEcharts" style="width: 100%;height:100%;"></div>
           </div>
         </div>
       </div>
 
       <div id="tone">
         <div id="tonenameback">
-          <a id="stringR"> </a>&nbsp;<a id="pointgroundname">机场跑道地面风速</a>
+          <a id="stringR"></a>&nbsp;
+          <a id="pointgroundname">机场跑道地面风速</a>
         </div>
         <hr id="ruletwo" />
         <div>
-          <a id="small"> </a> <a id="smallname">正常 0-5 m/s</a><br />
-          <a id="centre"> </a> <a id="centrename">轻度 5-17 m/s</a><br />
-          <a id="big"> </a> <a id="bigname">严重 ㄒ17 m/s</a><br />
+          <a id="small"></a>
+          <a id="smallname">正常 0-5 m/s</a>
+          <br />
+          <a id="centre"></a>
+          <a id="centrename">轻度 5-17 m/s</a>
+          <br />
+          <a id="big"></a>
+          <a id="bigname">严重 ㄒ17 m/s</a>
+          <br />
         </div>
       </div>
     </div>
@@ -210,6 +192,12 @@
     </article>
     <div class="shadow" v-show="activeWind=='sectionwind' && sectionwindDetail">
       <article v-show="activeWind=='sectionwind' && sectionwindDetail" class="wind_content">
+        <div class="myScroll_btn_div">
+          <div class="myScroll_btn el-icon-arrow-left" @click="moveMyScroll('left')">
+          </div>
+          <div class="myScroll_btn el-icon-arrow-right" @click="moveMyScroll('right')">
+          </div>
+        </div>
         <div ref="height_dom" class="height_font">
           (高度：m)
           <div class="close-button" @click="closeWindow">
@@ -234,7 +222,7 @@
             <div>0</div>
           </div>
         </div>
-        <el-scrollbar class="scroll_parent" :native="false" :noresize="false">
+        <el-scrollbar class="scroll_parent" :native="false" :noresize="false" ref="myScrollbar">
           <!-- <GeminiScrollbar ref="mycom" class="scroll_parent"> -->
           <div id="body">
             <div ref="canvas" id="canvas" class="canvas" v-show="isLegendChange"></div>
@@ -317,7 +305,7 @@
               </li>
             </ul>
           </div>
-          <el-slider
+          <el-slider 
             @input="changeTime"
             v-model="runwayTime"
             :step="100/24"
@@ -338,21 +326,20 @@ import Wind3D from "@/components/wind/wind3D.js";
 import sectionwind from "./sectionwind";
 import data from "@/assets/data/j1.json";
 import request from "@/utils/request1";
-import windImgUrl from '../../assets/images/windImg.png'
-import windImgUrl1 from '../../assets/images/wind1.png'
-import windImgUrl2 from '../../assets/images/wind2.png'
-import windImgUrl3 from '../../assets/images/wind3.png'
-import windImgUrl4 from '../../assets/images/wind4.png'
-import windImgUrl5 from '../../assets/images/wind5.png'
-import windImgUrl6 from '../../assets/images/wind6.png'
-import windImgUrl7 from '../../assets/images/wind7.png'
-import windImgUrl8 from '../../assets/images/wind8.png'
-import windImgUrl9 from '../../assets/images/wind9.png'
-import windImgUrl10 from '../../assets/images/wind10.png'
-import windImgUrl11 from '../../assets/images/wind11.png'
-import windImgUrl12 from '../../assets/images/wind12.png'
+import windImgUrl from "../../assets/images/windImg.png";
+import windImgUrl1 from "../../assets/images/wind1.png";
+import windImgUrl2 from "../../assets/images/wind2.png";
+import windImgUrl3 from "../../assets/images/wind3.png";
+import windImgUrl4 from "../../assets/images/wind4.png";
+import windImgUrl5 from "../../assets/images/wind5.png";
+import windImgUrl6 from "../../assets/images/wind6.png";
+import windImgUrl7 from "../../assets/images/wind7.png";
+import windImgUrl8 from "../../assets/images/wind8.png";
+import windImgUrl9 from "../../assets/images/wind9.png";
+import windImgUrl10 from "../../assets/images/wind10.png";
+import windImgUrl11 from "../../assets/images/wind11.png";
+import windImgUrl12 from "../../assets/images/wind12.png";
 import ColorImage from '@/components/wind/ColorImage'
-
 // import config from "../../../vue.config.js"
 export default {
   name: "cesiumContainer",
@@ -368,7 +355,7 @@ export default {
       '0.6': 'rgb(0,255,255)',
       '0.3': 'rgb(0,178,255)',
       '0.0': 'rgb(0,0,255)'
-    },
+      },
       isDetail: false,
       data: Object,
       ops: {
@@ -455,8 +442,7 @@ export default {
     };
   },
   methods: {
-
-      drawWindHeatLayer(data) { // 绘制风场热力图
+          drawWindHeatLayer(data) { // 绘制风场热力图
       // if(this.overlayer != Overlayers.wind)
       //   return;
 
@@ -809,8 +795,66 @@ export default {
 
       
     },
-    detail(type){
-      this.isDetail = type
+    changeHeightLevel(time,level) {
+      let time2 = "2019-11-13%2000:00:00";
+      this.loadwind(time2,this.heightLevel)
+    },
+    showHeightLevelToolTip(value) {
+      let tip=""
+      if (value===0) {
+        tip='地面'
+      }else if(value===1){
+        tip='30米'
+      }else if(value===2){
+        tip='50米'
+      }else if(value===3){
+        tip='100米'
+      }else if(value===4){
+        tip='150米'
+      }else if(value===5){
+        tip='200米'
+      }else if(value===6){
+        tip='250米'
+      }else if(value===7){
+        tip='300米'
+      }else if(value===8){
+        tip='400米'
+      }else if(value===9){
+        tip='500米'
+      }else if(value===10){
+        tip='600米'
+      }else if(value===11){
+        tip='900米'
+      }else if(value===12){
+        tip='1200米'
+      }else if(value===13){
+        tip='1500米'
+      }else if(value===14){
+        tip='1800米'
+      }else if(value===15){
+        tip='2100米'
+      }
+      return tip;
+    },
+    moveMyScroll(type){
+      let leftDistance = this.$refs['myScrollbar'].wrap.scrollLeft
+      if(type=='left'){
+        if(leftDistance-30<0){
+          this.$refs['myScrollbar'].wrap.scrollLeft = 0
+        }else{
+          this.$refs['myScrollbar'].wrap.scrollLeft = this.$refs['myScrollbar'].wrap.scrollLeft -30
+        }
+      }else{
+        if(leftDistance+30>this.$refs['myScrollbar'].wrap.scrollWidth){
+          this.$refs['myScrollbar'].wrap.scrollLeft = this.$refs['myScrollbar'].wrap.scrollWidth
+        }else{
+          this.$refs['myScrollbar'].wrap.scrollLeft = this.$refs['myScrollbar'].wrap.scrollLeft +30
+        }
+      }
+      // this.$refs['myScrollbar'].wrap.scrollLeft = this.$refs['myScrollbar'].wrap.scrollWidth
+    },
+    detail(type) {
+      this.isDetail = type;
     },
     closeWindow() {
       this.sectionwindDetail = false;
@@ -853,53 +897,11 @@ export default {
           (Math.floor(this.runwayTime * 24) / 100) * 60 * 60 * 1000
       );
     },
-    changeHeightLevel(time,level) {
-      let time2 = "2019-11-13%2000:00:00";
-      this.loadwind(time2,this.heightLevel)
-    },
     getTime(value) {
       this.searchTime = this.$moment(this.sliderTime)
         .format("YYYY.MM.DD HH:mm")
         .toString();
       return this.searchTime;
-    },
-
-    showHeightLevelToolTip(value) {
-      let tip=""
-      if (value===0) {
-        tip='地面'
-      }else if(value===1){
-        tip='30米'
-      }else if(value===2){
-        tip='50米'
-      }else if(value===3){
-        tip='100米'
-      }else if(value===4){
-        tip='150米'
-      }else if(value===5){
-        tip='200米'
-      }else if(value===6){
-        tip='250米'
-      }else if(value===7){
-        tip='300米'
-      }else if(value===8){
-        tip='400米'
-      }else if(value===9){
-        tip='500米'
-      }else if(value===10){
-        tip='600米'
-      }else if(value===11){
-        tip='900米'
-      }else if(value===12){
-        tip='1200米'
-      }else if(value===13){
-        tip='1500米'
-      }else if(value===14){
-        tip='1800米'
-      }else if(value===15){
-        tip='2100米'
-      }
-      return tip;
     },
     /**
      * 获取站点数据
@@ -1015,11 +1017,8 @@ export default {
     pointHandler: function(movement) {
       var pick = this.viewer.scene.pick(movement.endPosition);
       //      if (!pick) {
-      if (
-        this.entity &&
-        this.entity.id.label.scale != 1
-      ) {
-        if( !pick || this.entity.id.id != pick.id.id) {
+      if (this.entity && this.entity.id.label.scale != 1) {
+        if (!pick || this.entity.id.id != pick.id.id) {
           this.entity.id.label.scale = 1;
           this.entity.id.label.fillColor = Cesium.Color.fromCssColorString(
             this.entity.id.textColor
@@ -1067,8 +1066,8 @@ export default {
               pick.id.textColor
             );
             let hover = document.getElementById("hover_info");
-            hover.style.top=movement.endPosition.y + "px";
-            hover.style.left=(movement.endPosition.x+50) + "px";
+            hover.style.top = movement.endPosition.y + "px";
+            hover.style.left = movement.endPosition.x + 50 + "px";
             this.isHoverShow = true;
             let Echarts1 = this._initEcharts1();
             this.potail(Echarts1, pick.id.id, pick.id.runway);
@@ -1082,8 +1081,8 @@ export default {
             pick.id.textColor
           );
           let hover = document.getElementById("hover_info");
-          hover.style.top=movement.endPosition.y + "px";
-          hover.style.left=(movement.endPosition.x+50) + "px";
+          hover.style.top = movement.endPosition.y + "px";
+          hover.style.left = movement.endPosition.x + 50 + "px";
           this.isHoverShow = true;
           let Echarts1 = this._initEcharts1();
           this.potail(Echarts1, pick.id.id, pick.id.runway);
@@ -1095,7 +1094,7 @@ export default {
      * 剖面风点击
      */
     wallHandler: function(click) {
-      this.sectionwindDetail = true
+      this.sectionwindDetail = true;
       var pick = this.viewer.scene.pick(click.position);
       if (pick) {
         if (pick.id.name == "windWall") {
@@ -1190,7 +1189,6 @@ export default {
       s.label.backgroundColor = Cesium.Color.fromCssColorString(textColor); //背景颜色
       return color;
     },
-
     closename() {
       this.isShow = this.isShow == false ? true : false;
     },
@@ -1208,7 +1206,6 @@ export default {
       }
       return existInstance;
     },
-
     windDen(wind) {
       if (wind > 0 && wind <= 30) {
         return "30";
@@ -1371,14 +1368,14 @@ export default {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image:windImgUrl8
+                    image: windImgUrl8
                   }
                 },
                 270: {
                   height: 16,
                   align: "left",
                   backgroundColor: {
-                    image:windImgUrl9
+                    image: windImgUrl9
                   }
                 },
                 300: {
@@ -1500,7 +1497,7 @@ export default {
         });
       } else {
         this.isLegendChange = true;
-        this.sectionwindDetail = false
+        this.sectionwindDetail = false;
         this.activeWind = "planewind";
         this.$el.querySelector("#sectionwind").classList.remove("active");
         this.$el.querySelector("#planewind").classList.add("active");
@@ -1531,7 +1528,6 @@ export default {
         });
       }
     },
-
     changeRunway(type) {
       this.runType = type;
       let self = this;
@@ -1590,7 +1586,6 @@ export default {
       var xlat = data["data"]["XLAT"];
       this.height_num = Math.ceil(data["data"]["count"] / 16);
       var sortList = [];
-
       //每行数据按纬度xlat排序
       for (let i = 0, len = xlat.length / this.height_num; i < len; i++) {
         var jList = [];
@@ -1643,11 +1638,9 @@ export default {
             // speed_dir=Math.atan((-1*w1)/(-1/v1))*r2d
             speed_dir = Math.atan((-1 * v1) / (-1 * w1 * 10)) * r2d;
           }
-
           if (speed_dir < 0) {
             speed_dir = speed_dir + 360;
           }
-
           speed_dir += 180;
           //  if(speed_dir>360){speed_dir -= 180}
           xList.push([
@@ -1665,7 +1658,6 @@ export default {
       // console.log(sortList);
       // console.log(finList);
       // console.log(JSON.stringify(finList));
-
       return finList;
     },
     drawDiv(finList) {
@@ -1673,14 +1665,15 @@ export default {
       var body = document.getElementById("body");
       var canvast = document.getElementById("canvas");
       body.removeChild(canvast);
-
       var canvas = document.createElement("div");
       canvas.setAttribute("id", "canvas");
       body.appendChild(canvas);
-
       if (finList.length < 1) {
         return;
       }
+      //calc(105vh + 1050px);
+      let stylestr = 'width : calc(' + (finList[0].length * 3) + 'vh + ' + (finList[0].length * 30) +'px)'
+      body.setAttribute('style',stylestr)
       for (let len = finList.length, j = len - 1; j >= 0; j--) {
         var div_0 = document.createElement("div");
         div_0.setAttribute(
@@ -1691,24 +1684,28 @@ export default {
           var div_1 = document.createElement("div");
           div_1.setAttribute("class", "demo");
           if (i == 14) {
-            div_1.style = "border-left:2px dashed red;box-shadow:inset 15px 0px  10px -15px red;";
+            div_1.style =
+              "border-left:2px dashed red;box-shadow:inset 15px 0px  10px -15px red;";
           }
           if (i == 14 && j == finList.length - 1) {
             div_1.style =
               "border-left:2px dashed red;border-top:2px dashed red;box-shadow:inset 8px 8px 9px -8px red;";
           }
           if (j == finList.length - 1 && i > 14 && i < 20) {
-            div_1.style = "border-top:2px dashed red;box-shadow:inset -1px 11px 13px -15px red";
+            div_1.style =
+              "border-top:2px dashed red;box-shadow:inset -1px 11px 13px -15px red";
           }
           if (i == 20) {
-            div_1.style = "border-right:2px dashed red;box-shadow:inset -15px 0px  10px -15px red";
+            div_1.style =
+              "border-right:2px dashed red;box-shadow:inset -15px 0px  10px -15px red";
           }
           if (i == 20 && j == finList.length - 1) {
             div_1.style =
               "border-right:2px dashed red;border-top:2px dashed red;box-shadow:inset -8px 8px  9px -8px red";
           }
           if (j == 0 && i > 14 && i < 20) {
-            div_1.style = "border-bottom:2px dashed red;box-shadow:inset -1px -11px 13px -15px red";
+            div_1.style =
+              "border-bottom:2px dashed red;box-shadow:inset -1px -11px 13px -15px red";
           }
           if (j == 0 && i == 14) {
             div_1.style =
@@ -1719,7 +1716,6 @@ export default {
               "border-bottom:2px dashed red; border-right:2px dashed red;box-shadow:inset -8px -8px 9px -8px red;";
           }
           var b_1 = document.createElement("b");
-
           var speed = finList[j][i][3];
           var iconid = this.getSpeedIconId(speed);
           b_1.setAttribute("class", "icon-" + iconid);
@@ -1760,22 +1756,22 @@ export default {
       for (let k = 0; k < 35; k++) {
         let div_child = document.createElement("div");
         div_child.setAttribute("class", "demo");
-        if (value_num == 1 ) {
-          if(this.runType === 'runway1'){
-            div_child.innerHTML = 'MID1';
-          }else if(this.runType === 'runway2'){
-            div_child.innerHTML = 'MID2';
-          }else {
-            div_child.innerHTML = 'MID3';
+        if (value_num == 1) {
+          if (this.runType === "runway1") {
+            div_child.innerHTML = "MID1";
+          } else if (this.runType === "runway2") {
+            div_child.innerHTML = "MID2";
+          } else {
+            div_child.innerHTML = "MID3";
           }
-        } else if (value_num === -2 ) {
-          div_child.innerHTML = '18L';
-        } else if ( value_num === 4) {
-          div_child.innerHTML = '36R';
+        } else if (value_num === -2) {
+          div_child.innerHTML = "18L";
+        } else if (value_num === 4) {
+          div_child.innerHTML = "36R";
         } else {
-          div_child.innerHTML = '';
+          div_child.innerHTML = "";
         }
-        value_num = value_num + 1
+        value_num = value_num + 1;
         hang2.appendChild(div_child);
       }
       var div_sp1 = document.createElement("div");
@@ -1799,7 +1795,6 @@ export default {
         this.distance = this.mouseX - this.mouseXstart;
         console.log("距离变化", this.distance);
         let mySlider = this.$refs.mySlider;
-
         mySlider.style.left = this.initLeft + this.distance + "px";
         console.log("鼠标结束距离", this.mouseX);
         console.log("元素左间距", mySlider.style.left);
@@ -1810,9 +1805,11 @@ export default {
     }
   },
   mounted() {
+    
     // this.$refs.height_dom.style =
     //   "margin-left:" + ((window.innerHeight / 100) * 12 * 3 + 360) + "px;";
-    console.log("GeminiScrollbar", this);
+    console.log("GeminiScrollbar", this.$refs['myScrollbar']);
+    console.log(this.$refs['myScrollbar'].wrap);
     this.$el.querySelector("#planewind").classList.add("active");
     let self = this;
     // request({
@@ -1888,15 +1885,11 @@ export default {
         this.windData = data;
       });
     } else if (val === 2) {
-        let time = "2019-11-13%2000:00:00";
-        let level = 0;
-        this.loadwind(time,level)
-        
-
-
+      let time = "2019-11-13%2000:00:00";
+      let level = 0;
+      this.loadwind(time,level)
     }
   },
-
   async loadNetCDF(filePath) {
     let _this = this;
     return new Promise(function(resolve) {
@@ -1961,8 +1954,8 @@ export default {
   font-style: normal;
   font-display: block;
 }
-.a{
-  font-size:0.12rem
+.a {
+  font-size: 0.12rem;
 }
 #closename {
   float: right;
@@ -1970,12 +1963,10 @@ export default {
   right: 1%;
   top: 3%;
 }
-
 #menu {
   border-radius: 3px;
   color: white;
 }
-
 #menu1 {
   position: absolute;
   z-index: 10;
@@ -1986,7 +1977,6 @@ export default {
   background-color: #242236;
   border-radius: 5px;
 }
-
 #menu11 {
   display: none;
   position: absolute;
@@ -1999,7 +1989,6 @@ export default {
   border-radius: 4px;
   border: 1px solid rgba(59, 55, 87, 1);
 }
-
 #menu2 {
   position: absolute;
   z-index: 10;
@@ -2010,7 +1999,6 @@ export default {
   background-color: #242236;
   border-radius: 5px;
 }
-
 #menu22 {
   display: none;
   position: absolute;
@@ -2023,14 +2011,12 @@ export default {
   border-radius: 4px;
   border: 1px solid rgba(59, 55, 87, 1);
 }
-
 .nearmenu {
   color: white;
   font-size: 14px;
   list-style: none;
   margin: 5px;
 }
-
 .input {
   position: absolute;
   z-index: 10;
@@ -2039,7 +2025,6 @@ export default {
   width: 17%;
   background-color: white;
 }
-
 #string {
   position: absolute;
   z-index: 10;
@@ -2050,7 +2035,6 @@ export default {
   left: 1%;
   top: 3%;
 }
-
 #search {
   top: 2%;
   left: 2%;
@@ -2058,7 +2042,6 @@ export default {
   box-shadow: 0px 6px 19px 0px rgba(0, 0, 0, 0.12);
   border-radius: 4px;
 }
-
 #pointname {
   position: absolute;
   z-index: 10;
@@ -2070,7 +2053,6 @@ export default {
   color: rgba(255, 255, 255, 1);
   line-height: 30px;
 }
-
 #search-input {
   width: 70%;
   margin-left: -12%;
@@ -2081,12 +2063,10 @@ export default {
   line-height: 30px;
   pointer-events: none; /* a标签禁止点击 */
 }
-
 #search-icon {
   float: left;
   margin: 3px;
 }
-
 #date {
   top: 20%;
   text-align: left;
@@ -2095,12 +2075,10 @@ export default {
   width: 10%;
   float: left;
 }
-
 #dateshow {
   width: 100px;
   font-size: 14px;
 }
-
 #back {
   bottom: 0%;
   left: 1%;
@@ -2112,7 +2090,6 @@ export default {
   box-shadow: 0px 12px 32px 1px rgba(16, 15, 23, 0.15);
   border-radius: 4px;
 }
-
 #rule {
   width: 100%;
   height: 2px;
@@ -2120,19 +2097,16 @@ export default {
   border: none;
   border-top: 2px solid #555555;
 }
-
 #airport {
   margin-left: 2%;
   float: left;
   width: 12%;
 }
-
 #airporticon {
   float: left;
   width: 25%;
   height: 25%;
 }
-
 #airportname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2141,7 +2115,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #airportBJ {
   font-size: 14px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2150,19 +2123,16 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #windspeed {
   margin-left: 1%;
   float: left;
   width: 10%;
 }
-
 #windspeedicon {
   float: left;
   width: 35%;
   height: 35%;
 }
-
 #windspeedname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2171,7 +2141,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #windspeedBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2180,19 +2149,16 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #winddirection {
   margin-left: 1%;
   float: left;
   width: 9%;
 }
-
 #winddirectionicon {
   float: left;
   width: 40%;
   height: 40%;
 }
-
 #winddirectionname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2201,7 +2167,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #winddirectionBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2210,19 +2175,16 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #airpressure {
   margin-left: 2%;
   float: left;
   width: 13%;
 }
-
 #airpressureicon {
   float: left;
   width: 25%;
   height: 25%;
 }
-
 #airpressurename {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2231,7 +2193,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #airpressureBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2240,18 +2201,15 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #T {
   float: left;
   width: 7%;
 }
-
 #Ticon {
   float: left;
   width: 55%;
   height: 55%;
 }
-
 #Tname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2260,7 +2218,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #TBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2269,19 +2226,16 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #rain {
   margin-left: 3%;
   float: left;
   width: 10%;
 }
-
 #rainicon {
   float: left;
   width: 35%;
   height: 35%;
 }
-
 #rainname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2290,7 +2244,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #rainBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2299,19 +2252,16 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #humidity {
   margin-left: 2%;
   float: left;
   width: 8%;
 }
-
 #humidityicon {
   float: left;
   width: 50%;
   height: 50%;
 }
-
 #humidityname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2320,7 +2270,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #humidityBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2329,7 +2278,6 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #tag {
   top: 30%;
   left: 1%;
@@ -2338,7 +2286,6 @@ export default {
   width: 100%;
   height: 71%;
 }
-
 #Y {
   font-size: 14px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2348,7 +2295,6 @@ export default {
   float: left;
   margin-left: 1%;
 }
-
 #Unit {
   font-size: 14px;
   font-family: PingFangSC-Regular, PingFang SC;
@@ -2358,7 +2304,6 @@ export default {
   margin-right: 4%;
   float: right;
 }
-
 #X {
   font-size: 14px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2369,15 +2314,12 @@ export default {
   margin-top: 9%;
   margin-left: -2.2%;
 }
-
 .closename-normal {
   transform: rotate(0deg);
 }
-
 .closename-inverse {
   transform: rotate(180deg);
 }
-
 #flat {
   display: none;
   top: 3%;
@@ -2389,7 +2331,6 @@ export default {
   box-shadow: 0px 6px 19px 0px rgba(0, 0, 0, 0.12);
   border-radius: 4px;
 }
-
 #flat1 {
   display: none;
   list-style: none;
@@ -2398,7 +2339,6 @@ export default {
   text-align: center;
   margin: 10%;
 }
-
 #profile {
   display: none;
   top: 3%;
@@ -2411,7 +2351,6 @@ export default {
   box-shadow: 0px 6px 19px 0px rgba(0, 0, 0, 0.12);
   border-radius: 4px;
 }
-
 #profile1 {
   display: none;
   list-style: none;
@@ -2420,7 +2359,6 @@ export default {
   text-align: center;
   margin: 10%;
 }
-
 #tone {
   position: absolute;
   z-index: 10;
@@ -2432,13 +2370,11 @@ export default {
   width: 10%;
   height: 20%;
 }
-
 #tonenameback {
   float: left;
   width: 100%;
   height: 20%;
 }
-
 #stringR {
   width: 2%;
   height: 15%;
@@ -2447,7 +2383,6 @@ export default {
   border-radius: 1px;
   margin-top: 3%;
 }
-
 #pointgroundname {
   font-size: 13px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2458,7 +2393,6 @@ export default {
   float: right;
   margin-right: 6%;
 }
-
 #ruletwo {
   width: 100%;
   height: 3px;
@@ -2466,7 +2400,6 @@ export default {
   border: none;
   border-top: 2px solid #555555;
 }
-
 #small {
   width: 10%;
   height: 20%;
@@ -2477,14 +2410,12 @@ export default {
   border-radius: 2px 2px 0px 0px;
   top: 30%;
 }
-
 #smallname {
-  font-size:0.12rem;
+  font-size: 0.12rem;
   float: right;
   margin-right: 15%;
   margin-top: 6%;
 }
-
 #centre {
   width: 10%;
   height: 20%;
@@ -2495,14 +2426,12 @@ export default {
   background: rgba(255, 190, 58, 1);
   top: 50%;
 }
-
 #centrename {
-  font-size:0.12rem;
+  font-size: 0.12rem;
   float: right;
   margin-right: 10%;
   margin-top: 10%;
 }
-
 #big {
   width: 10%;
   height: 20%;
@@ -2513,23 +2442,19 @@ export default {
   background: rgba(255, 44, 85, 1);
   top: 70%;
 }
-
 #bigname {
-  font-size:0.12rem;
+  font-size: 0.12rem;
   float: right;
   margin-right: 15px;
   margin-top: 10%;
 }
-
 .tag {
   display: flex;
 }
-
 #windEcharts {
   height: 98%;
   width: 100%;
 }
-
 .station_hover_info {
   width: 3.333rem;
   height: 1.508rem;
@@ -2543,25 +2468,21 @@ export default {
   display: flex;
   flex-direction: column;
 }
-
 .station_hover_header {
   height: 0.35rem;
   display: flex;
   flex-direction: row;
   align-items: center;
 }
-
 .station_hover_line {
   height: 0.017rem;
   background-color: #45416f;
 }
-
 .station_hover_container {
   flex-grow: 1;
   display: flex;
   flex-wrap: wrap;
 }
-
 .station_hover_container div {
   min-width: 40%;
   /*min-height: 33.33333%;*/
@@ -2570,7 +2491,6 @@ export default {
   display: flex;
   align-items: center;
 }
-
 .station_hover_container div span:nth-child(odd) {
   font-size: 0.125rem;
   font-family: PingFangSC-Regular, PingFang SC;
@@ -2579,7 +2499,6 @@ export default {
   line-height: 0.175rem;
   text-align: left;
 }
-
 .station_hover_container div span:nth-child(even) {
   font-size: 0.125rem;
   font-family: PingFangSC-Regular, PingFang SC;
@@ -2588,7 +2507,6 @@ export default {
   line-height: 0.175rem;
   text-align: left;
 }
-
 .station_hover_footer {
   height: 0.35rem;
   display: flex;
@@ -2596,7 +2514,6 @@ export default {
   align-items: center;
   justify-content: flex-start;
 }
-
 .header_icon {
   width: 0.033rem;
   height: 0.133rem;
@@ -2604,7 +2521,6 @@ export default {
   border-radius: 0.008rem;
   margin-left: 0.1rem;
 }
-
 .header_title {
   width: 0.383rem;
   height: 0.233rem;
@@ -2615,7 +2531,6 @@ export default {
   line-height: 0.234rem;
   margin-left: 0.05rem;
 }
-
 .footer_time {
   width: 1.85rem;
   height: 0.142rem;
@@ -2627,15 +2542,12 @@ export default {
   margin-left: 0.1rem;
   text-align: left;
 }
-
 .reverseenteractive {
   animation: bounce-in 0.5s forwards;
 }
-
 .reverseleaveactive {
   animation: bounce-out 0.5s forwards;
 }
-
 @keyframes bounce-in {
   0% {
     transform: rotate(0);
@@ -2647,7 +2559,6 @@ export default {
     transform: rotate(180deg);
   }
 }
-
 @keyframes bounce-out {
   0% {
     transform: rotate(180deg);
@@ -2659,7 +2570,6 @@ export default {
     transform: rotate(0);
   }
 }
-
 .move_in1 {
   -webkit-animation: move1 0.5s linear 1;
   -moz-animation: move1 0.5s linear 1;
@@ -2672,7 +2582,6 @@ export default {
   -o-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 }
-
 .move_out1 {
   -webkit-animation: moveOut1 0.5s linear 1;
   -moz-animation: moveOut1 0.5s linear 1;
@@ -2685,7 +2594,6 @@ export default {
   -o-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 }
-
 @keyframes move1 {
   from {
     bottom: -28%;
@@ -2694,7 +2602,6 @@ export default {
     bottom: 0px;
   }
 }
-
 @keyframes moveOut1 {
   from {
     bottom: 0%;
@@ -2715,7 +2622,6 @@ export default {
   -o-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 }
-
 .move_out2 {
   -webkit-animation: moveOut2 0.5s linear 1;
   -moz-animation: moveOut2 0.5s linear 1;
@@ -2728,7 +2634,6 @@ export default {
   -o-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 }
-
 @keyframes move2 {
   from {
     bottom: 43%;
@@ -2737,7 +2642,6 @@ export default {
     bottom: 15%;
   }
 }
-
 @keyframes moveOut2 {
   from {
     bottom: 15%;
@@ -2750,11 +2654,9 @@ export default {
 .slide-fade-enter-active {
   transition: all 0.3s ease;
 }
-
 .slide-fade-leave-active {
   transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
-
 /* 测试 */
 .wind {
   width: 100%;
@@ -2770,7 +2672,7 @@ export default {
     height: 0.4rem;
     z-index: 999;
   }
-  .windheightcontroller{
+    .windheightcontroller{
     // background:rgba(0,0,0,1);
     // opacity:0.37;
     position: absolute;
@@ -2793,11 +2695,11 @@ export default {
     position: absolute;
     top: 5%;
     z-index: 1000;
-    .wind_header_btn{
+    .wind_header_btn {
       display: flex;
     }
     .el-button {
-      font-size: 15px;
+      font-size: 0.15rem;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 1);
@@ -2812,16 +2714,16 @@ export default {
       background-color: #05892a;
     }
     .pic_icon {
-      width: 256px;
+      width: 2.56rem;
     }
     .wind_header_icon {
       position: fixed;
-      right: 20px;
+      right: 0.2rem;
       display: flex;
       span {
         cursor: pointer;
-        line-height: 40px;
-        font-size: 15px;
+        line-height: 0.4rem;
+        font-size: 0.15rem;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(0, 255, 71, 1);
@@ -2847,11 +2749,34 @@ export default {
     width: 91vw;
   }
   .wind_content {
+    .myScroll_btn_div {
+      padding-left: 0.9rem;
+      padding-right: 0.2rem;
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      width: 91vw;
+      z-index: 1002;
+      top: 30%;
+      [class*=" el-icon-"], [class^=el-icon-] {
+        color:white;        
+        font-size: 0.2rem;
+        line-height: 0.54rem;
+      }
+      .myScroll_btn {
+        cursor: pointer;
+        width: 0.2rem;
+        height: 0.54rem;
+        background: rgba(5, 137, 42, 1);
+        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.5);
+        border-radius: 2px;
+      }
+    }
     .unit {
-      font-size: 16px;
+      font-size: 0.16rem;
       font-family: DINMittelschriftStd;
       color: rgba(0, 255, 71, 1);
-      line-height: 19px;
+      line-height: 0.19rem;
       text-align: right;
       position: relative;
       bottom: 3vh;
@@ -2860,7 +2785,7 @@ export default {
         margin-right: 0.03rem;
       }
       .length_font {
-        font-size: 16px;
+        font-size: 0.16rem;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(255, 255, 255, 1);
@@ -2869,12 +2794,12 @@ export default {
     }
     .height_font {
       // margin-left: calc(100vh - 100px);
-      font-size: 16px;
+      font-size: 0.16rem;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 1);
       text-align: left;
-      margin-left: 20px;
+      margin-left: 0.2rem;
     }
     .height_value {
       position: absolute;
@@ -2886,10 +2811,10 @@ export default {
     }
     .close-button {
       display: inline;
-      width: 18px;
-      height: 18px;
+      width: 0.18rem;
+      height: 0.18rem;
       background: rgba(36, 34, 54, 1);
-      box-shadow: 0px 12px 32px 1px rgba(16, 15, 23, 0.15);
+      box-shadow: 0px 0.12rem 0.32rem 0.01rem rgba(16, 15, 23, 0.15);
       border-radius: 4px;
       position: absolute;
       right: 10px;
@@ -2904,36 +2829,42 @@ export default {
       }
     }
     .scroll_parent {
-      margin-left: 65px;
+      margin-left: 0.65rem;
       height: 56vh;
-      overflow-x:scroll; 
-      overflow-y: hidden;
-
+      // div:nth-child(3) {
+      //   display: none;
+      //}
       // #body::-webkit-scrollbar{
       //   width: 0%!important
       // }
+      .is-vertical{
+        display: none;
+      }
+      /deep/.el-scrollbar__wrap {
+        overflow-y: hidden;
+      }
       /deep/.el-scrollbar__wrap::-webkit-scrollbar {
         display: none;
       }
       /deep/.el-scrollbar__bar {
+        opacity: 1;
         bottom: 6vh;
         background: #14122e;
         /deep/.el-scrollbar__thumb {
           background: #dddddd;
         }
       }
-
       #body {
-        width: calc(105vh + 1050px);
+        width: calc(105vh + 11rem);
       }
       #canvas {
         // overflow-x: scroll
         // width: 2000px;
-        padding-left: 10px;
+        padding-left: 0.1rem;
       }
       .bottom_div {
         width: 3vh;
-        margin-right: 30px;
+        margin-right: 0.3rem;
       }
       .demo {
         width: 3vh;
@@ -2943,19 +2874,18 @@ export default {
           width: 3vh;
           height: 3vh;
         }
-        margin-right: 30px;
+        margin-right: 0.3rem;
       }
       .div_height {
         z-index: 6;
         position: absolute;
-        font-size: 16px;
-        font-size: 16px;
+        font-size: 0.16rem;
         font-family: DINMittelschriftStd;
         color: rgba(255, 255, 255, 1);
-        line-height: 19px;
+        line-height: 0.19rem;
         text-align: left;
-        width: 31px;
-        left: 20px;
+        width: 0.31rem;
+        left: 0.2rem;
       }
       .demo_border_left {
         border-left: 2px dashed red;
@@ -2975,14 +2905,11 @@ export default {
         font-variant: normal;
         text-transform: none;
         line-height: 1;
-
         /* Better Font Rendering =========== */
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-
         font-size: 3vh;
       }
-
       .icon-0:before {
         content: "\e900";
         color: #1200a9;
@@ -3066,23 +2993,21 @@ export default {
         position: relative;
         // top: 5px;
       }
-
       .clear {
         clear: both;
       }
-
       .hidden {
         /* display:none; */
-        width: 20px;
-        height: 30px;
+        width: 0.2rem;
+        height: 0.3rem;
       }
     }
   }
   .wind_footer {
-     position: absolute;
-      bottom: 0.2rem;
-      left: 0.2rem;
-      right: 0.2rem;
+    position: absolute;
+    bottom: 0.2rem;
+    left: 0.2rem;
+    right: 0.2rem;
     .wind_footer_header {
       text-align: left;
       margin-bottom: 0.08rem;
@@ -3124,7 +3049,7 @@ export default {
       /deep/.el-slider__button {
         position: relative;
         top: 0.15rem;
-        margin-left:0.15rem;
+        margin-left: 0.15rem;
         width: 0.12rem;
         border-width: 0.12rem 0 0;
         border-radius: 0%;
@@ -3159,7 +3084,6 @@ export default {
           margin-right: 0.05rem;
         }
       }
-
       .progress_bar_div {
         height: 0.3rem;
         .progress_bar {
@@ -3198,7 +3122,6 @@ export default {
           }
         }
       }
-
       .pentagon {
         margin-top: 0.14rem;
         position: relative;
@@ -3229,5 +3152,3 @@ export default {
   }
 }
 </style>
-
-
