@@ -219,7 +219,7 @@ export default {
           let item={
             id:rs['data']['pagedList'][id].id,
             name:rs['data']['pagedList'][id].name,
-            site:'ZBAA',
+            site:'ZABB',
             createtime:timestampToTime(rs['data']['pagedList'][id].createtime/1000),
             severityId:rs['data']['pagedList'][id].severity,
             severity:(typeof(severity) =='undefined')?this.riskServerity[0].value:severity.value,
@@ -382,7 +382,7 @@ export default {
 
       this.riskTypeId={
         name:'',
-        site:'ZBAA',
+        site:'ZABB',
         status:true,
         conditionsLevel:this.riskServerity[0].key,
         conditionList:conditionList,

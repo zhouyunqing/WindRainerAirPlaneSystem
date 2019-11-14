@@ -3,6 +3,19 @@
     <el-input class="search" v-model="searchInput" placeholder="输入查询机场名称或拼音">
       <i slot="prefix" class="el-input__icon el-icon-search"></i>
     </el-input>
+     <el-slider
+      v-model="heightLevel"
+      :min="0"
+      :max="15"
+      :step="1"
+      :show-tooltip="true"
+      @change="changeHeightLevel"
+      :format-tooltip="showHeightLevelToolTip"
+      vertical
+      class="windheightcontroller">
+      >
+    </el-slider>
+     
 
     <div id="cesiumContainer"></div>
 
@@ -326,12 +339,23 @@ import windImgUrl9 from "../../assets/images/wind9.png";
 import windImgUrl10 from "../../assets/images/wind10.png";
 import windImgUrl11 from "../../assets/images/wind11.png";
 import windImgUrl12 from "../../assets/images/wind12.png";
-
+import ColorImage from '@/components/wind/ColorImage'
 // import config from "../../../vue.config.js"
 export default {
   name: "cesiumContainer",
   data() {
     return {
+      wind3D:null,
+      colorImage:null,
+      gradientWind: {
+      '1.0': 'rgb(255,255,0)',
+      '0.9': 'rgb(0,255,0)',
+      '0.8': 'rgb(0,255,88)',
+      '0.7': 'rgb(0,255,178)',
+      '0.6': 'rgb(0,255,255)',
+      '0.3': 'rgb(0,178,255)',
+      '0.0': 'rgb(0,0,255)'
+      },
       isDetail: false,
       data: Object,
       ops: {
@@ -380,6 +404,7 @@ export default {
       activeWind: "planewind",
       sliderTime: new Date(new Date().toLocaleDateString()),
       runwayTime: 1,
+      heightLevel: 0,
       isShow: false,
       isHoverShow: false, //悬浮数据框显示控制
       windInfo: [], // 风数据,按高度获取
@@ -417,6 +442,400 @@ export default {
     };
   },
   methods: {
+          drawWindHeatLayer(data) { // 绘制风场热力图
+      // if(this.overlayer != Overlayers.wind)
+      //   return;
+
+      // var that = this
+      var points = []
+      var max = 0
+      var width = 1000
+      var height = 1000
+
+      var longdata = data.lon.array
+      var latdata = data.lat.array
+      var udata = data.U.array
+      var vdata = data.V.array
+
+      var minLat = data.lat.min
+      var minLong = data.lon.min
+      var maxLat = data.lat.max
+      var maxLong = data.lon.max
+      var minSpeed = 1000000
+      var maxSpeed = 0
+      var max = 0
+      var speeds = []
+      for (var i = 0; i < data.lat.array.length; i++) {
+        var speed = Math.sqrt(udata[i] * udata[i] + vdata[i] * vdata[i])
+        speeds.push(speed);
+        minSpeed = Math.min(minSpeed, speed);
+        maxSpeed = Math.max(maxSpeed, speed);
+      }
+      // minSpeed = 0;
+      // maxSpeed = 100;
+      for (var i = 0; i < data.lat.array.length; i++) {
+        // var speed = Math.sqrt(udata[i]*udata[i]+vdata[i]*vdata[i]);
+        var value = (speeds[i] - minSpeed) * (1 / (maxSpeed - minSpeed))
+        max = Math.max(max, value)
+        var point = {
+          x: (longdata[i] - minLong) * (1000 / (maxLong - minLong)),
+          y: (maxLat - latdata[i]) * (1000 / (maxLat - minLat)),
+          value: value
+        }
+        points.push(point)
+      }
+      // max = 4;
+      var coordinate3 = [minLong, minLat, maxLong, maxLat]
+
+      if (this.colorImage) {
+        this.colorImage.redraw(this.viewer, coordinate3, max, points, this.gradientWind)
+      }
+      else {
+        this.colorImage = new ColorImage(this.viewer, coordinate3, max, points, this.gradientWind)
+      }
+    },
+    loadwind(time,level){
+      // this.viewer.scene.primitives.clear()
+      this.viewer.scene.primitives.show = false;
+      // this.viewer.scene.primitives.removeAll();
+      if(this.wind3D)
+      {
+         this.wind3D.removeWindPrimitives()
+         this.wind3D.colorImage=null
+
+      }
+     
+      let jsonPath =
+        "http://161.189.11.216:8090/gis/BJPEK/ModelForecast?datacode=ABC&dataset=XLONG,XLAT,U,V&time=" +
+        time +
+        "&bbox=110,30,120,42&z=" +
+        level +
+        "&resolution=1000M"; //fileOptions.dataDirectory + "wind/wind_"+time+"_L"+level+".json";
+      Cesium.Resource.fetchJson({ url: jsonPath }).then(resData => {
+        resData = resData.data;
+        let data = {};
+
+        data.dimensions = {};
+        data.dimensions.lon = 120; //dimensions['lon'].size;
+        data.dimensions.lat = 120; //dimensions['lat'].size;
+        data.dimensions.lev = 1; //dimensions['lev'].size;
+
+        data.lon = {};
+        data.lon.array = new Float32Array(resData.XLONG);
+        data.lon.min = Math.min.apply(null, data.lon.array); //Math.min(...data.lon.array);
+        data.lon.max = Math.max.apply(null, data.lon.array); //Math.max(...data.lon.array);
+
+        data.lat = {};
+        data.lat.array = new Float32Array(resData.XLAT);
+        data.lat.min = Math.min.apply(null, data.lat.array); //Math.min(...data.lat.array);
+        data.lat.max = Math.max.apply(null, data.lat.array); //Math.max(...data.lat.array);
+
+        data.lev = {};
+        data.lev.array = new Float32Array([1.0]);
+        data.lev.min = Math.min.apply(null, data.lev.array); //Math.min(...data.lev.array);
+        data.lev.max = Math.max.apply(null, data.lev.array); //Math.max(...data.lev.array);
+
+        data.U = {};
+        data.U.array = new Float32Array(resData.U); //new Float32Array(resData.U);
+        data.U.min = Math.min.apply(null, data.U.array); //Math.min(...data.U.array);
+        data.U.max = Math.max.apply(null, data.U.array); //Math.max(...data.U.array);
+
+        data.V = {};
+        data.V.array = new Float32Array(resData.V); //new Float32Array(resData.V);
+        data.V.min = Math.min.apply(null, data.V.array); //Math.min(...data.V.array);
+        data.V.max = Math.max.apply(null, data.V.array); //Math.max(...data.V.array);
+
+        this.windData = data;
+        this.windData.colorTable = loadColorTable();
+        let particlecount = 100;
+        let particleSystemOptions = {
+          particlesTextureSize: particlecount,
+          maxParticles: particlecount * particlecount,
+          particleHeight: 100.0,
+          fadeOpacity: 0.92,
+          dropRate: 0.03,
+          dropRateBump: 0.01,
+          speedFactor: 3.0,
+          lineWidth: 4
+        };
+        let windDataMap = this.windData;
+        let particleSystemOptionsMap = particleSystemOptions;
+        this.wind3D = new Wind3D(
+          this.viewer,
+          windDataMap,
+          particleSystemOptionsMap
+        );
+       this.drawWindHeatLayer(windDataMap)
+       this.viewer.entities.add({
+          show: this.isLegendChange,
+          id: "runway1",
+          name: "Runway",
+          station: "runway1",
+          polyline: {
+            // 多线段
+            positions: Cesium.Cartesian3.fromDegreesArray([
+              116.575473,
+              40.10303,
+              116.580113,
+              40.074035
+            ]), //方位
+            width: 10, //折线的宽度（以像素为单位）
+            material: new Cesium.ImageMaterialProperty({
+              image: this.drawRunWays([
+                "#0BD3A7",
+                "#86C86F",
+                "#FFBE3A",
+                "#D8C24C",
+                "#0BD3A7"
+              ])
+            })
+          }
+        });
+        this.viewer.entities.add({
+          show: !this.isLegendChange,
+          id: "wall1",
+          name: "windWall",
+          type: "runway1",
+          wall: {
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+              116.575473,
+              40.10303,
+              2100,
+              116.580113,
+              40.074035,
+              2100
+            ]),
+            material: new Cesium.ImageMaterialProperty({
+              image: windImgUrl
+            }),
+            outline: true,
+            //              outlineColor:Cesium.Color.fromCssColorString('#FF2C55'), //边框颜色
+            //              outlineWidth:15, //边框宽度
+            minimumHeights: [100, 100]
+          }
+        });
+        this.viewer.entities.add({
+          show: this.isLegendChange,
+          id: "runway2",
+          name: "Runway",
+          station: "runway2",
+          polyline: {
+            // 多线段
+            positions: Cesium.Cartesian3.fromDegreesArray([
+              116.600573,
+              40.089862,
+              116.605809,
+              40.056497
+            ]), //方位
+            width: 10, //折线的宽度（以像素为单位）
+            material: new Cesium.ImageMaterialProperty({
+              image: this.drawRunWays([
+                "#FFBE3A",
+                "#FFBE3A",
+                "#FFBE3A",
+                "#FF7C46",
+                "#FF3752"
+              ])
+            })
+          }
+        });
+        this.viewer.entities.add({
+          show: !this.isLegendChange,
+          id: "wall2",
+          name: "windWall",
+          type: "runway2",
+          wall: {
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+              116.600573,
+              40.089862,
+              2100,
+              116.605809,
+              40.056497,
+              2100
+            ]),
+            material: new Cesium.ImageMaterialProperty({
+              image: windImgUrl
+            }),
+            outline: true,
+            minimumHeights: [100, 100]
+          }
+        });
+        this.viewer.entities.add({
+          show: this.isLegendChange,
+          id: "runway3",
+          name: "Runway",
+          station: "runway3",
+          polyline: {
+            // 多线段
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+              116.617997,
+              40.094787,
+              0,
+              116.623469,
+              40.059059,
+              0
+            ]), //方位
+            width: 10, //折线的宽度（以像素为单位）
+            material: new Cesium.ImageMaterialProperty({
+              image: this.drawRunWays([
+                "#FFBE3A",
+                "#15D2A3",
+                "#42CE8E",
+                "#A4C663",
+                "#FEBE3B"
+              ])
+            }),
+            shadows: Cesium.ShadowMode.ENABLED
+          }
+        });
+        this.viewer.entities.add({
+          show: !this.isLegendChange,
+          id: "wall3",
+          name: "windWall",
+          type: "runway3",
+          wall: {
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+              116.617997,
+              40.094787,
+              2100,
+              116.623469,
+              40.059059,
+              2100
+            ]),
+            material: new Cesium.ImageMaterialProperty({
+              image: windImgUrl
+            }),
+            outline: true,
+            minimumHeights: [100, 100]
+          }
+        });
+        this.drawPoint(" 18R ", 116.575473, 40.10303, 0);
+        this.drawPoint("MID1", 116.577925, 40.088623, 0);
+        this.drawPoint(" 36L ", 116.580113, 40.074035, 0);
+        this.drawPoint(" 18L ", 116.600573, 40.089862, 1);
+        this.drawPoint("MID2", 116.603528, 40.07174, 1);
+        this.drawPoint(" 36R ", 116.605809, 40.056497, 1);
+        this.drawPoint("  19  ", 116.617997, 40.094787, 2);
+        this.drawPoint("MID3", 116.621128, 40.074618, 2);
+        this.drawPoint("  01  ", 116.623469, 40.059059, 2);
+        var handlerVideo = new Cesium.ScreenSpaceEventHandler(
+          this.viewer.scene.canvas
+        );
+        var that = this;
+        /**
+         * 鼠标移动事件
+         */
+        handlerVideo.setInputAction(function(movement) {
+          that.pointHandler(movement);
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+        /**
+         * 鼠标左键点击事件
+         */
+        handlerVideo.setInputAction(function(click) {
+          that.wallHandler(click);
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+        /**
+         * 相机高度监听事件
+         */
+        this.viewer.scene.camera.moveEnd.addEventListener(function() {
+          //获取当前相机高度
+          let height = Math.ceil(
+            that.viewer.camera.positionCartographic.height
+          );
+          if (height > 60000) {
+            for (let i = 0; i < that.pointName.length; i++) {
+              let entity = that.viewer.entities.getById(that.pointName[i]);
+              entity.show = false;
+            }
+          } else {
+            for (let i = 0; i < that.pointName.length; i++) {
+              let entity = that.viewer.entities.getById(that.pointName[i]);
+              entity.show = true;
+            }
+          }
+        });
+        this.getStationInfo();
+       function loadColorTable() {
+          let json = {
+            ncolors: 1,
+            colorTable: [1, 1, 1.0, 0.8]
+          };
+          let colorNum = json["ncolors"];
+          let colorTable = json["colorTable"];
+          // let colorsArray = new Float32Array(3 * colorNum)
+          // for (let i = 0; i < colorNum; i++) {
+          //   colorsArray[3 * i] = colorTable[3 * i]
+          //   colorsArray[3 * i + 1] = colorTable[3 * i + 1]
+          //   colorsArray[3 * i + 2] = colorTable[3 * i + 2]
+          // }
+
+          let channel = 4;
+          let colorsArray = new Float32Array(channel * colorNum);
+          for (var i = 0; i < colorNum; i++) {
+            for (var j = 0; j < channel; j++) {
+              colorsArray[channel * i + j] = colorTable[channel * i + j];
+            }
+            //colorsArray[channel * i + 1] = colorTable[channel * i + 1];
+            //colorsArray[channel * i + 2] = colorTable[channel * i + 2];
+          }
+          let result = {};
+          result.colorNum = colorNum;
+          result.array = colorsArray;
+          return result;
+        }
+
+        function objToStrMap(obj) {
+          let strMap = new Map();
+          for (let k of Object.keys(obj)) {
+            strMap.set(k, obj[k]);
+          }
+          return strMap;
+        }
+      });
+
+      
+    },
+    changeHeightLevel(time,level) {
+      let time2 = "2019-11-13%2000:00:00";
+      this.loadwind(time2,this.heightLevel)
+    },
+    showHeightLevelToolTip(value) {
+      let tip=""
+      if (value===0) {
+        tip='地面'
+      }else if(value===1){
+        tip='30米'
+      }else if(value===2){
+        tip='50米'
+      }else if(value===3){
+        tip='100米'
+      }else if(value===4){
+        tip='150米'
+      }else if(value===5){
+        tip='200米'
+      }else if(value===6){
+        tip='250米'
+      }else if(value===7){
+        tip='300米'
+      }else if(value===8){
+        tip='400米'
+      }else if(value===9){
+        tip='500米'
+      }else if(value===10){
+        tip='600米'
+      }else if(value===11){
+        tip='900米'
+      }else if(value===12){
+        tip='1200米'
+      }else if(value===13){
+        tip='1500米'
+      }else if(value===14){
+        tip='1800米'
+      }else if(value===15){
+        tip='2100米'
+      }
+      return tip;
+    },
     moveMyScroll(type){
       let leftDistance = this.$refs['myScrollbar'].wrap.scrollLeft
       if(type=='left'){
@@ -770,7 +1189,6 @@ export default {
       s.label.backgroundColor = Cesium.Color.fromCssColorString(textColor); //背景颜色
       return color;
     },
-
     closename() {
       this.isShow = this.isShow == false ? true : false;
     },
@@ -788,7 +1206,6 @@ export default {
       }
       return existInstance;
     },
-
     windDen(wind) {
       if (wind > 0 && wind <= 30) {
         return "30";
@@ -1111,7 +1528,6 @@ export default {
         });
       }
     },
-
     changeRunway(type) {
       this.runType = type
       this.runwayTime = 1
@@ -1171,7 +1587,6 @@ export default {
       var xlat = data["data"]["XLAT"];
       this.height_num = Math.ceil(data["data"]["count"] / 16);
       var sortList = [];
-
       //每行数据按纬度xlat排序
       for (let i = 0, len = xlat.length / this.height_num; i < len; i++) {
         var jList = [];
@@ -1224,11 +1639,9 @@ export default {
             // speed_dir=Math.atan((-1*w1)/(-1/v1))*r2d
             speed_dir = Math.atan((-1 * v1) / (-1 * w1 * 10)) * r2d;
           }
-
           if (speed_dir < 0) {
             speed_dir = speed_dir + 360;
           }
-
           speed_dir += 180;
           //  if(speed_dir>360){speed_dir -= 180}
           xList.push([
@@ -1246,7 +1659,6 @@ export default {
       // console.log(sortList);
       // console.log(finList);
       // console.log(JSON.stringify(finList));
-
       return finList;
     },
     drawDiv(finList) {
@@ -1254,11 +1666,9 @@ export default {
       var body = document.getElementById("body");
       var canvast = document.getElementById("canvas");
       body.removeChild(canvast);
-
       var canvas = document.createElement("div");
       canvas.setAttribute("id", "canvas");
       body.appendChild(canvas);
-
       if (finList.length < 1) {
         return;
       }
@@ -1307,7 +1717,6 @@ export default {
               "border-bottom:2px dashed red; border-right:2px dashed red;box-shadow:inset -8px -8px 9px -8px red;";
           }
           var b_1 = document.createElement("b");
-
           var speed = finList[j][i][3];
           var iconid = this.getSpeedIconId(speed);
           b_1.setAttribute("class", "icon-" + iconid);
@@ -1387,7 +1796,6 @@ export default {
         this.distance = this.mouseX - this.mouseXstart;
         console.log("距离变化", this.distance);
         let mySlider = this.$refs.mySlider;
-
         mySlider.style.left = this.initLeft + this.distance + "px";
         console.log("鼠标结束距离", this.mouseX);
         console.log("元素左间距", mySlider.style.left);
@@ -1478,300 +1886,11 @@ export default {
         this.windData = data;
       });
     } else if (val === 2) {
-      let time = "2019-10-31%2000:00:00";
+      let time = "2019-11-13%2000:00:00";
       let level = 0;
-
-      let jsonPath =
-        "http://161.189.11.216:8090/gis/BJPEK/ModelForecast?datacode=ABC&dataset=XLONG,XLAT,U,V&time=" +
-        time +
-        "&bbox=110,30,120,42&z=" +
-        level +
-        "&resolution=1000M"; //fileOptions.dataDirectory + "wind/wind_"+time+"_L"+level+".json";
-      Cesium.Resource.fetchJson({ url: jsonPath }).then(resData => {
-        resData = resData.data;
-        let data = {};
-
-        data.dimensions = {};
-        data.dimensions.lon = 120; //dimensions['lon'].size;
-        data.dimensions.lat = 120; //dimensions['lat'].size;
-        data.dimensions.lev = 1; //dimensions['lev'].size;
-
-        data.lon = {};
-        data.lon.array = new Float32Array(resData.XLONG);
-        data.lon.min = Math.min.apply(null, data.lon.array); //Math.min(...data.lon.array);
-        data.lon.max = Math.max.apply(null, data.lon.array); //Math.max(...data.lon.array);
-
-        data.lat = {};
-        data.lat.array = new Float32Array(resData.XLAT);
-        data.lat.min = Math.min.apply(null, data.lat.array); //Math.min(...data.lat.array);
-        data.lat.max = Math.max.apply(null, data.lat.array); //Math.max(...data.lat.array);
-
-        data.lev = {};
-        data.lev.array = new Float32Array([1.0]);
-        data.lev.min = Math.min.apply(null, data.lev.array); //Math.min(...data.lev.array);
-        data.lev.max = Math.max.apply(null, data.lev.array); //Math.max(...data.lev.array);
-
-        data.U = {};
-        data.U.array = new Float32Array(resData.U); //new Float32Array(resData.U);
-        data.U.min = Math.min.apply(null, data.U.array); //Math.min(...data.U.array);
-        data.U.max = Math.max.apply(null, data.U.array); //Math.max(...data.U.array);
-
-        data.V = {};
-        data.V.array = new Float32Array(resData.V); //new Float32Array(resData.V);
-        data.V.min = Math.min.apply(null, data.V.array); //Math.min(...data.V.array);
-        data.V.max = Math.max.apply(null, data.V.array); //Math.max(...data.V.array);
-
-        this.windData = data;
-        this.windData.colorTable = loadColorTable();
-        let particlecount = 100;
-        let particleSystemOptions = {
-          particlesTextureSize: particlecount,
-          maxParticles: particlecount * particlecount,
-          particleHeight: 100.0,
-          fadeOpacity: 0.92,
-          dropRate: 0.03,
-          dropRateBump: 0.01,
-          speedFactor: 3.0,
-          lineWidth: 4
-        };
-        let windDataMap = this.windData;
-        let particleSystemOptionsMap = particleSystemOptions;
-        let wind3D = new Wind3D(
-          this.viewer,
-          windDataMap,
-          particleSystemOptionsMap
-        );
-
-        this.viewer.entities.add({
-          show: this.isLegendChange,
-          id: "runway1",
-          name: "Runway",
-          station: "runway1",
-          polyline: {
-            // 多线段
-            positions: Cesium.Cartesian3.fromDegreesArray([
-              116.575473,
-              40.10303,
-              116.580113,
-              40.074035
-            ]), //方位
-            width: 10, //折线的宽度（以像素为单位）
-            material: new Cesium.ImageMaterialProperty({
-              image: this.drawRunWays([
-                "#0BD3A7",
-                "#86C86F",
-                "#FFBE3A",
-                "#D8C24C",
-                "#0BD3A7"
-              ])
-            })
-          }
-        });
-        this.viewer.entities.add({
-          show: !this.isLegendChange,
-          id: "wall1",
-          name: "windWall",
-          type: "runway1",
-          wall: {
-            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-              116.575473,
-              40.10303,
-              2100,
-              116.580113,
-              40.074035,
-              2100
-            ]),
-            material: new Cesium.ImageMaterialProperty({
-              image: windImgUrl
-            }),
-            outline: true,
-            //              outlineColor:Cesium.Color.fromCssColorString('#FF2C55'), //边框颜色
-            //              outlineWidth:15, //边框宽度
-            minimumHeights: [100, 100]
-          }
-        });
-        this.viewer.entities.add({
-          show: this.isLegendChange,
-          id: "runway2",
-          name: "Runway",
-          station: "runway2",
-          polyline: {
-            // 多线段
-            positions: Cesium.Cartesian3.fromDegreesArray([
-              116.600573,
-              40.089862,
-              116.605809,
-              40.056497
-            ]), //方位
-            width: 10, //折线的宽度（以像素为单位）
-            material: new Cesium.ImageMaterialProperty({
-              image: this.drawRunWays([
-                "#FFBE3A",
-                "#FFBE3A",
-                "#FFBE3A",
-                "#FF7C46",
-                "#FF3752"
-              ])
-            })
-          }
-        });
-        this.viewer.entities.add({
-          show: !this.isLegendChange,
-          id: "wall2",
-          name: "windWall",
-          type: "runway2",
-          wall: {
-            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-              116.600573,
-              40.089862,
-              2100,
-              116.605809,
-              40.056497,
-              2100
-            ]),
-            material: new Cesium.ImageMaterialProperty({
-              image: windImgUrl
-            }),
-            outline: true,
-            minimumHeights: [100, 100]
-          }
-        });
-        this.viewer.entities.add({
-          show: this.isLegendChange,
-          id: "runway3",
-          name: "Runway",
-          station: "runway3",
-          polyline: {
-            // 多线段
-            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-              116.617997,
-              40.094787,
-              0,
-              116.623469,
-              40.059059,
-              0
-            ]), //方位
-            width: 10, //折线的宽度（以像素为单位）
-            material: new Cesium.ImageMaterialProperty({
-              image: this.drawRunWays([
-                "#FFBE3A",
-                "#15D2A3",
-                "#42CE8E",
-                "#A4C663",
-                "#FEBE3B"
-              ])
-            }),
-            shadows: Cesium.ShadowMode.ENABLED
-          }
-        });
-        this.viewer.entities.add({
-          show: !this.isLegendChange,
-          id: "wall3",
-          name: "windWall",
-          type: "runway3",
-          wall: {
-            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-              116.617997,
-              40.094787,
-              2100,
-              116.623469,
-              40.059059,
-              2100
-            ]),
-            material: new Cesium.ImageMaterialProperty({
-              image: windImgUrl
-            }),
-            outline: true,
-            minimumHeights: [100, 100]
-          }
-        });
-        this.drawPoint(" 18R ", 116.575473, 40.10303, 0);
-        this.drawPoint("MID1", 116.577925, 40.088623, 0);
-        this.drawPoint(" 36L ", 116.580113, 40.074035, 0);
-        this.drawPoint(" 18L ", 116.600573, 40.089862, 1);
-        this.drawPoint("MID2", 116.603528, 40.07174, 1);
-        this.drawPoint(" 36R ", 116.605809, 40.056497, 1);
-        this.drawPoint("  19  ", 116.617997, 40.094787, 2);
-        this.drawPoint("MID3", 116.621128, 40.074618, 2);
-        this.drawPoint("  01  ", 116.623469, 40.059059, 2);
-        var handlerVideo = new Cesium.ScreenSpaceEventHandler(
-          this.viewer.scene.canvas
-        );
-        var that = this;
-        /**
-         * 鼠标移动事件
-         */
-        handlerVideo.setInputAction(function(movement) {
-          that.pointHandler(movement);
-        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-        /**
-         * 鼠标左键点击事件
-         */
-        handlerVideo.setInputAction(function(click) {
-          that.wallHandler(click);
-        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-        /**
-         * 相机高度监听事件
-         */
-        this.viewer.scene.camera.moveEnd.addEventListener(function() {
-          //获取当前相机高度
-          let height = Math.ceil(
-            that.viewer.camera.positionCartographic.height
-          );
-          if (height > 60000) {
-            for (let i = 0; i < that.pointName.length; i++) {
-              let entity = that.viewer.entities.getById(that.pointName[i]);
-              entity.show = false;
-            }
-          } else {
-            for (let i = 0; i < that.pointName.length; i++) {
-              let entity = that.viewer.entities.getById(that.pointName[i]);
-              entity.show = true;
-            }
-          }
-        });
-        this.getStationInfo();
-
-        function loadColorTable() {
-          let json = {
-            ncolors: 1,
-            colorTable: [1, 1, 1.0, 0.8]
-          };
-          let colorNum = json["ncolors"];
-          let colorTable = json["colorTable"];
-          // let colorsArray = new Float32Array(3 * colorNum)
-          // for (let i = 0; i < colorNum; i++) {
-          //   colorsArray[3 * i] = colorTable[3 * i]
-          //   colorsArray[3 * i + 1] = colorTable[3 * i + 1]
-          //   colorsArray[3 * i + 2] = colorTable[3 * i + 2]
-          // }
-
-          let channel = 4;
-          let colorsArray = new Float32Array(channel * colorNum);
-          for (var i = 0; i < colorNum; i++) {
-            for (var j = 0; j < channel; j++) {
-              colorsArray[channel * i + j] = colorTable[channel * i + j];
-            }
-            //colorsArray[channel * i + 1] = colorTable[channel * i + 1];
-            //colorsArray[channel * i + 2] = colorTable[channel * i + 2];
-          }
-          let result = {};
-          result.colorNum = colorNum;
-          result.array = colorsArray;
-          return result;
-        }
-
-        function objToStrMap(obj) {
-          let strMap = new Map();
-          for (let k of Object.keys(obj)) {
-            strMap.set(k, obj[k]);
-          }
-          return strMap;
-        }
-      });
+      this.loadwind(time,level)
     }
   },
-
   async loadNetCDF(filePath) {
     let _this = this;
     return new Promise(function(resolve) {
@@ -1845,12 +1964,10 @@ export default {
   right: 1%;
   top: 3%;
 }
-
 #menu {
   border-radius: 3px;
   color: white;
 }
-
 #menu1 {
   position: absolute;
   z-index: 10;
@@ -1861,7 +1978,6 @@ export default {
   background-color: #242236;
   border-radius: 5px;
 }
-
 #menu11 {
   display: none;
   position: absolute;
@@ -1874,7 +1990,6 @@ export default {
   border-radius: 4px;
   border: 1px solid rgba(59, 55, 87, 1);
 }
-
 #menu2 {
   position: absolute;
   z-index: 10;
@@ -1885,7 +2000,6 @@ export default {
   background-color: #242236;
   border-radius: 5px;
 }
-
 #menu22 {
   display: none;
   position: absolute;
@@ -1898,14 +2012,12 @@ export default {
   border-radius: 4px;
   border: 1px solid rgba(59, 55, 87, 1);
 }
-
 .nearmenu {
   color: white;
   font-size: 14px;
   list-style: none;
   margin: 5px;
 }
-
 .input {
   position: absolute;
   z-index: 10;
@@ -1914,7 +2026,6 @@ export default {
   width: 17%;
   background-color: white;
 }
-
 #string {
   position: absolute;
   z-index: 10;
@@ -1925,7 +2036,6 @@ export default {
   left: 1%;
   top: 3%;
 }
-
 #search {
   top: 2%;
   left: 2%;
@@ -1933,7 +2043,6 @@ export default {
   box-shadow: 0px 6px 19px 0px rgba(0, 0, 0, 0.12);
   border-radius: 4px;
 }
-
 #pointname {
   position: absolute;
   z-index: 10;
@@ -1945,7 +2054,6 @@ export default {
   color: rgba(255, 255, 255, 1);
   line-height: 30px;
 }
-
 #search-input {
   width: 70%;
   margin-left: -12%;
@@ -1956,12 +2064,10 @@ export default {
   line-height: 30px;
   pointer-events: none; /* a标签禁止点击 */
 }
-
 #search-icon {
   float: left;
   margin: 3px;
 }
-
 #date {
   top: 20%;
   text-align: left;
@@ -1970,12 +2076,10 @@ export default {
   width: 10%;
   float: left;
 }
-
 #dateshow {
   width: 100px;
   font-size: 14px;
 }
-
 #back {
   bottom: 0%;
   left: 1%;
@@ -1987,7 +2091,6 @@ export default {
   box-shadow: 0px 12px 32px 1px rgba(16, 15, 23, 0.15);
   border-radius: 4px;
 }
-
 #rule {
   width: 100%;
   height: 2px;
@@ -1995,19 +2098,16 @@ export default {
   border: none;
   border-top: 2px solid #555555;
 }
-
 #airport {
   margin-left: 2%;
   float: left;
   width: 12%;
 }
-
 #airporticon {
   float: left;
   width: 25%;
   height: 25%;
 }
-
 #airportname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2016,7 +2116,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #airportBJ {
   font-size: 14px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2025,19 +2124,16 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #windspeed {
   margin-left: 1%;
   float: left;
   width: 10%;
 }
-
 #windspeedicon {
   float: left;
   width: 35%;
   height: 35%;
 }
-
 #windspeedname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2046,7 +2142,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #windspeedBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2055,19 +2150,16 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #winddirection {
   margin-left: 1%;
   float: left;
   width: 9%;
 }
-
 #winddirectionicon {
   float: left;
   width: 40%;
   height: 40%;
 }
-
 #winddirectionname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2076,7 +2168,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #winddirectionBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2085,19 +2176,16 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #airpressure {
   margin-left: 2%;
   float: left;
   width: 13%;
 }
-
 #airpressureicon {
   float: left;
   width: 25%;
   height: 25%;
 }
-
 #airpressurename {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2106,7 +2194,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #airpressureBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2115,18 +2202,15 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #T {
   float: left;
   width: 7%;
 }
-
 #Ticon {
   float: left;
   width: 55%;
   height: 55%;
 }
-
 #Tname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2135,7 +2219,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #TBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2144,19 +2227,16 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #rain {
   margin-left: 3%;
   float: left;
   width: 10%;
 }
-
 #rainicon {
   float: left;
   width: 35%;
   height: 35%;
 }
-
 #rainname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2165,7 +2245,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #rainBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2174,19 +2253,16 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #humidity {
   margin-left: 2%;
   float: left;
   width: 8%;
 }
-
 #humidityicon {
   float: left;
   width: 50%;
   height: 50%;
 }
-
 #humidityname {
   font-size: 12px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2195,7 +2271,6 @@ export default {
   line-height: 18px;
   float: left;
 }
-
 #humidityBJ {
   font-size: 14px;
   font-family: DINMittelschriftStd;
@@ -2204,7 +2279,6 @@ export default {
   line-height: 22px;
   float: left;
 }
-
 #tag {
   top: 30%;
   left: 1%;
@@ -2213,7 +2287,6 @@ export default {
   width: 100%;
   height: 71%;
 }
-
 #Y {
   font-size: 14px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2223,7 +2296,6 @@ export default {
   float: left;
   margin-left: 1%;
 }
-
 #Unit {
   font-size: 14px;
   font-family: PingFangSC-Regular, PingFang SC;
@@ -2233,7 +2305,6 @@ export default {
   margin-right: 4%;
   float: right;
 }
-
 #X {
   font-size: 14px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2244,15 +2315,12 @@ export default {
   margin-top: 9%;
   margin-left: -2.2%;
 }
-
 .closename-normal {
   transform: rotate(0deg);
 }
-
 .closename-inverse {
   transform: rotate(180deg);
 }
-
 #flat {
   display: none;
   top: 3%;
@@ -2264,7 +2332,6 @@ export default {
   box-shadow: 0px 6px 19px 0px rgba(0, 0, 0, 0.12);
   border-radius: 4px;
 }
-
 #flat1 {
   display: none;
   list-style: none;
@@ -2273,7 +2340,6 @@ export default {
   text-align: center;
   margin: 10%;
 }
-
 #profile {
   display: none;
   top: 3%;
@@ -2286,7 +2352,6 @@ export default {
   box-shadow: 0px 6px 19px 0px rgba(0, 0, 0, 0.12);
   border-radius: 4px;
 }
-
 #profile1 {
   display: none;
   list-style: none;
@@ -2295,7 +2360,6 @@ export default {
   text-align: center;
   margin: 10%;
 }
-
 #tone {
   position: absolute;
   z-index: 10;
@@ -2307,13 +2371,11 @@ export default {
   width: 10%;
   height: 20%;
 }
-
 #tonenameback {
   float: left;
   width: 100%;
   height: 20%;
 }
-
 #stringR {
   width: 2%;
   height: 15%;
@@ -2322,7 +2384,6 @@ export default {
   border-radius: 1px;
   margin-top: 3%;
 }
-
 #pointgroundname {
   font-size: 13px;
   font-family: PingFangSC-Medium, PingFang SC;
@@ -2333,7 +2394,6 @@ export default {
   float: right;
   margin-right: 6%;
 }
-
 #ruletwo {
   width: 100%;
   height: 3px;
@@ -2341,7 +2401,6 @@ export default {
   border: none;
   border-top: 2px solid #555555;
 }
-
 #small {
   width: 10%;
   height: 20%;
@@ -2352,14 +2411,12 @@ export default {
   border-radius: 2px 2px 0px 0px;
   top: 30%;
 }
-
 #smallname {
   font-size: 0.12rem;
   float: right;
   margin-right: 15%;
   margin-top: 6%;
 }
-
 #centre {
   width: 10%;
   height: 20%;
@@ -2370,14 +2427,12 @@ export default {
   background: rgba(255, 190, 58, 1);
   top: 50%;
 }
-
 #centrename {
   font-size: 0.12rem;
   float: right;
   margin-right: 10%;
   margin-top: 10%;
 }
-
 #big {
   width: 10%;
   height: 20%;
@@ -2388,23 +2443,19 @@ export default {
   background: rgba(255, 44, 85, 1);
   top: 70%;
 }
-
 #bigname {
   font-size: 0.12rem;
   float: right;
   margin-right: 15px;
   margin-top: 10%;
 }
-
 .tag {
   display: flex;
 }
-
 #windEcharts {
   height: 98%;
   width: 100%;
 }
-
 .station_hover_info {
   width: 3.333rem;
   height: 1.508rem;
@@ -2418,25 +2469,21 @@ export default {
   display: flex;
   flex-direction: column;
 }
-
 .station_hover_header {
   height: 0.35rem;
   display: flex;
   flex-direction: row;
   align-items: center;
 }
-
 .station_hover_line {
   height: 0.017rem;
   background-color: #45416f;
 }
-
 .station_hover_container {
   flex-grow: 1;
   display: flex;
   flex-wrap: wrap;
 }
-
 .station_hover_container div {
   min-width: 40%;
   /*min-height: 33.33333%;*/
@@ -2445,7 +2492,6 @@ export default {
   display: flex;
   align-items: center;
 }
-
 .station_hover_container div span:nth-child(odd) {
   font-size: 0.125rem;
   font-family: PingFangSC-Regular, PingFang SC;
@@ -2454,7 +2500,6 @@ export default {
   line-height: 0.175rem;
   text-align: left;
 }
-
 .station_hover_container div span:nth-child(even) {
   font-size: 0.125rem;
   font-family: PingFangSC-Regular, PingFang SC;
@@ -2463,7 +2508,6 @@ export default {
   line-height: 0.175rem;
   text-align: left;
 }
-
 .station_hover_footer {
   height: 0.35rem;
   display: flex;
@@ -2471,7 +2515,6 @@ export default {
   align-items: center;
   justify-content: flex-start;
 }
-
 .header_icon {
   width: 0.033rem;
   height: 0.133rem;
@@ -2479,7 +2522,6 @@ export default {
   border-radius: 0.008rem;
   margin-left: 0.1rem;
 }
-
 .header_title {
   width: 0.383rem;
   height: 0.233rem;
@@ -2490,7 +2532,6 @@ export default {
   line-height: 0.234rem;
   margin-left: 0.05rem;
 }
-
 .footer_time {
   width: 1.85rem;
   height: 0.142rem;
@@ -2502,15 +2543,12 @@ export default {
   margin-left: 0.1rem;
   text-align: left;
 }
-
 .reverseenteractive {
   animation: bounce-in 0.5s forwards;
 }
-
 .reverseleaveactive {
   animation: bounce-out 0.5s forwards;
 }
-
 @keyframes bounce-in {
   0% {
     transform: rotate(0);
@@ -2522,7 +2560,6 @@ export default {
     transform: rotate(180deg);
   }
 }
-
 @keyframes bounce-out {
   0% {
     transform: rotate(180deg);
@@ -2534,7 +2571,6 @@ export default {
     transform: rotate(0);
   }
 }
-
 .move_in1 {
   -webkit-animation: move1 0.5s linear 1;
   -moz-animation: move1 0.5s linear 1;
@@ -2547,7 +2583,6 @@ export default {
   -o-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 }
-
 .move_out1 {
   -webkit-animation: moveOut1 0.5s linear 1;
   -moz-animation: moveOut1 0.5s linear 1;
@@ -2560,7 +2595,6 @@ export default {
   -o-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 }
-
 @keyframes move1 {
   from {
     bottom: -28%;
@@ -2569,7 +2603,6 @@ export default {
     bottom: 0px;
   }
 }
-
 @keyframes moveOut1 {
   from {
     bottom: 0%;
@@ -2590,7 +2623,6 @@ export default {
   -o-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 }
-
 .move_out2 {
   -webkit-animation: moveOut2 0.5s linear 1;
   -moz-animation: moveOut2 0.5s linear 1;
@@ -2603,7 +2635,6 @@ export default {
   -o-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 }
-
 @keyframes move2 {
   from {
     bottom: 43%;
@@ -2612,7 +2643,6 @@ export default {
     bottom: 15%;
   }
 }
-
 @keyframes moveOut2 {
   from {
     bottom: 15%;
@@ -2625,11 +2655,9 @@ export default {
 .slide-fade-enter-active {
   transition: all 0.3s ease;
 }
-
 .slide-fade-leave-active {
   transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
-
 /* 测试 */
 .wind {
   width: 100%;
@@ -2644,6 +2672,23 @@ export default {
     width: 2.56rem;
     height: 0.4rem;
     z-index: 999;
+  }
+    .windheightcontroller{
+    // background:rgba(0,0,0,1);
+    // opacity:0.37;
+    position: absolute;
+    top: 2.29rem;
+    right: 0.37rem;
+    width: 0.08rem;
+    height: 1.72rem;
+    z-index: 999;
+    .el-slider__button-wrapper{
+      height: auto;
+    }
+    .el-slider__bar{
+      background-color: rgba(0,0,0,1);
+      opacity:0.37;
+    }
   }
   .wind_header {
     display: flex;
@@ -2728,7 +2773,6 @@ export default {
         border-radius: 2px;
       }
     }
-
     .unit {
       font-size: 0.16rem;
       font-family: DINMittelschriftStd;
@@ -2811,7 +2855,6 @@ export default {
           background: #dddddd;
         }
       }
-
       #body {
         width: calc(105vh + 11rem);
       }
@@ -2863,14 +2906,11 @@ export default {
         font-variant: normal;
         text-transform: none;
         line-height: 1;
-
         /* Better Font Rendering =========== */
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-
         font-size: 3vh;
       }
-
       .icon-0:before {
         content: "\e900";
         color: #1200a9;
@@ -2954,11 +2994,9 @@ export default {
         position: relative;
         // top: 5px;
       }
-
       .clear {
         clear: both;
       }
-
       .hidden {
         /* display:none; */
         width: 0.2rem;
@@ -3047,7 +3085,6 @@ export default {
           margin-right: 0.05rem;
         }
       }
-
       .progress_bar_div {
         height: 0.3rem;
         .progress_bar {
@@ -3086,7 +3123,6 @@ export default {
           }
         }
       }
-
       .pentagon {
         margin-top: 0.14rem;
         position: relative;
@@ -3117,5 +3153,3 @@ export default {
   }
 }
 </style>
-
-

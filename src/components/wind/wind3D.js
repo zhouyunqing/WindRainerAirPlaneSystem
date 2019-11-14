@@ -5,6 +5,7 @@ import ColorImage from './ColorImage'
 
 class Wind3D {
   constructor(viewer, data, particleSystemOptions, that) {
+    this.currentLevel = 1
     this.viewer = viewer
     this.scene = this.viewer.scene
     this.camera = this.viewer.camera
@@ -39,12 +40,14 @@ class Wind3D {
       particleSystemOptions,
       this.viewerParameters
     )
-
+    this.particleSystem.canvasResize(this.scene.context)  
+    // this.particleSystem.canvasResize(this.scene.context)  
     this.addPrimitives()
     this.setupEventListeners()
     this.imageryLayers = this.viewer.imageryLayers
+    this.scene.primitives.show = true
     // this.drawWindLayer(this.data)
-    this.drawWindHeatLayer(this.data)
+    // this.drawWindHeatLayer(this.data)
     // drawWindLayer(data){//绘制风向图
     //   if(this.overlayer != Overlayers.wind)
     //     return;
@@ -129,6 +132,7 @@ class Wind3D {
       that.colorImage = new ColorImage(that.viewer, coordinate3, max, points, that.gradientWind)
     }
   }
+
 
   addPrimitives() {
     // the order of primitives.add() should respect the dependency of primitives
