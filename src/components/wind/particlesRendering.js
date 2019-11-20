@@ -179,6 +179,7 @@ class ParticlesRendering {
           },
           lineWidth: function () {
             return particleSystemOptions.lineWidth
+            // return viewerParameters.lineWidthDef;
           },
           particleHeight: function () {
             return particleSystemOptions.particleHeight

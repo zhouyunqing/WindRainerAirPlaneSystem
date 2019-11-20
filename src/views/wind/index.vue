@@ -400,7 +400,7 @@ export default {
             maxParticles: 128 * 128,
             particleHeight: 100.0,
             fadeOpacity: 0.996,
-            dropRate: 0.003,
+            dropRate: 0.5,
             dropRateBump: 0.01,
             speedFactor: 4.0,
             lineWidth: 4.0
@@ -565,9 +565,9 @@ export default {
         let particleSystemOptions = {
           particlesTextureSize: particlecount,
           maxParticles: particlecount * particlecount,
-          particleHeight: 100.0,
+          particleHeight: 200.0,
           fadeOpacity: 0.92,
-          dropRate: 0.03,
+          dropRate: 0.5,
           dropRateBump: 0.01,
           speedFactor: 3.0,
           lineWidth: 4
