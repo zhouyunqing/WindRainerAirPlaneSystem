@@ -198,7 +198,7 @@
 
     <article class="wind_header">
       <div class="wind_header_btn">
-        <el-button id="planewind" type="primary" @click="windToggle('plane')">平面风展示</el-button>
+        <el-button id="planewind" type="primary" @click="windToggle('plane') ">平面风展示</el-button>
         <el-button id="sectionwind" type="primary" @click="windToggle('section')">剖面风展示</el-button>
       </div>
       <div v-if="activeWind=='sectionwind' && sectionwindDetail" class="wind_header_icon">
@@ -2708,6 +2708,7 @@ potail36(Echarts36, id, runway) {
           }
         });
       } else {
+        this.changeMenu(0);
         this.isLegendChange = true;
         this.sectionwindDetail = false;
         this.activeWind = "planewind";
