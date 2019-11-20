@@ -5,6 +5,7 @@ import ColorImage from './ColorImage'
 
 class Wind3D {
   constructor(viewer, data, particleSystemOptions, that) {
+    this.particleSystemOptions = particleSystemOptions
     this.currentLevel = 1
     this.viewer = viewer
     this.scene = this.viewer.scene
@@ -24,7 +25,8 @@ class Wind3D {
     this.viewerParameters = {
       lonRange: new Cesium.Cartesian2(),
       latRange: new Cesium.Cartesian2(),
-      pixelSize: 0.0
+      pixelSize: 0.0,
+      lineWidthDef: 10.0
       // lonDataRange: new Cesium.Cartesian2(),
       // latDataRange: new Cesium.Cartesian2()
     }
@@ -33,14 +35,15 @@ class Wind3D {
       Cesium.Cartesian3.ZERO,
       0.99 * 6378137.0
     )
-    this.updateViewerParameters()
+    // this.updateViewerParameters()
     this.particleSystem = new ParticleSystem(
       this.scene.context,
       data,
       particleSystemOptions,
       this.viewerParameters
     )
-    this.particleSystem.canvasResize(this.scene.context)  
+    // this.particleSystem.canvasResize(this.scene.context)  
+    this.updateViewerParameters()
     // this.particleSystem.canvasResize(this.scene.context)  
     this.addPrimitives()
     this.setupEventListeners()
@@ -202,6 +205,7 @@ class Wind3D {
   }
 
   updateViewerParameters() {
+
     var viewRectangle = this.camera.computeViewRectangle(
       this.scene.globe.ellipsoid
     )
@@ -224,10 +228,114 @@ class Wind3D {
       this.scene.drawingBufferWidth,
       this.scene.drawingBufferHeight
     )
-
     if (pixelSize > 0) {
-      this.viewerParameters.pixelSize = pixelSize
+      this.viewerParameters.pixelSize = pixelSize;
+      // let lw = this.calWidth(pixelSize);//0.02;
+      // this.viewerParameters.lineWidthDef = lw;
+      
     }
+    let particlecount
+    //获取当前相机高度
+    let height = Math.ceil(
+      this.viewer.camera.positionCartographic.height
+    );
+    if (height  > 120000) {
+      particlecount = 30
+      this.particleSystemOptions.particlesTextureSize = particlecount
+      this.particleSystemOptions.maxParticles = particlecount * particlecount
+      this.particleSystemOptions.fadeOpacity = 0.9
+      this.particleSystemOptions.speedFactor=4
+      this.particleSystemOptions.lineWidth = 6
+      this.particleSystemOptions.dropRate=0.09
+
+    }
+    if (height <=120000&&height > 60000) {
+      particlecount = 50
+      this.particleSystemOptions.particlesTextureSize = particlecount
+      this.particleSystemOptions.maxParticles = particlecount * particlecount
+      this.particleSystemOptions.fadeOpacity = 0.9
+      this.particleSystemOptions.speedFactor=4
+      this.particleSystemOptions.lineWidth = 6
+      this.particleSystemOptions.dropRate=0.08
+
+    }else if(height <=60000&&height >30000){
+      particlecount=80
+      this.particleSystemOptions.particlesTextureSize=particlecount
+      this.particleSystemOptions.maxParticles=particlecount*particlecount
+      this.particleSystemOptions.fadeOpacity=0.9
+      this.particleSystemOptions.speedFactor=2
+      this.particleSystemOptions.lineWidth = 4
+    }else if(height <=30000&&height >20000){
+      particlecount=120
+      this.particleSystemOptions.particlesTextureSize=particlecount
+      this.particleSystemOptions.maxParticles=particlecount*particlecount
+      this.particleSystemOptions.fadeOpacity=0.9
+      this.particleSystemOptions.speedFactor=1
+      this.particleSystemOptions.lineWidth = 3
+      this.particleSystemOptions.dropRate=0.07
+    }else if(height <=20000&&height >10000){
+      particlecount=200
+      this.particleSystemOptions.particlesTextureSize=particlecount
+      this.particleSystemOptions.maxParticles=particlecount*particlecount
+      this.particleSystemOptions.fadeOpacity=0.9
+      this.particleSystemOptions.speedFactor=0.8
+      this.particleSystemOptions.lineWidth = 3
+      this.particleSystemOptions.dropRate=0.06
+    }else if(height <= 10000&& height >6500){
+      particlecount=600
+      this.particleSystemOptions.particlesTextureSize=particlecount
+      this.particleSystemOptions.maxParticles=particlecount*particlecount
+      this.particleSystemOptions.fadeOpacity=0.9
+      this.particleSystemOptions.speedFactor=0.6
+      // this.particleSystemOptions.lineWidthDef=1
+      this.particleSystemOptions.lineWidth = 1.5
+      this.particleSystemOptions.dropRate=0.05
+    }else if(height <= 6500&&height >= 4000){
+      particlecount=1200
+      this.particleSystemOptions.particlesTextureSize=particlecount
+      this.particleSystemOptions.maxParticles=particlecount*particlecount
+      this.particleSystemOptions.fadeOpacity=0.9
+      this.particleSystemOptions.speedFactor=0.4
+      this.particleSystemOptions.lineWidth = 1
+      this.particleSystemOptions.dropRate=0.05
+
+    }else if(height <= 4000&&height >= 1000){
+      particlecount=2500
+      this.particleSystemOptions.particlesTextureSize=particlecount
+      this.particleSystemOptions.maxParticles=particlecount*particlecount
+      this.particleSystemOptions.fadeOpacity=0.9
+      this.particleSystemOptions.speedFactor=0.2
+      this.particleSystemOptions.lineWidth = 0.05
+      this.particleSystemOptions.dropRate=0.03
+    }
+    
+    this.particleSystem.applyParticleSystemOptions(this.particleSystemOptions)
+  }
+
+  calWidth(px){
+    var w = 1;
+    //return this.lwConf;
+    if(px>512)
+      return 6;
+    if(px>=64)
+      w = Math.log2(px) - 2;
+    else if(px<42){
+      w = 0.03;
+    }
+    else{
+      //const a = [-394.12024676993497, 30.103893729839470, -0.86034688168263518,0.010898275605563869,-5.1406960882154350e-005];
+      const a=[-160.18902915328761,11.672092349957680,-0.32062075723777594,0.0039374192405739403,-1.8044290351930669e-005]
+      var i = 0;
+      var w = 0;
+      for(var i=0;i<a.length;i++){
+        var v = a[i] * Math.pow(px,i);
+        w = w + v;
+        //console.log(i + ":"+a[i] + " " + v);
+      }
+      w = w /1.25;
+    }
+    //console.log("w:"+w);
+    return w;
   }
 
   moveStartListener() {
@@ -255,6 +363,7 @@ class Wind3D {
 
     this.camera.moveStart.addEventListener(this.moveStartListener, this)
     this.camera.moveEnd.addEventListener(this.moveEndListener, this)
+
 
     this.resized = false
     window.addEventListener('resize', function() {
