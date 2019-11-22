@@ -10,7 +10,7 @@ const actions = {
       }).then(function(response) {
         resolve(response)
       }).catch(function(error) {
-        console.log(error)
+        console.log('================', error)
       })
     })
   }

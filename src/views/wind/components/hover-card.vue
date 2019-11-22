@@ -4,27 +4,27 @@
     <ul class="item">
       <li>
         <span>地面风速：</span>
-        <em>{{ parseFloat(detail.SPD[0]).toFixed(2) }}m/s</em>
+        <em>{{ parseFloat(detail.SPD[index]).toFixed(2) }}m/s</em>
       </li>
       <li>
         <span>一小时降水量：</span>
-        <em>{{ parseFloat(detail.RAIN[0]).toFixed(1) }}mm</em>
+        <em>{{ parseFloat(detail.RAIN[index]).toFixed(1) }}mm</em>
       </li>
       <li>
         <span>地面风向：</span>
-        <em>{{ parseInt(detail.DIR[0]) }}°</em>
+        <em>{{ parseInt(detail.DIR[index]) }}°</em>
       </li>
       <li>
         <span>相对湿度：</span>
-        <em>{{ parseInt(detail.RH[0]) }}%</em>
+        <em>{{ parseInt(detail.RH[index]) }}%</em>
       </li>
       <li>
         <span>温度：</span>
-        <em>{{ parseInt(detail.T[0] - 272.15) }}℃</em>
+        <em>{{ parseInt(detail.T[index] - 272.15) }}℃</em>
       </li>
       <li>
         <span>修正海平面气压：</span>
-        <em>{{ parseInt(detail.SLP[0]) }}hPa</em>
+        <em>{{ parseInt(detail.SLP[index]) }}hPa</em>
       </li>
     </ul>
     <div class="time">数据时间(UTC)：{{ time }}</div>
@@ -32,7 +32,7 @@
 </template>
 <script>
 export default {
-  props: ['site', 'detail', 'time'],
+  props: ['site', 'detail', 'time', 'index'],
   data() {
     return {}
   }

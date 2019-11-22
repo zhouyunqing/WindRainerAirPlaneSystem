@@ -25,7 +25,7 @@
                   <div v-if="!!info[item.name] && item.name == 'RH'" class="txt">{{ parseInt(info[item.name][chartIndex]) }}{{ item.unit }}</div>
                   <div v-if="!!info[item.name] && item.name == 'SLP'" class="txt">{{ parseInt(info[item.name][chartIndex]) }}{{ item.unit }}</div>
                 </div>
-                <div v-else :class="{sp: chartTab == item.name}">
+                <div v-else class="sp">
                   <div class="tit">{{ item.tit }}</div>
                   <div class="txt">{{ item.data }}{{ item.unit }}</div>
                 </div>
@@ -54,6 +54,7 @@ import windImgUrl9 from '../../../assets/images/wind9.png'
 import windImgUrl10 from '../../../assets/images/wind10.png'
 import windImgUrl11 from '../../../assets/images/wind11.png'
 import windImgUrl12 from '../../../assets/images/wind12.png'
+import utilTime from '@/utils/time'
 export default {
   props: ['time', 'site', 'detail'],
   data() {
@@ -68,16 +69,16 @@ export default {
           unit: '',
           data: '北京首都机场'
         }, {
-          icon: require('../../../../public/images/icon_fengsu@2x.png'),
-          tit: '地面风速',
-          name: 'SPD',
-          unit: 'm/s',
-          data: ''
-        }, {
           icon: require('../../../../public/images/icon_fengxiang@2x.png'),
           tit: '地面风向',
           name: 'DIR',
           unit: '°',
+          data: ''
+        }, {
+          icon: require('../../../../public/images/icon_fengsu@2x.png'),
+          tit: '地面风速',
+          name: 'SPD',
+          unit: 'm/s',
           data: ''
         }, {
           icon: require('../../../../public/images/icon_qiya@2x.png'),
@@ -386,28 +387,60 @@ export default {
             nameTextStyle: { color: '#BBBBBB' },
             axisLabel: { color: '#BBBBBB' },
             splitLine: { show: false }
+            // splitLine: { show: this.chartTab == 'SPD', lineStyle: { color: '#555' }}
           }
         ],
+        visualMap: {
+          top: 10,
+          right: -100,
+          smooth: false,
+          pieces: [{
+            gt: 0,
+            lte: 5,
+            color: '#0BD3A7'
+          }, {
+            gt: 5,
+            lte: 17,
+            color: '#FFBE3A'
+          }, {
+            gt: 17,
+            color: '#FF2C55'
+          }],
+          outOfRange: {
+            color: '#999'
+          }
+        },
         series: [
           {
             name: this.chartTit.tooltip,
             type: 'line',
             step: false,
-            color: {
-              type: 'linear',
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [{
-                offset: 0, color: colors[0] // 0% 处的颜色
+            color: '#555',
+            // color: {
+            //   type: 'linear',
+            //   x: 0,
+            //   y: 0,
+            //   x2: 0,
+            //   y2: 1,
+            //   colorStops: [{
+            //     offset: 0, color: colors[0] // 0% 处的颜色
+            //   }, {
+            //     offset: 1, color: colors[1] // 100% 处的颜色
+            //   }],
+            //   global: false
+            // },
+            // smooth: true,
+            data: Data[this.chartTab],
+            markLine: {
+              symbol: 'none',
+              silent: true,
+              data: [{
+                yAxis: 5
               }, {
-                offset: 1, color: colors[1] // 100% 处的颜色
-              }],
-              global: false
+                yAxis: 17
+              }]
             },
-            smooth: true,
-            data: Data[this.chartTab]
+            label: { normal: { show: true, position: 'top' }}
           }
         ]
       }
@@ -447,156 +480,47 @@ export default {
       }
     },
     setOptionData() {
+      const nowTime = new Date().getTime()
+      const times = []
+      const timeData = []
+      const DIR = []
+      const RH = []
+      const SLP = []
+      const T = []
+      const RAIN = []
+      const SPD = []
+      let sTime = 0
+      const _this = this
       if (this.forecastTab === 'near') {
-        return {
-          times: [
-            '2019-11-17 06:00:00',
-            '2019-11-17 07:00:00',
-            '2019-11-17 08:00:00',
-            '2019-11-17 09:00:00',
-            '2019-11-17 10:00:00',
-            '2019-11-17 11:00:00',
-            '2019-11-17 12:00:00',
-            '2019-11-17 13:00:00',
-            '2019-11-17 14:00:00',
-            '2019-11-17 15:00:00',
-            '2019-11-17 16:00:00',
-            '2019-11-17 17:00:00',
-            '2019-11-17 18:00:00'
-          ],
-          timeData: [
-            '-6h',
-            '-5h',
-            '-4h',
-            '-3h',
-            '-2h',
-            '-1h',
-            '当前',
-            '+1h',
-            '+2h',
-            '+3h',
-            '+4h',
-            '+5h',
-            '+6h'
-          ],
-          DIR: this.info.DIR,
-          RH: this.info.RH,
-          SLP: this.info.SLP,
-          T: this.info.T,
-          RAIN: this.info.RAIN,
-          SPD: this.info.SPD
-        }
+        sTime = nowTime - 6 * 60 * 60 * 1000
       } else {
-        return {
-          times: [
-            '2019-11-15 00:00:00',
-            '2019-11-15 01:00:00',
-            '2019-11-15 02:00:00',
-            '2019-11-15 03:00:00',
-            '2019-11-15 04:00:00',
-            '2019-11-15 05:00:00',
-            '2019-11-15 06:00:00',
-            '2019-11-15 07:00:00',
-            '2019-11-15 08:00:00',
-            '2019-11-15 09:00:00',
-            '2019-11-15 10:00:00',
-            '2019-11-15 11:00:00',
-            '2019-11-15 12:00:00',
-            '2019-11-15 13:00:00',
-            '2019-11-15 14:00:00',
-            '2019-11-15 15:00:00',
-            '2019-11-15 16:00:00',
-            '2019-11-15 17:00:00',
-            '2019-11-15 18:00:00',
-            '2019-11-15 19:00:00',
-            '2019-11-15 20:00:00',
-            '2019-11-15 21:00:00',
-            '2019-11-15 22:00:00',
-            '2019-11-15 23:00:00',
-            '2019-11-16 00:00:00',
-            '2019-11-16 01:00:00',
-            '2019-11-16 02:00:00',
-            '2019-11-16 03:00:00',
-            '2019-11-16 04:00:00',
-            '2019-11-16 05:00:00',
-            '2019-11-16 06:00:00',
-            '2019-11-16 07:00:00',
-            '2019-11-16 08:00:00',
-            '2019-11-16 09:00:00',
-            '2019-11-16 10:00:00',
-            '2019-11-16 11:00:00',
-            '2019-11-16 12:00:00',
-            '2019-11-16 13:00:00',
-            '2019-11-16 14:00:00',
-            '2019-11-16 15:00:00',
-            '2019-11-16 16:00:00',
-            '2019-11-16 17:00:00',
-            '2019-11-16 18:00:00',
-            '2019-11-16 19:00:00',
-            '2019-11-16 20:00:00',
-            '2019-11-16 21:00:00',
-            '2019-11-16 22:00:00',
-            '2019-11-16 23:00:00',
-            '2019-11-17 00:00:00'
-          ],
-          timeData: [
-            '-12h',
-            '-11h',
-            '-10h',
-            '-9h',
-            '-8h',
-            '-7h',
-            '-6h',
-            '-5h',
-            '-4h',
-            '-3h',
-            '-2h',
-            '-1h',
-            '当前',
-            '+1h',
-            '+2h',
-            '+3h',
-            '+3h',
-            '+4h',
-            '+5h',
-            '+6h',
-            '+7h',
-            '+8h',
-            '+9h',
-            '+10h',
-            '+11h',
-            '+12h',
-            '+13h',
-            '+14h',
-            '+15h',
-            '+16h',
-            '+17h',
-            '+18h',
-            '+19h',
-            '+20h',
-            '+21h',
-            '+22h',
-            '+23h',
-            '+24h',
-            '+25h',
-            '+26h',
-            '+27h',
-            '+28h',
-            '+29h',
-            '+30h',
-            '+31h',
-            '+32h',
-            '+33h',
-            '+34h',
-            '+35h'
-          ],
-          DIR: this.info.DIR,
-          RH: this.info.RH,
-          SLP: this.info.SLP,
-          T: this.info.T,
-          RAIN: this.info.RAIN,
-          SPD: this.info.SPD
+        sTime = nowTime - 12 * 60 * 60 * 1000
+      }
+      for (var i = 0; i < this.info.DIR.length; i++) {
+        const time = utilTime.timeObj(sTime + i * 60 * 60 * 1000)
+        times.push(`${time.y}-${time.m}-${time.d} ${time.hh}:00:00`)
+        if (nowTime == sTime + i * 60 * 60 * 1000) {
+          timeData.push('当前')
+          _this.chartIndex = i
+        } else {
+          timeData.push(`${time.hh}时`)
         }
+        DIR.push(parseInt(this.info.DIR[i]))
+        RH.push(parseInt(this.info.RH[i]))
+        SLP.push(parseInt(this.info.SLP[i]))
+        SPD.push(parseFloat(this.info.SPD[i]).toFixed(2))
+        RAIN.push(parseFloat(this.info.RAIN[i]).toFixed(1))
+        T.push(parseInt(this.info.T[i] - 272.15))
+      }
+      return {
+        times: times,
+        timeData: timeData,
+        DIR: DIR,
+        RH: RH,
+        SLP: SLP,
+        T: T,
+        RAIN: RAIN,
+        SPD: SPD
       }
     },
     setchartData(data) {
@@ -770,7 +694,8 @@ export default {
             line-height: 0.22rem;
           }
           &:nth-child(1),
-          &:nth-child(3) {
+          &:nth-child(2) {
+            cursor: default;
             > div {
               opacity: 1;
             }

@@ -37,13 +37,13 @@
 
     <!-- 平面风展示 底部图表 start -->
     <div v-show="activeWind == 'plane'">
-      <bottomCard v-if="!!info.T" time="2019.11.04 星期一 12:00:00" :site="clickSite" :detail="info" @change="changeForecastTab" />
+      <bottomCard v-if="!!info.T" :time="day" :site="clickSite" :detail="info" @change="changeForecastTab" />
     </div>
 
     <!-- 平面风展示 底部图表 end -->
 
     <!-- 九站点 hover时展示的 card start -->
-    <hoverCard v-if="isHoverShow" :site="hoverSite" :detail="info" :style="hoverStyle" :time="infoTime" />
+    <hoverCard v-if="isHoverShow" :index="hoverIndex" :site="hoverSite" :detail="info" :style="hoverStyle" :time="params.starttime" />
     <!-- 九站点 hover时展示的 card end -->
 
     <!-- 剖面风 start -->
@@ -174,6 +174,7 @@ import request from '@/utils/request1'
 import ColorImage from '@/components/wind/ColorImage'
 
 import windImgUrl from '../../assets/images/windImg.png'
+import utilTime from '@/utils/time'
 export default {
   name: 'CesiumContainer',
   components: {
@@ -247,24 +248,30 @@ export default {
       height_num: 35,
       searchTime: '',
       sliderTime: new Date(new Date().toLocaleDateString()),
-      runName: '跑道1'
+      runName: '跑道1',
+      day: '',
+      hoverIndex: 0
     }
   },
   mounted() {
     this.setMap()
     this.getChartData(this.site)
+
+    let nowTime = new Date().getTime()
+    let time = utilTime.timeObj(nowTime)
+    this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
+    setInterval(() => {
+      nowTime = new Date().getTime()
+      time = utilTime.timeObj(nowTime)
+      this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
+    }, 1000)
   },
   methods: {
     getChartData(site) {
       const info = {}
       this.params.site = site
-      if (this.forecastTab === 'near') {
-        this.params.starttime = '2019-11-17 06:00:00'
-        this.params.endtime = '2019-11-17 18:00:00'
-      } else {
-        this.params.starttime = '2019-11-15 00:00:00'
-        this.params.endtime = '2019-11-17 00:00:00'
-      }
+      this.params.starttime = this.getStartTime()
+      this.params.endtime = this.getEndTime()
       info.url = this.ip + this.url
       info.params = this.params
       this.$store.dispatch('station/getRankInfo', info).then(res => {
@@ -280,6 +287,28 @@ export default {
           this.$message.error(res.data.returnMessage)
         }
       })
+    },
+    getStartTime() {
+      const nowTime = new Date().getTime()
+      if (this.forecastTab === 'near') {
+        const sTime = utilTime.timeObj(nowTime - 6 * 60 * 60 * 1000)
+        this.hoverIndex = 6
+        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
+      } else {
+        const sTime = utilTime.timeObj(nowTime - 12 * 60 * 60 * 1000)
+        this.hoverIndex = 12
+        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
+      }
+    },
+    getEndTime() {
+      const nowTime = new Date().getTime()
+      if (this.forecastTab === 'near') {
+        const sTime = utilTime.timeObj(nowTime + 6 * 60 * 60 * 1000)
+        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
+      } else {
+        const sTime = utilTime.timeObj(nowTime + 24 * 60 * 60 * 1000)
+        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
+      }
     },
     changeForecastTab(val) {
       this.forecastTab = val
