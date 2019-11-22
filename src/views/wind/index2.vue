@@ -375,7 +375,10 @@ export default {
           this.windData = data
         })
       } else if (val === 2) {
-        const time = '2019-11-13%2000:00:00'
+        const nowTime = new Date().getTime()
+        const time0 = utilTime.timeObj(nowTime)
+        const time = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
+        console.log(time)
         const level = 0
         this.loadwind(time, level)
       }
@@ -418,7 +421,9 @@ export default {
       return tip
     },
     changeHeightLevel(time, level) {
-      const time2 = '2019-11-13%2000:00:00'
+      const nowTime = new Date().getTime()
+      const time0 = utilTime.timeObj(nowTime)
+      const time2 = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
       this.loadwind(time2, this.heightLevel)
     },
     windToggle(type) {
@@ -1166,7 +1171,10 @@ export default {
       const timeArray = this.searchTime.split(' ')
       const yearArray = timeArray[0].split('.')
       const secondArray = timeArray[1].split(':')
-      const timestr = '2019-11-01%20' + secondArray[0] + ':' + secondArray[1] + ':00'
+      const nowTime = new Date().getTime()
+      const time0 = utilTime.timeObj(nowTime)
+      // const timestr = '2019-11-01%20' + secondArray[0] + ':' + secondArray[1] + ':00'
+      const timestr = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:${time0.mm}:00`
       request({
         url:
           'http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=' +
