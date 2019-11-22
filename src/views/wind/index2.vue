@@ -250,7 +250,22 @@ export default {
       sliderTime: new Date(new Date().toLocaleDateString()),
       runName: '跑道1',
       day: '',
-      hoverIndex: 0
+      hoverIndex: 0,
+      particleSystemOptions: {
+        type: Object,
+        default: function() {
+          return {
+            particlesTextureSize: 128,
+            maxParticles: 128 * 128,
+            particleHeight: 100.0,
+            fadeOpacity: 0.996,
+            dropRate: 0.5,
+            dropRateBump: 0.01,
+            speedFactor: 4.0,
+            lineWidth: 4.0
+          }
+        }
+      }
     }
   },
   mounted() {
@@ -377,9 +392,9 @@ export default {
       } else if (val === 2) {
         const nowTime = new Date().getTime()
         const time0 = utilTime.timeObj(nowTime)
-        const time = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
-        console.log(time)
+        // const time = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
         const level = 0
+        const time = '2019-11-13%2000:00:00';
         this.loadwind(time, level)
       }
     },
@@ -423,7 +438,8 @@ export default {
     changeHeightLevel(time, level) {
       const nowTime = new Date().getTime()
       const time0 = utilTime.timeObj(nowTime)
-      const time2 = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
+      // const time2 = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
+      const time2 = '2019-11-13%2000:00:00';
       this.loadwind(time2, this.heightLevel)
     },
     windToggle(type) {

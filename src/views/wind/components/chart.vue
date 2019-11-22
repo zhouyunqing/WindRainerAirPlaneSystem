@@ -637,7 +637,7 @@ export default {
       color: #fff;
       height: 0.6rem;
       align-items: center;
-      padding: 0.1rem 0.16rem 0;
+      padding: 0 0.16rem;
       .time {
         flex-shrink: 0;
         width: 1.9rem;
@@ -713,10 +713,10 @@ export default {
       -webkit-transition: height 0.3s; /* Safari 和 Chrome */
       -o-transition: height 0.3s; /* Opera */
       &.sp {
-        height: 2rem;
+        height: 1.9rem;
       }
       .chart-wrap {
-        height: 2rem;
+        height: 1.9rem;
         // padding-bottom: 0.16rem;
       }
     }
