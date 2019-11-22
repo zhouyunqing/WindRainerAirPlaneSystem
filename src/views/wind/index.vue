@@ -15,7 +15,7 @@
       class="windheightcontroller">
       >
     </el-slider>
-     
+
 
     <div id="cesiumContainer"></div>
 
@@ -323,7 +323,7 @@
               </li>
             </ul>
           </div>
-          <el-slider 
+          <el-slider
             @input="changeTime"
             v-model="runwayTime"
             :step="100/24"
@@ -679,7 +679,7 @@ export default {
          this.wind3D.removeWindPrimitives()
          this.wind3D.colorImage=null
       }
-     
+
       let jsonPath =
         "http://161.189.11.216:8090/gis/BJPEK/ModelForecast?datacode=ABC&dataset=XLONG,XLAT,U,V&time=" +
         time +
@@ -856,8 +856,6 @@ export default {
             shadows: Cesium.ShadowMode.ENABLED
           }
         });
-
-
         this.viewer.entities.add({
           show: !this.isLegendChange,
           id: "wall3",
@@ -879,7 +877,6 @@ export default {
             minimumHeights: [100, 100]
           }
         });
-
         // this.viewer.entities.add({
         //     id:'SDJCoutline',
         //     name : 'SDJCoutline',
@@ -891,7 +888,6 @@ export default {
         //         outlineColor : Cesium.Color.RED
         //     }
         // });
-
         // this.viewer.entities.add({
         //     id:'SDJCoutline',
         //     name : 'SDJCoutline',
@@ -907,7 +903,6 @@ export default {
         //         outlineColor : Cesium.Color.RED.withAlpha(0.8),
         //     }
         // });
-
         this.drawPoint(" 18R ", 116.575473, 40.10303, 0);
         this.drawPoint("MID1", 116.577925, 40.088623, 0);
         this.drawPoint(" 36L ", 116.580113, 40.074035, 0);
@@ -990,7 +985,7 @@ export default {
           return strMap;
         }
       });
-      
+
     },
     changeHeightLevel(time,level) {
       let time2 = "2019-11-13%2000:00:00";
@@ -1133,7 +1128,6 @@ export default {
         let Echarts0 = this._initEcharts0();
         this.potail0(Echarts0);
       });
-
       info = {};
       params = {};
       params.datacode = "ZBAA";
@@ -1161,8 +1155,8 @@ export default {
         let EchartsZBAA36 = this._initEchartsZBAA36();
         this.potailZBAA36(EchartsZBAA36);
       });
-        
-      
+
+
       info = {};
       params = {};
       params.datacode = "ZBAA";
@@ -1226,7 +1220,7 @@ export default {
           this.$message.error(res.data.returnMessage);
         }
       });
-      
+
       //36小时数据
       info = {};
       params = {};
@@ -1250,9 +1244,6 @@ export default {
         }
         return this.wind36Info
       });
-
-
-
       info = {};
       params = {};
       params.datacode = "ZBAA";
@@ -1295,7 +1286,7 @@ export default {
           this.$message.error(res.data.returnMessage);
         }
       });
-      
+
     },
     /**
      * 画跑道
@@ -1360,7 +1351,7 @@ export default {
      * @param movement
      */
     pointHandler: function(movement) {
-      
+
       var pick = this.viewer.scene.pick(movement.endPosition);
       //      if (!pick) {
       if (this.entity && this.entity.id.label.scale != 1) {
@@ -1382,9 +1373,9 @@ export default {
       }
       //    return
       // }
-      
-      
-      
+
+
+
       if (pick && pick.id.type == "point") {
         let index = this.showHour - this.nowHour + 7; // 获取数据在数组中位值
         let wind = this.windInfo[pick.id.runway][
@@ -1396,7 +1387,7 @@ export default {
         let rain = this.rainInfo[pick.id.runway][
           pick.id.name.replace(/^\s*|\s*$/g, "")
         ];
-        
+
         let wind36 = this.wind36Info[pick.id.runway][
           pick.id.name.replace(/^\s*|\s*$/g, "")
         ];
@@ -1416,7 +1407,7 @@ export default {
           if (rain[this.infoType[i]] != undefined) {
             this.info[this.infoType[i]] = rain[this.infoType[i]][index];
           }
-          
+
           // if (wind36[this.infoType[i]] != undefined) {
           //   this.info[this.infoType[i]] = wind36[this.infoType[i]][index];
           // }
@@ -1445,10 +1436,10 @@ export default {
             hover.style.top = movement.endPosition.y + "px";
             hover.style.left = movement.endPosition.x + 50 + "px";
             this.isHoverShow = true;
-            
+
            let Echarts1 = this._initEcharts1();
            let Echarts36 = this._initEcharts36();
-            
+
            this.potail(Echarts1, pick.id.id, pick.id.runway);
            this.potail36(Echarts36, pick.id.id, pick.id.runway);
             this.stationname = pick.id.id;
@@ -1465,14 +1456,14 @@ export default {
           hover.style.top = movement.endPosition.y + "px";
           hover.style.left = movement.endPosition.x + 50 + "px";
           this.isHoverShow = true;
-          
+
           let Echarts1 = this._initEcharts1();
           let Echarts36 = this._initEcharts36();
-          
+
           this.potail(Echarts1, pick.id.id, pick.id.runway);
           this.potail36(Echarts36, pick.id.id, pick.id.runway);
           this.stationname = pick.id.id;
-          
+
         }
       }
     },
@@ -1606,7 +1597,6 @@ export default {
       }
       return existInstance;
     },
-
     _initEchartsZBAA36(){
       var existInstanceZBAA36 = this.$echarts.getInstanceByDom(
         document.getElementById("windZBAA36Echarts")
@@ -1621,7 +1611,6 @@ export default {
       }
       return existInstanceZBAA36;
     },
-
     _initEcharts36() {
       var existInstance36 = this.$echarts.getInstanceByDom(
         document.getElementById("wind36Echarts")
@@ -1636,7 +1625,7 @@ export default {
       }
       return existInstance36;
     },
-    
+
     windDen(wind) {
       if (wind > 0 && wind <= 30) {
         return "30";
@@ -1673,7 +1662,7 @@ export default {
         slpData: this.info.SLP,
         tData: this.info.T,
         rainData: this.info.RAIN,
-        temData: this.info.SPD      
+        temData: this.info.SPD
       };
       let colors = ['rgba(136, 136, 136, 1)','rgba(136, 136, 136, 1)'];
       let ZBAAoption = {
@@ -1685,9 +1674,9 @@ export default {
           axisPointer: { type: "cross" },
           formatter: function(params, ticket, callback) {
             let index = params[0].dataIndex;
-            let Htm =  `${(Data.times[index]).substring(0,16)}<br>                    
+            let Htm =  `${(Data.times[index]).substring(0,16)}<br>
                     风速:${parseFloat(Data.temData[index]).toFixed(1)}m/s&nbsp;&nbsp;
-                    风向:${parseInt(Data.windxData[index])}°`; 
+                    风向:${parseInt(Data.windxData[index])}°`;
             return Htm;
           }
         },
@@ -1848,7 +1837,7 @@ export default {
             offset: -0,
             nameLocation:"end",
             nameGap:-0,
-          
+
             axisTick: {lineStyle: { color: colors[0] }, inside: true},
             nameTextStyle: { color: colors[0] },
             axisLabel: { color: colors[0] },
@@ -1913,9 +1902,6 @@ export default {
       });
     },
 
-
-
-   
     potail(Echarts1, id, runway) {
       let Data = {
         times: this.times,
@@ -1927,7 +1913,6 @@ export default {
         rainData: this.rainInfo[runway][id].RAIN,
         temData: this.windInfo[runway][id].SPD,
 
-        
       };
       let colors = ['rgba(136, 136, 136, 1)','rgba(136, 136, 136, 1)'];
       let SLPoption = {
@@ -1942,7 +1927,7 @@ export default {
             let Htm =  `${(Data.times[index]).substring(0,16)}<br>
                     海平面气压:${parseInt(Data.slpData[index])}hPa<br/>
                     风速:${parseFloat(Data.temData[index]).toFixed(1)}m/s&nbsp;&nbsp;
-                    风向:${parseInt(Data.windxData[index])}°`; 
+                    风向:${parseInt(Data.windxData[index])}°`;
             return Htm;
           }
         },
@@ -2103,7 +2088,7 @@ export default {
             offset: 0,
             nameLocation:"end",
             nameGap:-0,
-          
+
             axisTick: {lineStyle: { color: colors[0] }, inside: true},
             nameTextStyle: { color: colors[0] },
             axisLabel: { color: colors[0] },
@@ -2157,10 +2142,6 @@ export default {
         Echarts1.resize();
       });
     },
-
-
-
-
 potailZBAA36(EchartsZBAA36, id, runway) {
       let Data = {
         times: this.times24,
@@ -2185,7 +2166,7 @@ potailZBAA36(EchartsZBAA36, id, runway) {
             let index = params[0].dataIndex;
             let Htm =  `${(Data.times[index]).substring(0,16)}<br>
                     风速:${parseFloat(Data.temData[index]).toFixed(1)}m/s&nbsp;&nbsp;
-                    风向:${parseInt(Data.windxData[index])}°`; 
+                    风向:${parseInt(Data.windxData[index])}°`;
             return Htm;
           }
         },
@@ -2345,7 +2326,7 @@ potailZBAA36(EchartsZBAA36, id, runway) {
             position: "left",
             offset: 0,
             nameLocation:"end",
-            nameGap:0,          
+            nameGap:0,
             axisTick: {lineStyle: { color: colors[0] }, inside: true},
             nameTextStyle: { color: colors[0] },
             axisLabel: { color: colors[0] },
@@ -2399,7 +2380,6 @@ potailZBAA36(EchartsZBAA36, id, runway) {
         EchartsZBAA36.resize();
       });
     },
-    
 
 potail36(Echarts36, id, runway) {
       let Data = {
@@ -2424,7 +2404,7 @@ potail36(Echarts36, id, runway) {
             let index = params[0].dataIndex;
             let Htm =  `${(Data.times[index]).substring(0,16)}<br>
                     风速:${parseFloat(Data.temData[index]).toFixed(1)}m/s&nbsp;&nbsp;
-                    风向:${parseInt(Data.windxData[index])}°`; 
+                    风向:${parseInt(Data.windxData[index])}°`;
             return Htm;
           }
         },
@@ -2584,7 +2564,7 @@ potail36(Echarts36, id, runway) {
             position: "left",
             offset: 0,
             nameLocation:"end",
-            nameGap:0,          
+            nameGap:0,
             axisTick: {lineStyle: { color: colors[0] }, inside: true},
             nameTextStyle: { color: colors[0] },
             axisLabel: { color: colors[0] },
@@ -2638,10 +2618,6 @@ potail36(Echarts36, id, runway) {
         Echarts36.resize();
       });
     },
-
-
-
-
     windToggle(windType) {
       if (windType == "section") {
         this.activeWind = "sectionwind";
@@ -2982,7 +2958,11 @@ potail36(Echarts36, id, runway) {
     }
   },
   mounted() {
+<<<<<<< HEAD
     this.getWinTime();
+=======
+
+>>>>>>> 3ce1b7e6dbf6ff86e4e970634db36b6cbab53a4f
     // this.$refs.height_dom.style =
     //   "margin-left:" + ((window.innerHeight / 100) * 12 * 3 + 360) + "px;";
     this.$el.querySelector("#planewind").classList.add("active");
@@ -3239,7 +3219,7 @@ potail36(Echarts36, id, runway) {
 #dateshow {
   width: 1rem;
   font-size: 0.16rem;
-  
+
 }
 #back {
   font-size:0.01rem;
@@ -3982,7 +3962,7 @@ potail36(Echarts36, id, runway) {
       z-index: 1002;
       top: 30%;
       [class*=" el-icon-"], [class^=el-icon-] {
-        color:white;        
+        color:white;
         font-size: 0.2rem;
         line-height: 0.54rem;
       }

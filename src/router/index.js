@@ -64,6 +64,17 @@ export const constantRoutes = [
   //   component: CesiumViewer
   // },
 
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/wind',
+  //   children: [{
+  //     path: 'wind',
+  //     name: 'wind',
+  //     component: () => import('@/views/wind/index'),
+  //     meta: { title: '风', icon: 'feng' }
+  //   }]
+  // },
   {
     path: '/',
     component: Layout,
@@ -71,7 +82,7 @@ export const constantRoutes = [
     children: [{
       path: 'wind',
       name: 'wind',
-      component: () => import('@/views/wind/index'),
+      component: () => import('@/views/wind/index2'),
       meta: { title: '风', icon: 'feng' }
     }]
   },
