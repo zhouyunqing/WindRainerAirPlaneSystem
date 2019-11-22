@@ -11,8 +11,8 @@
       :show-tooltip="true"
       :format-tooltip="showHeightLevelToolTip"
       vertical
-      class="windheightcontroller"
       @change="changeHeightLevel"
+      class="windheightcontroller"
     >
       >
     </el-slider>
@@ -21,10 +21,10 @@
 
     <!---->
     <div
-      v-if="activeWind=='planewind'"
-      v-show="isHoverShow"
       id="hover_info"
+      v-if="activeWind=='planewind'"
       class="station_hover_info"
+      v-show="isHoverShow"
     >
       <div class="station_hover_header">
         <div class="header_icon" />
@@ -78,17 +78,11 @@
         </div>
       </div>
 
-      <div id="menu1" :class="{move_in2:!isShow,move_out2:isShow}">
-        <li class="nearmenu">临近预报</li>
+      <div id="menu1" :class="{move_in2:!isShow,move_out2:isShow}" @click="changeMenu(0)">
+        <li class="nearmenu" :class="{sp: menuType == 0}">临近预报</li>
       </div>
-      <div id="menu11" :class="{move_in2:!isShow,move_out2:isShow}">
-        <li class="nearmenu">临近预报</li>
-      </div>
-      <div id="menu2" :class="{move_in2:!isShow,move_out2:isShow}">
-        <li class="nearmenu">短时预报</li>
-      </div>
-      <div id="menu22" :class="{move_in2:!isShow,move_out2:isShow}">
-        <li class="nearmenu">短时预报</li>
+      <div id="menu2" :class="{move_in2:!isShow,move_out2:isShow}" @click="changeMenu(36)">
+        <li class="nearmenu" :class="{sp: menuType == 36}">短时预报</li>
       </div>
 
       <div class>
@@ -107,20 +101,20 @@
           <hr id="rule">
 
           <div id="date">
-            <span id="dateshow">2019.11.04 星期一 12:00:00</span>
+            <span id="dateshow">2019.11.17 星期日 12:00:00</span>
           </div>
 
           <div id="airport">
             <img id="airporticon" src="../../../public/images/icon_jichang@2x.png">
-            <div id="airname" class="menunamelong">
+            <div id="airname" class="menunamelong sp">
               <a id="airportname">机场名称</a>
               <a id="airportBJ">北京首都机场</a>
             </div>
           </div>
 
-          <div id="windspeed">
+          <div id="windspeed" @click="changeChartTab('speed')">
             <img id="windspeedicon" src="../../../public/images/icon_fengsu@2x.png">
-            <div class="menunameshort">
+            <div class="menunameshort" :class="{sp: isTab == 'speed'}">
               <a id="windspeedname">地面风速</a>
               <a id="windspeedBJ">{{ parseFloat(info.SPD).toFixed(2) }}m/s</a>
             </div>
@@ -128,73 +122,83 @@
 
           <div id="winddirection">
             <img id="winddirectionicon" src="../../../public/images/icon_fengxiang@2x.png">
-            <div class="menunameshort">
+            <div class="menunameshort sp">
               <a id="winddirectionname">地面风向</a>
               <a id="winddirectionBJ">{{ parseInt(info.DIR) }}°</a>
             </div>
           </div>
 
-          <div id="airpressure">
+          <div id="airpressure" @click="changeChartTab('airpressure')">
             <img id="airpressureicon" src="../../../public/images/icon_qiya@2x.png">
-            <div class="menunamelong" @click="pressure()">
+            <div class="menunamelong" :class="{sp: isTab == 'airpressure'}" @click="pressure()">
               <a id="airpressurename">修正海平面气压</a>
-              <a id="airpressureBJ">{{ parseInt(info.SLP) }}hPa</a>
+              <a id="airpressureBJ">{{ parseInt(parseFloat(info.SLP)) }}hPa</a>
             </div>
           </div>
 
-          <div id="T">
+          <div id="T" @click="changeChartTab('t')">
             <img id="Ticon" src="../../../public/images/icon_wendu@2x.png">
-            <div class="menunameT">
+            <div class="menunameT" :class="{sp: isTab == 't'}">
               <a id="Tname">温度</a>
               <br>
-              <a id="TBJ">{{ parseInt(info.T - 272.15) }}℃</a>
+              <a id="TBJ">{{ parseFloat(parseFloat(info.T)-272.15).toFixed(0) }}℃</a>
             </div>
           </div>
 
-          <div id="rain">
+          <div id="rain" @click="changeChartTab('rain')">
             <img id="rainicon" src="../../../public/images/icon_jiangyu@2x.png">
-            <div class="menunamelong">
+            <div class="menunamelong" :class="{sp: isTab == 'rain'}">
               <a id="rainname">一小时降水量</a>
               <a id="rainBJ">{{ parseFloat(info.RAIN).toFixed(1) }}mm</a>
             </div>
           </div>
 
-          <div id="humidity">
+          <div id="humidity" @click="changeChartTab('humidity')">
             <img id="humidityicon" src="../../../public/images/icon_shidu@2x.png">
-            <div class="menunameshort">
+            <div class="menunameshort" :class="{sp: isTab == 'humidity'}">
               <a id="humidityname">相对湿度</a>
               <a id="humidityBJ">{{ parseInt(info.RH) }}%</a>
             </div>
           </div>
-          <div v-show="isShow" id="tag">
+          <div v-show="isShow" id="tag0" :class="{sp: menuType == 0 && !nearHoverTag}">
+            <div id="zbaaEcharts" style="width: 100%; height: 100%;" />
+          </div>
+          <div v-show="isShow" id="tag" :class="{sp: menuType == 0 && nearHoverTag}">
             <div id="windEcharts" style="width: 100%;height:100%;" />
           </div>
+          <div v-show="isShow" id="tagZBAA36" :class="{sp: menuType == 36 && !nearHoverTag}">
+            <div id="windZBAA36Echarts" style="width:100%;height:100%;" />
+          </div>
+          <div v-show="isShow" id="tag36" :class="{sp: menuType == 36 && nearHoverTag}">
+            <div id="wind36Echarts" style="width:100%;height:100%;" />
+          </div>
+
         </div>
       </div>
-      <rightCard card-title="机场跑道地面风速" normal="正常 0-5 m/s" light="轻度 5-17 m/s" serious="严重 ≧17 m/s" />
-      <!-- <div id="tone">
+
+      <div id="tone">
         <div id="tonenameback">
-          <a id="stringR"></a>
+          <a id="stringR" />
           <a id="pointgroundname">机场跑道地面风速</a>
         </div>
-        <hr id="ruletwo" />
+        <hr id="ruletwo">
         <div>
-          <a id="small"></a>
+          <a id="small" />
           <a id="smallname">正常 0-5 m/s</a>
-          <br />
-          <a id="centre"></a>
+          <br>
+          <a id="centre" />
           <a id="centrename">轻度 5-17 m/s</a>
-          <br />
-          <a id="big"></a>
+          <br>
+          <a id="big" />
           <a id="bigname">严重 ≧17 m/s</a>
-          <br />
+          <br>
         </div>
-      </div> -->
+      </div>
     </div>
 
     <article class="wind_header">
       <div class="wind_header_btn">
-        <el-button id="planewind" type="primary" @click="windToggle('plane')">平面风展示</el-button>
+        <el-button id="planewind" type="primary" @click="windToggle('plane') ">平面风展示</el-button>
         <el-button id="sectionwind" type="primary" @click="windToggle('section')">剖面风展示</el-button>
       </div>
       <div v-if="activeWind=='sectionwind' && sectionwindDetail" class="wind_header_icon">
@@ -234,10 +238,10 @@
             <div>0</div>
           </div>
         </div>
-        <el-scrollbar ref="myScrollbar" class="scroll_parent" :native="false" :noresize="false">
+        <el-scrollbar class="scroll_parent" ref="myScrollbar" :native="false" :noresize="false">
           <!-- <GeminiScrollbar ref="mycom" class="scroll_parent"> -->
           <div id="body">
-            <div v-show="isLegendChange" id="canvas" ref="canvas" class="canvas" />
+            <div id="canvas" v-show="isLegendChange" ref="canvas" class="canvas" />
           </div>
         </el-scrollbar>
         <!-- </GeminiScrollbar> -->
@@ -320,8 +324,8 @@
           <el-slider
             v-model="runwayTime"
             :step="100/24"
-            :format-tooltip="getTime"
             @input="changeTime"
+            :format-tooltip="getTime"
             @change="changeTimeToPic"
           />
         </div>
@@ -352,16 +356,14 @@ import windImgUrl10 from '../../assets/images/wind10.png'
 import windImgUrl11 from '../../assets/images/wind11.png'
 import windImgUrl12 from '../../assets/images/wind12.png'
 import ColorImage from '@/components/wind/ColorImage'
-
-import rightCard from './components/card.vue'
 // import config from "../../../vue.config.js"
 export default {
   name: 'CesiumContainer',
-  components: {
-    rightCard
-  },
   data() {
     return {
+      nearHoverTag: false,
+      menuType: 0,
+      isTab: 'speed',
       wind3D: null,
       colorImage: null,
       gradientWind: {
@@ -403,7 +405,7 @@ export default {
             maxParticles: 128 * 128,
             particleHeight: 100.0,
             fadeOpacity: 0.996,
-            dropRate: 0.003,
+            dropRate: 0.5,
             dropRateBump: 0.01,
             speedFactor: 4.0,
             lineWidth: 4.0
@@ -422,10 +424,16 @@ export default {
       sliderTime: new Date(new Date().toLocaleDateString()),
       runwayTime: 1,
       heightLevel: 0,
-      isShow: false,
+      isShow: true,
       isHoverShow: false, // 悬浮数据框显示控制
       windInfo: [], // 风数据,按高度获取
       otherInfo: [], // 其他数据,只有地面2米数据
+      rainInfo: [],
+      zbaaInfo: [],
+      zbaa36Info: [],
+      wind36Info: [],
+      other36Info: [],
+      rain36Info: [],
       nowHour: 12, // 当前时间
       showHour: 12, // 数据展示时间
       isLegendChange: true,
@@ -447,12 +455,13 @@ export default {
       infoTime: '', // 当前展示数据时间
       stationname: 'ZBAA',
       info: {
-        DIR: '0',
-        SPD: '0',
-        SLP: '0',
-        RAIN: '0',
-        RH: '0',
-        T: '0'
+        RAIN: '',
+        T: '',
+        SPD: '',
+        DIR: '',
+        PSFC: '',
+        SLP: '',
+        RH: ''
       },
       searchTime: '',
       sectionwindDetail: false
@@ -461,10 +470,8 @@ export default {
   mounted() {
     // this.$refs.height_dom.style =
     //   "margin-left:" + ((window.innerHeight / 100) * 12 * 3 + 360) + "px;";
-    console.log('GeminiScrollbar', this.$refs['myScrollbar'])
-    console.log(this.$refs['myScrollbar'].wrap)
     this.$el.querySelector('#planewind').classList.add('active')
-    const self = this
+    let self = this
     // request({
     //   url:
     //     "http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=2019-11-01%2000:00:00&resolution=1000M&runway=runway1",
@@ -498,8 +505,8 @@ export default {
           'http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8'
       })
     )
-    // 摄像机定位
-    const camera = this.viewer.camera
+    //摄像机定位
+    let camera = this.viewer.camera
     camera.setView({
       destination: Cesium.Cartesian3.fromDegrees(
         116.576534748692,
@@ -515,7 +522,7 @@ export default {
     this.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
       Cesium.ScreenSpaceEventType.LEFT_CLICK
     )
-    // 定位北京首都机场
+    //定位北京首都机场
     this.viewer.camera.flyTo({
       destination: Cesium.Cartesian3.fromDegrees(
         116.595534748692,
@@ -528,37 +535,88 @@ export default {
         roll: Cesium.Math.toRadians(0)
       }
     })
-    this.viewer._cesiumWidget._creditContainer.style.display = 'none'
+    this.viewer._cesiumWidget._creditContainer.style.display = 'none';
     Cesium.Ion.defaultAccessToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjY5ODg0MS1lZTMxLTRmMGMtOTRhYi00N2M2YjQ3ZDMzNjgiLCJpZCI6NDgwLCJpYXQiOjE1MjUyNTE1Nzh9.5Mi3ijReKCRQ_Shupv2w-wl2eJBRLOOW3Bmeq0IL5Y4'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjY5ODg0MS1lZTMxLTRmMGMtOTRhYi00N2M2YjQ3ZDMzNjgiLCJpZCI6NDgwLCJpYXQiOjE1MjUyNTE1Nzh9.5Mi3ijReKCRQ_Shupv2w-wl2eJBRLOOW3Bmeq0IL5Y4';
     const val = 2
-    // 加载风场
+    //加载风场
     if (val === 1) {
       this.loadNetCDF(this.urlNetCDF).then(data => {
         this.windData = data
       })
     } else if (val === 2) {
-      const time = '2019-11-13%2000:00:00'
+      const time = '2019-11-13%2000:00:00';
       const level = 0
       this.loadwind(time, level)
     }
   },
   methods: {
+    changeChartTab(type) {
+      // this.isTab = type
+    },
+    changeMenu(type) {
+      this.stationname = 'ZBAA'
+      const info = {}
+      let params = {}
+      params.datacode = 'ZBAA';
+      params.airport = 'ZBAA';
+      params.runway = 'runway1,runway2,runway3';
+      params.site = 'ZBAA';
+      params.resolution = '1000M';
+      params.dataset = 'RAIN,SLP,RH,T,PSFC,U,V,DIR,SPD';
+      params.hight = '1000m';
+      info.params = params
+      let url = 'http://161.189.11.216:8090/gis/BJPEK/RunwayPointForecastData';
+      info.url = url
+      if (type == 0) {
+        // 整场
+        params.starttime = '2019-11-17 06:00:00';
+        params.endtime = '2019-11-17 18:00:00';
+        this.$store.dispatch('station/getRankInfo', info).then(res => {
+          // 获取零米高度其他数据
+          if (res.data.returnCode == 0) {
+            this.zbaaInfo = res.data.data
+          } else {
+            this.$message.error(res.data.returnMessage)
+          }
+          this.info = this.zbaaInfo
+          return this.zbaaInfo
+        }).then(res => {
+          const Echarts0 = this._initEcharts0()
+          this.potail0(Echarts0)
+        })
+      } else {
+        params.starttime = '2019-11-17 06:00:00';
+        params.endtime = '2019-11-19 06:00:00';
+        this.$store.dispatch('station/getRankInfo', info).then(res => {
+          // 获取零米高度其他数据
+          if (res.data.returnCode == 0) {
+            this.zbaa36Info = res.data.data
+          } else {
+            this.$message.error(res.data.returnMessage)
+          }
+          this.info = this.zbaa36Info
+          return this.zbaa36Info
+        }).then(res => {
+          const EchartsZBAA36 = this._initEchartsZBAA36()
+          this.potailZBAA36(EchartsZBAA36)
+        })
+      }
+      this.nearHoverTag = false
+      this.menuType = type
+    },
     drawWindHeatLayer(data) { // 绘制风场热力图
       // if(this.overlayer != Overlayers.wind)
       //   return;
-
       // var that = this
       var points = []
       var max = 0
       var width = 1000
       var height = 1000
-
       var longdata = data.lon.array
       var latdata = data.lat.array
       var udata = data.U.array
       var vdata = data.V.array
-
       var minLat = data.lat.min
       var minLong = data.lon.min
       var maxLat = data.lat.max
@@ -588,7 +646,6 @@ export default {
       }
       // max = 4;
       var coordinate3 = [minLong, minLat, maxLong, maxLat]
-
       if (this.colorImage) {
         this.colorImage.redraw(this.viewer, coordinate3, max, points, this.gradientWind)
       } else {
@@ -609,62 +666,55 @@ export default {
         time +
         '&bbox=110,30,120,42&z=' +
         level +
-        '&resolution=1000M' // fileOptions.dataDirectory + "wind/wind_"+time+"_L"+level+".json";
+        '&resolution=1000M'; // fileOptions.dataDirectory + "wind/wind_"+time+"_L"+level+".json";
       Cesium.Resource.fetchJson({ url: jsonPath }).then(resData => {
         resData = resData.data
-        const data = {}
-
+        let data = {}
         data.dimensions = {}
-        data.dimensions.lon = 120 // dimensions['lon'].size;
-        data.dimensions.lat = 120 // dimensions['lat'].size;
-        data.dimensions.lev = 1 // dimensions['lev'].size;
-
+        data.dimensions.lon = 120 //dimensions['lon'].size;
+        data.dimensions.lat = 120 //dimensions['lat'].size;
+        data.dimensions.lev = 1 //dimensions['lev'].size;
         data.lon = {}
         data.lon.array = new Float32Array(resData.XLONG)
-        data.lon.min = Math.min.apply(null, data.lon.array) // Math.min(...data.lon.array);
-        data.lon.max = Math.max.apply(null, data.lon.array) // Math.max(...data.lon.array);
-
+        data.lon.min = Math.min.apply(null, data.lon.array) //Math.min(...data.lon.array);
+        data.lon.max = Math.max.apply(null, data.lon.array) //Math.max(...data.lon.array);
         data.lat = {}
         data.lat.array = new Float32Array(resData.XLAT)
-        data.lat.min = Math.min.apply(null, data.lat.array) // Math.min(...data.lat.array);
-        data.lat.max = Math.max.apply(null, data.lat.array) // Math.max(...data.lat.array);
-
+        data.lat.min = Math.min.apply(null, data.lat.array) //Math.min(...data.lat.array);
+        data.lat.max = Math.max.apply(null, data.lat.array) //Math.max(...data.lat.array);
         data.lev = {}
         data.lev.array = new Float32Array([1.0])
-        data.lev.min = Math.min.apply(null, data.lev.array) // Math.min(...data.lev.array);
-        data.lev.max = Math.max.apply(null, data.lev.array) // Math.max(...data.lev.array);
-
+        data.lev.min = Math.min.apply(null, data.lev.array) //Math.min(...data.lev.array);
+        data.lev.max = Math.max.apply(null, data.lev.array) //Math.max(...data.lev.array);
         data.U = {}
-        data.U.array = new Float32Array(resData.U) // new Float32Array(resData.U);
-        data.U.min = Math.min.apply(null, data.U.array) // Math.min(...data.U.array);
-        data.U.max = Math.max.apply(null, data.U.array) // Math.max(...data.U.array);
-
+        data.U.array = new Float32Array(resData.U) //new Float32Array(resData.U);
+        data.U.min = Math.min.apply(null, data.U.array) //Math.min(...data.U.array);
+        data.U.max = Math.max.apply(null, data.U.array) //Math.max(...data.U.array);
         data.V = {}
-        data.V.array = new Float32Array(resData.V) // new Float32Array(resData.V);
-        data.V.min = Math.min.apply(null, data.V.array) // Math.min(...data.V.array);
-        data.V.max = Math.max.apply(null, data.V.array) // Math.max(...data.V.array);
-
+        data.V.array = new Float32Array(resData.V) //new Float32Array(resData.V);
+        data.V.min = Math.min.apply(null, data.V.array) //Math.min(...data.V.array);
+        data.V.max = Math.max.apply(null, data.V.array) //Math.max(...data.V.array);
         this.windData = data
         this.windData.colorTable = loadColorTable()
-        const particlecount = 100
-        const particleSystemOptions = {
+        let particlecount = 100
+        let particleSystemOptions = {
           particlesTextureSize: particlecount,
           maxParticles: particlecount * particlecount,
-          particleHeight: 100.0,
+          particleHeight: 200.0,
           fadeOpacity: 0.92,
-          dropRate: 0.03,
+          dropRate: 0.5,
           dropRateBump: 0.01,
           speedFactor: 3.0,
           lineWidth: 4
         }
-        const windDataMap = this.windData
-        const particleSystemOptionsMap = particleSystemOptions
+        let windDataMap = this.windData
+        let particleSystemOptionsMap = particleSystemOptions
         this.wind3D = new Wind3D(
           this.viewer,
           windDataMap,
           particleSystemOptionsMap
         )
-        this.drawWindHeatLayer(windDataMap)
+       this.drawWindHeatLayer(windDataMap)
         this.viewer.entities.add({
           show: this.isLegendChange,
           id: 'runway1',
@@ -808,6 +858,32 @@ export default {
             minimumHeights: [100, 100]
           }
         })
+        // this.viewer.entities.add({
+        //     id:'SDJCoutline',
+        //     name : 'SDJCoutline',
+        //     position: Cesium.Cartesian3.fromDegrees( 116.600573,40.089862,0),
+        //     box : {
+        //         dimensions : new Cesium.Cartesian3(10000.0, 10000.0, 10000.0),
+        //         fill : Cesium.Color.RED.withAlpha(0.2),
+        //         outline : true,
+        //         outlineColor : Cesium.Color.RED
+        //     }
+        // });
+        // this.viewer.entities.add({
+        //     id:'SDJCoutline',
+        //     name : 'SDJCoutline',
+        //     polygon : {
+        //         hierarchy : Cesium.Cartesian3.fromDegreesArray([116.55550573,40.020862,
+        //                                                         116.645573, 40.020862,
+        //                                                         116.645573, 40.129862,
+        //                                                         116.55550573, 40.129862]),
+        //         extrudedHeight: 5000,
+        //         // material : Cesium.Color.RED.withAlpha(0.05),
+        //         fill : false,
+        //         outline : true,
+        //         outlineColor : Cesium.Color.RED.withAlpha(0.8),
+        //     }
+        // });
         this.drawPoint(' 18R ', 116.575473, 40.10303, 0)
         this.drawPoint('MID1', 116.577925, 40.088623, 0)
         this.drawPoint(' 36L ', 116.580113, 40.074035, 0)
@@ -825,6 +901,7 @@ export default {
          * 鼠标移动事件
          */
         handlerVideo.setInputAction(function(movement) {
+          // that.nearHoverTag = true
           that.pointHandler(movement)
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
         /**
@@ -854,22 +931,21 @@ export default {
           }
         })
         this.getStationInfo()
-        function loadColorTable() {
+       function loadColorTable() {
           const json = {
             ncolors: 1,
             colorTable: [1, 1, 1.0, 0.8]
           }
-          const colorNum = json['ncolors']
-          const colorTable = json['colorTable']
+          let colorNum = json['ncolors']
+          let colorTable = json['colorTable']
           // let colorsArray = new Float32Array(3 * colorNum)
           // for (let i = 0; i < colorNum; i++) {
           //   colorsArray[3 * i] = colorTable[3 * i]
           //   colorsArray[3 * i + 1] = colorTable[3 * i + 1]
           //   colorsArray[3 * i + 2] = colorTable[3 * i + 2]
           // }
-
-          const channel = 4
-          const colorsArray = new Float32Array(channel * colorNum)
+          let channel = 4
+          let colorsArray = new Float32Array(channel * colorNum)
           for (var i = 0; i < colorNum; i++) {
             for (var j = 0; j < channel; j++) {
               colorsArray[channel * i + j] = colorTable[channel * i + j]
@@ -882,7 +958,6 @@ export default {
           result.array = colorsArray
           return result
         }
-
         function objToStrMap(obj) {
           const strMap = new Map()
           for (const k of Object.keys(obj)) {
@@ -891,9 +966,10 @@ export default {
           return strMap
         }
       })
+
     },
     changeHeightLevel(time, level) {
-      const time2 = '2019-11-13%2000:00:00'
+      const time2 = '2019-11-13%2000:00:00';
       this.loadwind(time2, this.heightLevel)
     },
     showHeightLevelToolTip(value) {
@@ -938,13 +1014,13 @@ export default {
       if (type == 'left') {
         if (leftDistance - 30 < 0) {
           this.$refs['myScrollbar'].wrap.scrollLeft = 0
-        } else {
+        } else{
           this.$refs['myScrollbar'].wrap.scrollLeft = this.$refs['myScrollbar'].wrap.scrollLeft - 30
         }
-      } else {
-        if (leftDistance + 30 > this.$refs['myScrollbar'].wrap.scrollWidth) {
+      } else{
+        if (leftDistance + 30 >  this.$refs['myScrollbar'].wrap.scrollWidth) {
           this.$refs['myScrollbar'].wrap.scrollLeft = this.$refs['myScrollbar'].wrap.scrollWidth
-        } else {
+        }else {
           this.$refs['myScrollbar'].wrap.scrollLeft = this.$refs['myScrollbar'].wrap.scrollLeft + 30
         }
       }
@@ -958,10 +1034,10 @@ export default {
     },
     changeTimeToPic() {
       const self = this
-      this.$refs.canvas.innerHTML = ''
+      this.$refs.canvas.innerHTML = '';
       const timeArray = this.searchTime.split(' ')
-      const yearArray = timeArray[0].split('.')
-      const secondArray = timeArray[1].split(':')
+      let yearArray = timeArray[0].split('.')
+      let secondArray = timeArray[1].split(':')
       // let timestr =
       //   yearArray[0] +
       //   "-" +
@@ -973,8 +1049,8 @@ export default {
       //   ":" +
       //   secondArray[1] +
       //   ":00";
-      const timestr =
-        '2019-11-01%20' + secondArray[0] + ':' + secondArray[1] + ':00'
+      let timestr =
+        '2019-11-01%20' + secondArray[0] + ':' + secondArray[1] + ':00';
       console.log('timestr', timestr)
       request({
         url:
@@ -1004,41 +1080,97 @@ export default {
      * 获取站点数据
      */
     getStationInfo: function() {
+      // 整场
       let info = {}
       let params = {}
-      params.datacode = 'ZBAA'
-      params.airport = 'ZBAA'
-      params.runway = 'runway1,runway2,runway3'
-      params.dataset = 'U,V,DIR,SPD'
-      params.starttime = '2019-11-04 06:00:00'
-      params.endtime = '2019-11-04 18:00:00'
-      params.resolution = '1000M'
-      params.hight = '0010m'
-      const url = 'http://161.189.11.216:8090/gis/BJPEK/RunwaysForecast'
+      params.datacode = 'ZBAA';
+      params.airport = 'ZBAA';
+      params.runway = 'runway1,runway2,runway3';
+      params.starttime = '2019-11-17 06:00:00';
+      params.endtime = '2019-11-17 18:00:00';
+      params.site = 'ZBAA';
+      params.resolution = '1000M';
+      params.dataset = 'RAIN,SLP,RH,T,PSFC,U,V,DIR,SPD';
+      params.hight = '1000m';
+      info.params = params
+      let url = 'http://161.189.11.216:8090/gis/BJPEK/RunwayPointForecastData';
+      info.url = url
+      this.$store.dispatch('station/getRankInfo', info).then(res => {
+        // 获取零米高度其他数据
+        if (res.data.returnCode == 0) {
+          this.zbaaInfo = res.data.data
+        } else {
+          this.$message.error(res.data.returnMessage)
+        }
+        this.info = this.zbaaInfo
+        return this.zbaaInfo
+      }).then(res => {
+        const Echarts0 = this._initEcharts0()
+        this.potail0(Echarts0)
+      })
+      info = {}
+      params = {}
+      params.datacode = 'ZBAA';
+      params.airport = 'ZBAA';
+      params.runway = 'runway1,runway2,runway3';
+      params.starttime = '2019-11-17 06:00:00';
+      params.endtime = '2019-11-19 06:00:00';
+      params.site = 'ZBAA';
+      params.resolution = '1000M';
+      params.dataset = 'RAIN,SLP,RH,T,PSFC,U,V,DIR,SPD';
+      params.hight = '1000m';
+      info.params = params
+      url = 'http://161.189.11.216:8090/gis/BJPEK/RunwayPointForecastData';
+      info.url = url
+      this.$store.dispatch('station/getRankInfo', info).then(res => {
+        // 获取零米高度其他数据
+        if (res.data.returnCode == 0) {
+          this.zbaa36Info = res.data.data
+        } else {
+          this.$message.error(res.data.returnMessage)
+        }
+        this.info = this.zbaa36Info
+        return this.zbaa36Info
+      }).then(res => {
+        const EchartsZBAA36 = this._initEchartsZBAA36()
+        this.potailZBAA36(EchartsZBAA36)
+      })
+
+
+      info = {}
+      params = {}
+      params.datacode = 'ZBAA';
+      params.airport = 'ZBAA';
+      params.runway = 'runway1,runway2,runway3';
+      params.dataset = 'U,V,DIR,SPD';
+      params.starttime = '2019-11-17 06:00:00';
+      params.endtime = '2019-11-17 18:00:00';
+      params.resolution = '1000M';
+      params.hight = '0010m';
+      url = 'http://161.189.11.216:8090/gis/BJPEK/RunwaysForecast';
       info.url = url
       info.params = params
       this.$store.dispatch('station/getRankInfo', info).then(res => {
         // 按高度获取风数据
         if (res.data.returnCode == 0) {
           this.windInfo = res.data.runways
-          //            this.changeColor(0, 12, "18R", "MID1", "36L")
-          //            this.changeColor(1, 12, "18L", "MID2", "36R")
-          //            this.changeColor(2, 12, "19", "MID3", "01")
+          console.log(this.windInfo + '-------------------------')
         } else {
           this.$message.error(res.data.returnMessage)
         }
       })
       info = {}
       params = {}
-      params.datacode = 'ZBAA'
-      params.airport = 'ZBAA'
-      params.runway = 'runway1,runway2,runway3'
-      params.starttime = '2019-11-04 06:00:00'
-      params.endtime = '2019-11-04 18:00:00'
-      params.resolution = '1000M'
-      params.dataset = 'SLP,RH,T,PSFC'
-      params.hight = '0002m'
+      params.datacode = 'ZBAA';
+      params.airport = 'ZBAA';
+      params.runway = 'runway1,runway2,runway3';
+      params.starttime = '2019-11-17 06:00:00';
+      params.endtime = '2019-11-17 18:00:00';
+      params.resolution = '1000M';
+      params.dataset = 'SLP,RH,T,PSFC';
+      params.hight = '0002m';
       info.params = params
+      url = 'http://161.189.11.216:8090/gis/BJPEK/RunwaysForecast';
       info.url = url
       this.$store.dispatch('station/getRankInfo', info).then(res => {
         // 获取两米高度其他数据
@@ -1050,15 +1182,16 @@ export default {
       })
       info = {}
       params = {}
-      params.datacode = 'ZBAA'
-      params.airport = 'ZBAA'
-      params.runway = 'runway1,runway2,runway3'
-      params.starttime = '2019-11-09 06:00:00'
-      params.endtime = '2019-11-09 18:00:00'
-      params.resolution = '1000M'
-      params.dataset = 'RAIN'
-      params.hight = '0000m'
+      params.datacode = 'ZBAA';
+      params.airport = 'ZBAA';
+      params.runway = 'runway1,runway2,runway3';
+      params.starttime = '2019-11-09 06:00:00';
+      params.endtime = '2019-11-09 18:00:00';
+      params.resolution = '1000M';
+      params.dataset = 'RAIN';
+      params.hight = '0000m';
       info.params = params
+      url = 'http://161.189.11.216:8090/gis/BJPEK/RunwaysForecast';
       info.url = url
       this.$store.dispatch('station/getRankInfo', info).then(res => {
         // 获取零米高度其他数据
@@ -1068,38 +1201,43 @@ export default {
           this.$message.error(res.data.returnMessage)
         }
       })
-      // 36小时数据
+
+      //36小时数据
       info = {}
       params = {}
-      params.datacode = 'ZBAA'
-      params.airport = 'ZBAA'
-      params.runway = 'runway1,runway2,runway3'
-      params.dataset = 'U,V,DIR,SPD'
-      params.starttime = '2019-11-04 06:00:00'
-      params.endtime = '2019-11-06 06:00:00'
-      params.resolution = '1000M'
-      params.hight = '0010m'
+      params.datacode = 'ZBAA';
+      params.airport = 'ZBAA';
+      params.runway = 'runway1,runway2,runway3';
+      params.dataset = 'U,V,DIR,SPD';
+      params.starttime = '2019-11-17 06:00:00';
+      params.endtime = '2019-11-19 06:00:00';
+      params.resolution = '1000M';
+      params.hight = '0010m';
+      url = 'http://161.189.11.216:8090/gis/BJPEK/RunwaysForecast';
       info.url = url
       info.params = params
       this.$store.dispatch('station/getRankInfo', info).then(res => {
         // 按高度获取风数据
+        console.log('------>>>>>', res)
         if (res.data.returnCode == 0) {
           this.wind36Info = res.data.runways
         } else {
           this.$message.error(res.data.returnMessage)
         }
+        return this.wind36Info
       })
       info = {}
       params = {}
-      params.datacode = 'ZBAA'
-      params.airport = 'ZBAA'
-      params.runway = 'runway1,runway2,runway3'
-      params.starttime = '2019-11-04 06:00:00'
-      params.endtime = '2019-11-06 06:00:00'
-      params.resolution = '1000M'
-      params.dataset = 'SLP,RH,T,PSFC'
-      params.hight = '0002m'
+      params.datacode = 'ZBAA';
+      params.airport = 'ZBAA';
+      params.runway = 'runway1,runway2,runway3';
+      params.starttime = '2019-11-17 06:00:00';
+      params.endtime = '2019-11-17 06:00:00';
+      params.resolution = '1000M';
+      params.dataset = 'SLP,RH,T,PSFC';
+      params.hight = '0002m';
       info.params = params
+      url = 'http://161.189.11.216:8090/gis/BJPEK/RunwaysForecast';
       info.url = url
       this.$store.dispatch('station/getRankInfo', info).then(res => {
         // 获取两米高度其他数据
@@ -1111,15 +1249,16 @@ export default {
       })
       info = {}
       params = {}
-      params.datacode = 'ZBAA'
-      params.airport = 'ZBAA'
-      params.runway = 'runway1,runway2,runway3'
-      params.starttime = '2019-11-09 06:00:00'
-      params.endtime = '2019-11-11 06:00:00'
-      params.resolution = '1000M'
-      params.dataset = 'RAIN'
-      params.hight = '0000m'
+      params.datacode = 'ZBAA';
+      params.airport = 'ZBAA';
+      params.runway = 'runway1,runway2,runway3';
+      params.starttime = '2019-11-09 06:00:00';
+      params.endtime = '2019-11-11 06:00:00';
+      params.resolution = '1000M';
+      params.dataset = 'RAIN';
+      params.hight = '0000m';
       info.params = params
+      url = 'http://161.189.11.216:8090/gis/BJPEK/RunwaysForecast';
       info.url = url
       this.$store.dispatch('station/getRankInfo', info).then(res => {
         // 获取零米高度其他数据
@@ -1129,6 +1268,7 @@ export default {
           this.$message.error(res.data.returnMessage)
         }
       })
+
     },
     /**
      * 画跑道
@@ -1137,7 +1277,7 @@ export default {
      */
     drawRunWays: function(colors) {
       var point = [0, 0.25, 0.5, 0.75, 1]
-      var canvas = document.createElement('canvas') // 创建canvas标签
+      var canvas = document.createElement('canvas') //创建canvas标签
       var ctx = canvas.getContext('2d')
       var grd = ctx.createLinearGradient(0, 0, 300, 0)
       for (var i = 0; i < point.length; i++) {
@@ -1145,7 +1285,7 @@ export default {
       }
       ctx.shadowBlur = 10
       ctx.shadowOffsetX = 10
-      ctx.shadowColor = 'black'
+      ctx.shadowColor = 'black';
       ctx.rect(0, 0, 300, 150)
       ctx.fillStyle = grd
       ctx.fill()
@@ -1214,52 +1354,56 @@ export default {
       }
       //    return
       // }
+
       if (pick && pick.id.type == 'point') {
         const index = this.showHour - this.nowHour + 7 // 获取数据在数组中位值
-        const wind = this.windInfo[pick.id.runway][
+        let wind = this.windInfo[pick.id.runway][
           pick.id.name.replace(/^\s*|\s*$/g, '')
         ]
-        const other = this.otherInfo[pick.id.runway][
+        let other = this.otherInfo[pick.id.runway][
           pick.id.name.replace(/^\s*|\s*$/g, '')
         ]
-        const rain = this.rainInfo[pick.id.runway][
-          pick.id.name.replace(/^\s*|\s*$/g, '')
-        ]
-        const wind36 = this.wind36Info[pick.id.runway][
-          pick.id.name.replace(/^\s*|\s*$/g, '')
-        ]
-        const other36 = this.other36Info[pick.id.runway][
-          pick.id.name.replace(/^\s*|\s*$/g, '')
-        ]
-        const rain36 = this.rain36Info[pick.id.runway][
+        let rain = this.rainInfo[pick.id.runway][
           pick.id.name.replace(/^\s*|\s*$/g, '')
         ]
 
+        let wind36 = this.wind36Info[pick.id.runway][
+          pick.id.name.replace(/^\s*|\s*$/g, '')
+        ]
+        let other36 = this.other36Info[pick.id.runway][
+          pick.id.name.replace(/^\s*|\s*$/g, '')
+        ]
+        let rain36 = this.rain36Info[pick.id.runway][
+          pick.id.name.replace(/^\s*|\s*$/g, '')
+        ]
         for (let i = 0; i < this.infoType.length; i++) {
           if (wind[this.infoType[i]] != undefined) {
             this.info[this.infoType[i]] = wind[this.infoType[i]][index]
           }
           if (other[this.infoType[i]] != undefined) {
-            this.info[this.infoType[i]] = other[this.infoType[i]][index]
+            this.info[this.infoType[i]] = other[this.infoType[i]][1]
           }
+          // console.log(this.info, other[this.infoType[i]], other[this.infoType[i]].length)
           if (rain[this.infoType[i]] != undefined) {
             this.info[this.infoType[i]] = rain[this.infoType[i]][index]
           }
-          if (wind36[this.infoType[i]] != undefined) {
-            this.info[this.infoType[i]] = wind36[this.infoType[i]][index]
-          }
-          if (other36[this.infoType[i]] != undefined) {
-            this.info[this.infoType[i]] = other36[this.infoType[i]][index]
-          }
-          if (rain36[this.infoType[i]] != undefined) {
-            this.info[this.infoType[i]] = rain36[this.infoType[i]][index]
-          }
+
+          // if (wind36[this.infoType[i]] != undefined) {
+          //   this.info[this.infoType[i]] = wind36[this.infoType[i]][index];
+          // }
+          // if (other36[this.infoType[i]] != undefined) {
+          //   this.info[this.infoType[i]] = other36[this.infoType[i]][index];
+          // }
+          // if (rain36[this.infoType[i]] != undefined) {
+          //   this.info[this.infoType[i]] = rain36[this.infoType[i]][index];
+          // }
         }
-        this.infoTime = '2019-11-04 ' + this.showHour + ':00:00'
+        this.infoTime = '2019-11-17 ' + this.showHour + ':00:00';
         if (this.entity) {
           if (this.entity.id.name == pick.id.name) {
             return
           } else {
+            this.nearHoverTag = true
             this.entity = pick
             pick.id.label.scale = 1.5
             pick.id.label.fillColor = Cesium.Color.fromCssColorString(
@@ -1268,32 +1412,38 @@ export default {
             pick.id.label.backgroundColor = Cesium.Color.fromCssColorString(
               pick.id.textColor
             )
-            const hover = document.getElementById('hover_info')
-            hover.style.top = movement.endPosition.y + 'px'
-            hover.style.left = movement.endPosition.x + 50 + 'px'
+            let hover = document.getElementById('hover_info')
+            hover.style.top = movement.endPosition.y + 'px';
+            hover.style.left = movement.endPosition.x + 50 + 'px';
             this.isHoverShow = true
-            const Echarts1 = this._initEcharts1()
-            // let Echarts36 = this._initEcharts36();
-            this.potail(Echarts1, pick.id.id, pick.id.runway)
-            // this.potail36(Echarts36, pick.id.id, pick.id.runway);
+
+           let Echarts1 = this._initEcharts1()
+           let Echarts36 = this._initEcharts36()
+
+           this.potail(Echarts1, pick.id.id, pick.id.runway)
+           this.potail36(Echarts36, pick.id.id, pick.id.runway)
             this.stationname = pick.id.id
           }
         } else {
+          this.nearHoverTag = true
           this.entity = pick
           pick.id.label.scale = 1.5
           pick.id.label.fillColor = Cesium.Color.fromCssColorString('#ffffff')
           pick.id.label.backgroundColor = Cesium.Color.fromCssColorString(
             pick.id.textColor
           )
-          const hover = document.getElementById('hover_info')
-          hover.style.top = movement.endPosition.y + 'px'
-          hover.style.left = movement.endPosition.x + 50 + 'px'
+          let hover = document.getElementById('hover_info')
+          hover.style.top = movement.endPosition.y + 'px';
+          hover.style.left = movement.endPosition.x + 50 + 'px';
           this.isHoverShow = true
-          const Echarts1 = this._initEcharts1()
-          // let Echarts36 = this._initEcharts36();
+
+          let Echarts1 = this._initEcharts1()
+          let Echarts36 = this._initEcharts36()
+
           this.potail(Echarts1, pick.id.id, pick.id.runway)
-          // this.potail36(Echarts36, pick.id.id, pick.id.runway);
+          this.potail36(Echarts36, pick.id.id, pick.id.runway)
           this.stationname = pick.id.id
+
         }
       }
     },
@@ -1316,26 +1466,26 @@ export default {
      */
     formateDate: function(date) {
       var dateTime = null
-      var dateTime = date.getFullYear() + '-'
+      var dateTime = date.getFullYear() + '-';
       if (('' + (date.getUTCMonth() + 1)).length == 1) {
-        dateTime += '0' + (date.getUTCMonth() + 1) + '-'
+        dateTime += '0' + (date.getUTCMonth() + 1) + '-';
       } else {
-        dateTime += date.getUTCMonth() + 1 + '-'
+        dateTime += date.getUTCMonth() + 1 + '-';
       }
       if (('' + date.getUTCDate()).length == 1) {
-        dateTime += '0' + date.getUTCDate() + ' '
+        dateTime += '0' + date.getUTCDate() + ' ';
       } else {
-        dateTime += date.getUTCDate() + ' '
+        dateTime += date.getUTCDate() + ' ';
       }
       if (('' + date.getUTCHours()).length == 1) {
-        dateTime += '0' + date.getUTCHours() + ':'
+        dateTime += '0' + date.getUTCHours() + ':';
       } else {
-        dateTime += date.getUTCHours() + ':'
+        dateTime += date.getUTCHours() + ':';
       }
       if (('' + date.getUTCMinutes()).length == 1) {
-        dateTime += '0' + date.getUTCMinutes() + ':'
+        dateTime += '0' + date.getUTCMinutes() + ':';
       } else {
-        dateTime += date.getUTCMinutes() + ':'
+        dateTime += date.getUTCMinutes() + ':';
       }
       if (('' + date.getUTCSeconds()).length == 1) {
         dateTime += '0' + date.getUTCSeconds()
@@ -1354,9 +1504,9 @@ export default {
      */
     changeColor: function(index, hour, stat1, stat2, stat3) {
       var r = this.viewer.entities.getById(this.runLists[index]) // 获取跑道
-      const runInfoList = this.windInfo[index]
-      if (runInfoList) {
-        r.polyline.material = new Cesium.ImageMaterialProperty({
+      let runInfoList = this.windInfo[index]
+      if (runInfoList)
+        {r.polyline.material = new Cesium.ImageMaterialProperty({
           image: this.drawRunWays([
             this.getColor(12, stat1, runInfoList),
             this.getColor(12, stat1, runInfoList),
@@ -1364,8 +1514,7 @@ export default {
             this.getColor(12, stat3, runInfoList),
             this.getColor(12, stat3, runInfoList)
           ])
-        })
-      }
+        });}
     },
     /**
      *
@@ -1378,8 +1527,8 @@ export default {
       if (value == null || value == undefined) {
         value = 0
       }
-      let color = ''
-      let textColor = ''
+      let color = '';
+      let textColor = '';
       if (value >= 0 && value <= 5) {
         color = this.windColor[0]
         textColor = this.labelColor[0]
@@ -1391,14 +1540,28 @@ export default {
         textColor = this.labelColor[2]
       }
       var s = this.viewer.entities.getById(stat) // 获取站点
-      s.label.fillColor = Cesium.Color.fromCssColorString(color) // 字体颜色
+      s.label.fillColor = Cesium.Color.fromCssColorString(color) //字体颜色
       s.backColor = textColor
       s.textColor = color
-      s.label.backgroundColor = Cesium.Color.fromCssColorString(textColor) // 背景颜色
+      s.label.backgroundColor = Cesium.Color.fromCssColorString(textColor) //背景颜色
       return color
     },
     closename() {
-      this.isShow = this.isShow == false
+      this.isShow = this.isShow == false;
+    },
+    _initEcharts0() {
+      var existInstance0 = this.$echarts.getInstanceByDom(
+        document.getElementById('zbaaEcharts')
+      )
+      if (existInstance0 == undefined) {
+        var Echart0 = this.$echarts.init(
+          document.getElementById('zbaaEcharts'),
+          '',
+          {}
+        )
+        return Echart0
+      }
+      return existInstance0
     },
     _initEcharts1() {
       var existInstance = this.$echarts.getInstanceByDom(
@@ -1414,50 +1577,78 @@ export default {
       }
       return existInstance
     },
+    _initEchartsZBAA36() {
+      var existInstanceZBAA36 = this.$echarts.getInstanceByDom(
+        document.getElementById('windZBAA36Echarts')
+      )
+      if (existInstanceZBAA36 == undefined) {
+        var EchartZBAA36 = this.$echarts.init(
+          document.getElementById('windZBAA36Echarts'),
+          '',
+          {}
+        )
+        return EchartZBAA36
+      }
+      return existInstanceZBAA36
+    },
+    _initEcharts36() {
+      var existInstance36 = this.$echarts.getInstanceByDom(
+        document.getElementById('wind36Echarts')
+      )
+      if (existInstance36 == undefined) {
+        var Echart36 = this.$echarts.init(
+          document.getElementById('wind36Echarts'),
+          '',
+          {}
+        )
+        return Echart36
+      }
+      return existInstance36
+    },
 
     windDen(wind) {
       if (wind > 0 && wind <= 30) {
-        return '30'
+        return '30';
       } else if (wind > 30 && wind <= 60) {
-        return '60'
+        return '60';
       } else if (wind > 60 && wind <= 90) {
-        return '90'
+        return '90';
       } else if (wind > 90 && wind <= 120) {
-        return '120'
+        return '120';
       } else if (wind > 120 && wind <= 150) {
-        return '150'
+        return '150';
       } else if (wind > 150 && wind <= 180) {
-        return '180'
+        return '180';
       } else if (wind > 180 && wind <= 210) {
-        return '210'
+        return '210';
       } else if (wind > 210 && wind <= 240) {
-        return '240'
+        return '240';
       } else if (wind > 240 && wind <= 270) {
-        return '270'
+        return '270';
       } else if (wind > 270 && wind <= 300) {
-        return '300'
+        return '300';
       } else if (wind > 300 && wind <= 330) {
-        return '330'
+        return '330';
       } else if (wind > 330 && wind <= 360) {
-        return '360'
+        return '360';
       }
     },
-    potail(Echarts1, id, runway) {
+    potail0(Echarts0) {
       const Data = {
         times: [
-          '2019-11-04 06:00:00',
-          '2019-11-04 07:00:00',
-          '2019-11-04 08:00:00',
-          '2019-11-04 09:00:00',
-          '2019-11-04 10:00:00',
-          '2019-11-04 11:00:00',
-          '2019-11-04 12:00:00',
-          '2019-11-04 13:00:00',
-          '2019-11-04 14:00:00',
-          '2019-11-04 15:00:00',
-          '2019-11-04 16:00:00',
-          '2019-11-04 17:00:00',
-          '2019-11-04 18:00:00'
+          '2019-11-17 06:00:00',
+          '2019-11-17 07:00:00',
+          '2019-11-17 08:00:00',
+          '2019-11-17 09:00:00',
+          '2019-11-17 10:00:00',
+          '2019-11-17 11:00:00',
+          '2019-11-17 12:00:00',
+          '2019-11-17 13:00:00',
+          '2019-11-17 14:00:00',
+          '2019-11-17 15:00:00',
+          '2019-11-17 16:00:00',
+          '2019-11-17 17:00:00',
+          '2019-11-17 18:00:00'
         ],
         timeData: [
           '-6h',
@@ -1474,18 +1665,15 @@ export default {
           '+5h',
           '+6h'
         ],
-        windxData: this.windInfo[runway][id].DIR,
-        rhData: this.otherInfo[runway][id].RH,
-        slpData: this.otherInfo[runway][id].SLP,
-        tData: this.otherInfo[runway][id].T,
-        rainData: this.rainInfo[runway][id].RAIN,
-        // windsData: ["2.8/2", "1.4/1", "2.7/2", "3/2", "2.2/2", "1.4/1", "1.5/1", "1.9/2", "1.4/1", "1.8/2", "2/2", "3.4/3", "3/2"],
-        temData: this.windInfo[runway][id].SPD
-        // rainData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        // humData: [59, 67, 70, 74, 77, 77, 65, 63, 60, 47, 40, 36, 38],
+        windxData: this.info.DIR,
+        rhData: this.info.RH,
+        slpData: this.info.SLP,
+        tData: this.info.T,
+        rainData: this.info.RAIN,
+        temData: this.info.SPD
       }
-      const colors = ['#FF6863', '#6EAB40']
-      const SLPoption = {
+      let colors = ['#FF6863', '#6EAB40']
+      let ZBAAoption = {
         color: colors,
         backgroundColor: 'transparent',
         color: 'rgba(136,136,136,1)',
@@ -1494,8 +1682,7 @@ export default {
           axisPointer: { type: 'cross' },
           formatter: function(params, ticket, callback) {
             const index = params[0].dataIndex
-            const Htm = `${(Data.times[index]).substring(0, 16)}<br>
-                    海平面气压:${parseInt(Data.slpData[index])}hPa<br/>
+            let Htm = `${(Data.times[index]).substring(0, 16)}<br>
                     风速:${parseFloat(Data.temData[index]).toFixed(1)}m/s&nbsp;&nbsp;
                     风向:${parseInt(Data.windxData[index])}°`
             return Htm
@@ -1517,7 +1704,6 @@ export default {
             axisTick: { show: false },
             data: Data.timeData
           },
-
           {
             name: '风向',
             type: 'category',
@@ -1535,7 +1721,7 @@ export default {
               },
               interval: 0,
               formatter: value => {
-                return '{' + this.windDen(value) + '| }'
+                return '{' + this.windDen(value) + '| }';
               },
               rich: {
                 value: {
@@ -1658,24 +1844,12 @@ export default {
             position: 'left',
             offset: -20,
             nameLocation: 'end',
-            nameGap: -15,
+            nameGap: -0,
 
             axisTick: { lineStyle: { color: colors[0] }, inside: true },
             nameTextStyle: { color: colors[0] },
             axisLabel: { color: colors[0] },
             splitLine: { show: false }
-          },
-          {
-            type: 'value',
-            name: '海平面气压  hPa',
-            scale: true,
-            position: 'right',
-            offset: -20,
-            axisTick: { lineStyle: { color: colors[1] }, inside: true },
-            nameTextStyle: { color: colors[1], align: '' },
-            axisLabel: { color: colors[1] },
-            splitLine: { show: false },
-            data: Data.slpData
           }
         ],
         series: [
@@ -1689,16 +1863,247 @@ export default {
             // itemStyle: { opacity: 0  },
             smooth: true,
             data: Data.temData
+          }
+        ]
+      }
+      Echarts0.setOption(ZBAAoption)
+      window.addEventListener('resize', function(event) {
+        Echarts0.resize()
+      })
+    },
+
+    potail(Echarts1, id, runway) {
+      const Data = {
+        times: [
+          '2019-11-17 06:00:00',
+          '2019-11-17 07:00:00',
+          '2019-11-17 08:00:00',
+          '2019-11-17 09:00:00',
+          '2019-11-17 10:00:00',
+          '2019-11-17 11:00:00',
+          '2019-11-17 12:00:00',
+          '2019-11-17 13:00:00',
+          '2019-11-17 14:00:00',
+          '2019-11-17 15:00:00',
+          '2019-11-17 16:00:00',
+          '2019-11-17 17:00:00',
+          '2019-11-17 18:00:00'
+        ],
+        timeData: [
+          '-6h',
+          '-5h',
+          '-4h',
+          '-3h',
+          '-2h',
+          '-1h',
+          '当前',
+          '+1h',
+          '+2h',
+          '+3h',
+          '+4h',
+          '+5h',
+          '+6h'
+        ],
+        windxData: this.windInfo[runway][id].DIR,
+        rhData: this.otherInfo[runway][id].RH,
+        slpData: this.otherInfo[runway][id].SLP,
+        tData: this.otherInfo[runway][id].T,
+        rainData: this.rainInfo[runway][id].RAIN,
+        temData: this.windInfo[runway][id].SPD
+
+      }
+      let colors = ['#FF6863', '#6EAB40']
+      let SLPoption = {
+        color: colors,
+        backgroundColor: 'transparent',
+        color: 'rgba(136,136,136,1)',
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'cross' },
+          formatter: function(params, ticket, callback) {
+            const index = params[0].dataIndex
+            let Htm = `${(Data.times[index]).substring(0, 16)}<br>
+                    海平面气压:${parseInt(Data.slpData[index])}hPa<br/>
+                    风速:${parseFloat(Data.temData[index]).toFixed(1)}m/s&nbsp;&nbsp;
+                    风向:${parseInt(Data.windxData[index])}°`
+            return Htm
+          }
+        },
+        grid: {
+          top: 30,
+          left: '5%',
+          right: '5%'
+        },
+        xAxis: [
+          {
+            name: ' ',
+            type: 'category',
+            position: 'bottom',
+            offset: 0,
+            nameTextStyle: { color: '#BBBBBB' },
+            axisLabel: { color: '#BBBBBB' },
+            axisTick: { show: false },
+            data: Data.timeData
           },
           {
-            name: '海平面气压',
+            name: '风向',
+            type: 'category',
+            position: 'bottom',
+            offset: 20,
+            nameGap: 35,
+            axisTick: { show: false },
+            axisLine: { show: false },
+            axisLabel: {
+              show: true,
+              textStyle: {
+                color: 'rgba(136, 136, 136, 1)',
+                fontSize: 14,
+                lineHeight: 20
+              },
+              interval: 0,
+              formatter: value => {
+                return '{' + this.windDen(value) + '| }';
+              },
+              rich: {
+                value: {
+                  lineHeight: 16,
+                  align: 'left'
+                },
+                30: {
+                  height: 16,
+                  width: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl1
+                  }
+                },
+                60: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl2
+                  }
+                },
+                90: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl3
+                  }
+                },
+                120: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl4
+                  }
+                },
+                150: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl5
+                  }
+                },
+                180: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl6
+                  }
+                },
+                210: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl7
+                  }
+                },
+                240: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl8
+                  }
+                },
+                270: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl9
+                  }
+                },
+                300: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl10
+                  }
+                },
+                330: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl11
+                  }
+                },
+                360: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl12
+                  }
+                }
+              }
+            },
+            nameTextStyle: {
+              color: 'rgba(136, 136, 136, 1)',
+              padding: [0, 0, -38]
+            },
+            nameLocation: 'start',
+            data: Data.windxData
+          },
+          {
+            type: 'category',
+            axisLine: { show: false }
+          },
+          {
+            type: 'category',
+            position: 'bottom',
+            offset: 0,
+            nameTextStyle: { color: '#BBBBBB' },
+            axisLabel: { color: '#BBBBBB' },
+            axisTick: { show: false },
+            data: Data.timeData
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: '风速 m/s                                ',
+            scale: true,
+            position: 'left',
+            offset: -20,
+            nameLocation: 'end',
+            nameGap: -0,
+
+            axisTick: { lineStyle: { color: colors[0] }, inside: true },
+            nameTextStyle: { color: colors[0] },
+            axisLabel: { color: colors[0] },
+            splitLine: { show: false }
+          }
+        ],
+        series: [
+          {
+            name: '风速',
             type: 'line',
             step: false,
-            yAxisIndex: 1,
-            color: colors[1],
-            // label: { normal: { show: true, position: 'top' } },
+            color: colors[0],
+            // label: { normal: { show: false, position: "top" } },
+            // lineStyle: { color: "#fff" },
+            // itemStyle: { opacity: 0  },
             smooth: true,
-            data: Data.slpData
+            data: Data.temData
           }
         ]
       }
@@ -1707,9 +2112,628 @@ export default {
         Echarts1.resize()
       })
     },
+    potailZBAA36(EchartsZBAA36, id, runway) {
+      const Data = {
+        times: [
+          '2019-11-15 00:00:00',
+          '2019-11-15 01:00:00',
+          '2019-11-15 02:00:00',
+          '2019-11-15 03:00:00',
+          '2019-11-15 04:00:00',
+          '2019-11-15 05:00:00',
+          '2019-11-15 06:00:00',
+          '2019-11-15 07:00:00',
+          '2019-11-15 08:00:00',
+          '2019-11-15 09:00:00',
+          '2019-11-15 10:00:00',
+          '2019-11-15 11:00:00',
+          '2019-11-15 12:00:00',
+          '2019-11-15 13:00:00',
+          '2019-11-15 14:00:00',
+          '2019-11-15 15:00:00',
+          '2019-11-15 16:00:00',
+          '2019-11-15 17:00:00',
+          '2019-11-15 18:00:00',
+          '2019-11-15 19:00:00',
+          '2019-11-15 20:00:00',
+          '2019-11-15 21:00:00',
+          '2019-11-15 22:00:00',
+          '2019-11-15 23:00:00',
+          '2019-11-16 00:00:00',
+          '2019-11-16 01:00:00',
+          '2019-11-16 02:00:00',
+          '2019-11-16 03:00:00',
+          '2019-11-16 04:00:00',
+          '2019-11-16 05:00:00',
+          '2019-11-16 06:00:00',
+          '2019-11-16 07:00:00',
+          '2019-11-16 08:00:00',
+          '2019-11-16 09:00:00',
+          '2019-11-16 10:00:00',
+          '2019-11-16 11:00:00',
+          '2019-11-16 12:00:00',
+          '2019-11-16 13:00:00',
+          '2019-11-16 14:00:00',
+          '2019-11-16 15:00:00',
+          '2019-11-16 16:00:00',
+          '2019-11-16 17:00:00',
+          '2019-11-16 18:00:00',
+          '2019-11-16 19:00:00',
+          '2019-11-16 20:00:00',
+          '2019-11-16 21:00:00',
+          '2019-11-16 22:00:00',
+          '2019-11-16 23:00:00',
+          '2019-11-17 00:00:00'
+        ],
+        timeZBAA36Data: [
+          '-12h',
+          '-11h',
+          '-10h',
+          '-9h',
+          '-8h',
+          '-7h',
+          '-6h',
+          '-5h',
+          '-4h',
+          '-3h',
+          '-2h',
+          '-1h',
+          '当前',
+          '+1h',
+          '+2h',
+          '+3h',
+          '+3h',
+          '+4h',
+          '+5h',
+          '+6h',
+          '+7h',
+          '+8h',
+          '+9h',
+          '+10h',
+          '+11h',
+          '+12h',
+          '+13h',
+          '+14h',
+          '+15h',
+          '+16h',
+          '+17h',
+          '+18h',
+          '+19h',
+          '+20h',
+          '+21h',
+          '+22h',
+          '+23h',
+          '+24h',
+          '+25h',
+          '+26h',
+          '+27h',
+          '+28h',
+          '+29h',
+          '+30h',
+          '+31h',
+          '+32h',
+          '+33h',
+          '+34h',
+          '+35h'
+        ],
+        windxData: this.zbaa36Info.DIR,
+        rhData: this.zbaa36Info.RH,
+        slpData: this.zbaa36Info.SLP,
+        tData: this.zbaa36Info.T,
+        rainData: this.zbaa36Info.RAIN,
+        temData: this.zbaa36Info.SPD
+      }
+      let colors = ['#FF6863', '#6EAB40']
+      let ZBAASToption = {
+        color: colors,
+        backgroundColor: 'transparent',
+        color: 'rgba(136,136,136,1)',
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'cross' },
+          formatter: function(params, ticket, callback) {
+            const index = params[0].dataIndex
+            let Htm = `${(Data.times[index]).substring(0, 16)}<br>
+                    风速:${parseFloat(Data.temData[index]).toFixed(1)}m/s&nbsp;&nbsp;
+                    风向:${parseInt(Data.windxData[index])}°`
+            return Htm
+          }
+        },
+        grid: {
+          top: 30,
+          left: '5%',
+          right: '5%'
+        },
+        xAxis: [
+          {
+            name: ' ',
+            type: 'category',
+            position: 'bottom',
+            offset: 0,
+            nameTextStyle: { color: '#BBBBBB' },
+            axisLabel: { color: '#BBBBBB' },
+            axisTick: { show: false },
+            data: Data.timeZBAA36Data
+          },
+          {
+            name: '风向',
+            type: 'category',
+            position: 'bottom',
+            offset: 20,
+            nameGap: 35,
+            axisTick: { show: false },
+            axisLine: { show: false },
+            axisLabel: {
+              show: true,
+              textStyle: {
+                color: 'rgba(136, 136, 136, 1)',
+                fontSize: 14,
+                lineHeight: 20
+              },
+              interval: 0,
+              formatter: value => {
+                return '{' + this.windDen(value) + '| }';
+              },
+              rich: {
+                value: {
+                  lineHeight: 16,
+                  align: 'left'
+                },
+                30: {
+                  height: 16,
+                  width: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl1
+                  }
+                },
+                60: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl2
+                  }
+                },
+                90: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl3
+                  }
+                },
+                120: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl4
+                  }
+                },
+                150: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl5
+                  }
+                },
+                180: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl6
+                  }
+                },
+                210: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl7
+                  }
+                },
+                240: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl8
+                  }
+                },
+                270: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl9
+                  }
+                },
+                300: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl10
+                  }
+                },
+                330: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl11
+                  }
+                },
+                360: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl12
+                  }
+                }
+              }
+            },
+            nameTextStyle: {
+              color: 'rgba(136, 136, 136, 1)',
+              padding: [0, 0, -38]
+            },
+            nameLocation: 'start',
+            data: Data.windxData
+          },
+          {
+            type: 'category',
+            axisLine: { show: false }
+          },
+          {
+            type: 'category',
+            position: 'bottom',
+            offset: 0,
+            nameTextStyle: { color: '#BBBBBB' },
+            axisLabel: { color: '#BBBBBB' },
+            axisTick: { show: false },
+            data: Data.timeZBAA36Data
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: '风速        m/s         ',
+            scale: true,
+            position: 'left',
+            offset: 0,
+            nameLocation: 'end',
+            nameGap: 0,
+            axisTick: { lineStyle: { color: colors[0] }, inside: true },
+            nameTextStyle: { color: colors[0] },
+            axisLabel: { color: colors[0] },
+            splitLine: { show: false }
+          }
+        ],
+        series: [
+          {
+            name: '风速',
+            type: 'line',
+            step: false,
+            color: colors[0],
+            // label: { normal: { show: false, position: "top" } },
+            // lineStyle: { color: "#fff" },
+            // itemStyle: { opacity: 0  },
+            smooth: true,
+            data: Data.temData
+          }
+        ]
+      }
+      EchartsZBAA36.setOption(ZBAASToption)
+      window.addEventListener('resize', function(event) {
+        EchartsZBAA36.resize()
+      })
+    },
+
+    potail36(Echarts36, id, runway) {
+      const Data = {
+        times: [
+          '2019-11-15 00:00:00',
+          '2019-11-15 01:00:00',
+          '2019-11-15 02:00:00',
+          '2019-11-15 03:00:00',
+          '2019-11-15 04:00:00',
+          '2019-11-15 05:00:00',
+          '2019-11-15 06:00:00',
+          '2019-11-15 07:00:00',
+          '2019-11-15 08:00:00',
+          '2019-11-15 09:00:00',
+          '2019-11-15 10:00:00',
+          '2019-11-15 11:00:00',
+          '2019-11-15 12:00:00',
+          '2019-11-15 13:00:00',
+          '2019-11-15 14:00:00',
+          '2019-11-15 15:00:00',
+          '2019-11-15 16:00:00',
+          '2019-11-15 17:00:00',
+          '2019-11-15 18:00:00',
+          '2019-11-15 19:00:00',
+          '2019-11-15 20:00:00',
+          '2019-11-15 21:00:00',
+          '2019-11-15 22:00:00',
+          '2019-11-15 23:00:00',
+          '2019-11-16 00:00:00',
+          '2019-11-16 01:00:00',
+          '2019-11-16 02:00:00',
+          '2019-11-16 03:00:00',
+          '2019-11-16 04:00:00',
+          '2019-11-16 05:00:00',
+          '2019-11-16 06:00:00',
+          '2019-11-16 07:00:00',
+          '2019-11-16 08:00:00',
+          '2019-11-16 09:00:00',
+          '2019-11-16 10:00:00',
+          '2019-11-16 11:00:00',
+          '2019-11-16 12:00:00',
+          '2019-11-16 13:00:00',
+          '2019-11-16 14:00:00',
+          '2019-11-16 15:00:00',
+          '2019-11-16 16:00:00',
+          '2019-11-16 17:00:00',
+          '2019-11-16 18:00:00',
+          '2019-11-16 19:00:00',
+          '2019-11-16 20:00:00',
+          '2019-11-16 21:00:00',
+          '2019-11-16 22:00:00',
+          '2019-11-16 23:00:00',
+          '2019-11-17 00:00:00'
+        ],
+        time36Data: [
+          '-12h',
+          '-11h',
+          '-10h',
+          '-9h',
+          '-8h',
+          '-7h',
+          '-6h',
+          '-5h',
+          '-4h',
+          '-3h',
+          '-2h',
+          '-1h',
+          '当前',
+          '+1h',
+          '+2h',
+          '+3h',
+          '+3h',
+          '+4h',
+          '+5h',
+          '+6h',
+          '+7h',
+          '+8h',
+          '+9h',
+          '+10h',
+          '+11h',
+          '+12h',
+          '+13h',
+          '+14h',
+          '+15h',
+          '+16h',
+          '+17h',
+          '+18h',
+          '+19h',
+          '+20h',
+          '+21h',
+          '+22h',
+          '+23h',
+          '+24h',
+          '+25h',
+          '+26h',
+          '+27h',
+          '+28h',
+          '+29h',
+          '+30h',
+          '+31h',
+          '+32h',
+          '+33h',
+          '+34h',
+          '+35h'
+        ],
+        windxData: this.wind36Info[runway][id].DIR,
+        rhData: this.other36Info[runway][id].RH,
+        slpData: this.other36Info[runway][id].SLP,
+        tData: this.other36Info[runway][id].T,
+        rainData: this.rain36Info[runway][id].RAIN,
+        temData: this.wind36Info[runway][id].SPD
+      }
+      let colors = ['#FF6863', '#6EAB40']
+      let SToption = {
+        color: colors,
+        backgroundColor: 'transparent',
+        color: 'rgba(136,136,136,1)',
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'cross' },
+          formatter: function(params, ticket, callback) {
+            const index = params[0].dataIndex
+            let Htm = `${(Data.times[index]).substring(0, 16)}<br>
+                    风速:${parseFloat(Data.temData[index]).toFixed(1)}m/s&nbsp;&nbsp;
+                    风向:${parseInt(Data.windxData[index])}°`
+            return Htm
+          }
+        },
+        grid: {
+          top: 30,
+          left: '5%',
+          right: '5%'
+        },
+        xAxis: [
+          {
+            name: ' ',
+            type: 'category',
+            position: 'bottom',
+            offset: 0,
+            nameTextStyle: { color: '#BBBBBB' },
+            axisLabel: { color: '#BBBBBB' },
+            axisTick: { show: false },
+            data: Data.time36Data
+          },
+          {
+            name: '风向',
+            type: 'category',
+            position: 'bottom',
+            offset: 20,
+            nameGap: 35,
+            axisTick: { show: false },
+            axisLine: { show: false },
+            axisLabel: {
+              show: true,
+              textStyle: {
+                color: 'rgba(136, 136, 136, 1)',
+                fontSize: 14,
+                lineHeight: 20
+              },
+              interval: 0,
+              formatter: value => {
+                return '{' + this.windDen(value) + '| }';
+              },
+              rich: {
+                value: {
+                  lineHeight: 16,
+                  align: 'left'
+                },
+                30: {
+                  height: 16,
+                  width: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl1
+                  }
+                },
+                60: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl2
+                  }
+                },
+                90: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl3
+                  }
+                },
+                120: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl4
+                  }
+                },
+                150: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl5
+                  }
+                },
+                180: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl6
+                  }
+                },
+                210: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl7
+                  }
+                },
+                240: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl8
+                  }
+                },
+                270: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl9
+                  }
+                },
+                300: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl10
+                  }
+                },
+                330: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl11
+                  }
+                },
+                360: {
+                  height: 16,
+                  align: 'left',
+                  backgroundColor: {
+                    image: windImgUrl12
+                  }
+                }
+              }
+            },
+            nameTextStyle: {
+              color: 'rgba(136, 136, 136, 1)',
+              padding: [0, 0, -38]
+            },
+            nameLocation: 'start',
+            data: Data.windxData
+          },
+          {
+            type: 'category',
+            axisLine: { show: false }
+          },
+          {
+            type: 'category',
+            position: 'bottom',
+            offset: 0,
+            nameTextStyle: { color: '#BBBBBB' },
+            axisLabel: { color: '#BBBBBB' },
+            axisTick: { show: false },
+            data: Data.time36Data
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: '风速        m/s         ',
+            scale: true,
+            position: 'left',
+            offset: 0,
+            nameLocation: 'end',
+            nameGap: 0,
+            axisTick: { lineStyle: { color: colors[0] }, inside: true },
+            nameTextStyle: { color: colors[0] },
+            axisLabel: { color: colors[0] },
+            splitLine: { show: false }
+          }
+        ],
+        series: [
+          {
+            name: '风速',
+            type: 'line',
+            step: false,
+            color: colors[0],
+            // label: { normal: { show: false, position: "top" } },
+            // lineStyle: { color: "#fff" },
+            // itemStyle: { opacity: 0  },
+            smooth: true,
+            data: Data.temData
+          }
+        ]
+      }
+      Echarts36.setOption(SToption)
+      window.addEventListener('resize', function(event) {
+        Echarts36.resize()
+      })
+    },
     windToggle(windType) {
       if (windType == 'section') {
-        this.activeWind = 'sectionwind'
+        this.activeWind = 'sectionwind';
         this.$el.querySelector('#planewind').classList.remove('active')
         this.$el.querySelector('#sectionwind').classList.add('active')
         this.isLegendChange = false
@@ -1736,9 +2760,10 @@ export default {
           }
         })
       } else {
+        this.changeMenu(0)
         this.isLegendChange = true
         this.sectionwindDetail = false
-        this.activeWind = 'planewind'
+        this.activeWind = 'planewind';
         this.$el.querySelector('#sectionwind').classList.remove('active')
         this.$el.querySelector('#planewind').classList.add('active')
         for (let i = 0; i < this.pointName.length; i++) {
@@ -1772,7 +2797,7 @@ export default {
       this.runType = type
       this.runwayTime = 1
       const self = this
-      this.$refs.canvas.innerHTML = ''
+      this.$refs.canvas.innerHTML = '';
       request({
         url:
           'http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=2019-11-01%2000:00:00&resolution=1000M&runway=' +
@@ -1827,7 +2852,7 @@ export default {
       var xlat = data['data']['XLAT']
       this.height_num = Math.ceil(data['data']['count'] / 16)
       var sortList = []
-      // 每行数据按纬度xlat排序
+      //每行数据按纬度xlat排序
       for (let i = 0, len = xlat.length / this.height_num; i < len; i++) {
         var jList = []
         for (let j = 0; j < this.height_num; j++) {
@@ -1926,41 +2951,41 @@ export default {
           div_1.setAttribute('class', 'demo')
           if (i == 14) {
             div_1.style =
-              'border-left:2px dashed red;box-shadow:inset 15px 0px  10px -15px red;'
+              'border-left:2px dashed red;box-shadow:inset 15px 0px  10px -15px red;';
           }
           if (i == 14 && j == finList.length - 1) {
             div_1.style =
-              'border-left:2px dashed red;border-top:2px dashed red;box-shadow:inset 8px 8px 9px -8px red;'
+              'border-left:2px dashed red;border-top:2px dashed red;box-shadow:inset 8px 8px 9px -8px red;';
           }
           if (j == finList.length - 1 && i > 14 && i < 20) {
             div_1.style =
-              'border-top:2px dashed red;box-shadow:inset -1px 11px 13px -15px red'
+              'border-top:2px dashed red;box-shadow:inset -1px 11px 13px -15px red';
           }
           if (i == 20) {
             div_1.style =
-              'border-right:2px dashed red;box-shadow:inset -15px 0px  10px -15px red'
+              'border-right:2px dashed red;box-shadow:inset -15px 0px  10px -15px red';
           }
           if (i == 20 && j == finList.length - 1) {
             div_1.style =
-              'border-right:2px dashed red;border-top:2px dashed red;box-shadow:inset -8px 8px  9px -8px red'
+              'border-right:2px dashed red;border-top:2px dashed red;box-shadow:inset -8px 8px  9px -8px red';
           }
           if (j == 0 && i > 14 && i < 20) {
             div_1.style =
-              'border-bottom:2px dashed red;box-shadow:inset -1px -11px 13px -15px red'
+              'border-bottom:2px dashed red;box-shadow:inset -1px -11px 13px -15px red';
           }
           if (j == 0 && i == 14) {
             div_1.style =
-              'border-bottom:2px dashed red; border-left:2px dashed red;box-shadow:inset 8px -8px 9px -8px red;'
+              'border-bottom:2px dashed red; border-left:2px dashed red;box-shadow:inset 8px -8px 9px -8px red;';
           }
           if (j == 0 && i == 20) {
             div_1.style =
-              'border-bottom:2px dashed red; border-right:2px dashed red;box-shadow:inset -8px -8px 9px -8px red;'
+              'border-bottom:2px dashed red; border-right:2px dashed red;box-shadow:inset -8px -8px 9px -8px red;';
           }
           var b_1 = document.createElement('b')
           var speed = finList[j][i][3]
           var iconid = this.getSpeedIconId(speed)
           b_1.setAttribute('class', 'icon-' + iconid)
-          var color = ''
+          var color = '';
           b_1.setAttribute(
             'style',
             'transform: rotate(' + Math.round(finList[j][i][4]) + 'deg)' + color
@@ -1974,7 +2999,7 @@ export default {
         canvas.appendChild(div_0)
       }
       let value_num = -16
-      const hang = document.createElement('div')
+      let hang = document.createElement('div')
       hang.setAttribute(
         'style',
         'text-align:center;display:flex;width: fit-content;padding-left:5px;font-size: 16px;font-family: DINMittelschriftStd;color: rgba(255,255,255,1);line-height: 19px;margin-top: 0.20rem;'
@@ -1989,7 +3014,7 @@ export default {
         hang.appendChild(div_child)
       }
       value_num = -16
-      const hang2 = document.createElement('div')
+      let hang2 = document.createElement('div')
       hang2.setAttribute(
         'style',
         'text-align:center;display:flex;width: fit-content;padding-left:5px;font-size: 16px;font-family: DINMittelschriftStd;color: rgba(0, 255, 71, 1);;line-height: 19px;'
@@ -1999,18 +3024,18 @@ export default {
         div_child.setAttribute('class', 'demo')
         if (value_num == 1) {
           if (this.runType === 'runway1') {
-            div_child.innerHTML = 'MID1'
+            div_child.innerHTML = 'MID1';
           } else if (this.runType === 'runway2') {
-            div_child.innerHTML = 'MID2'
+            div_child.innerHTML = 'MID2';
           } else {
-            div_child.innerHTML = 'MID3'
+            div_child.innerHTML = 'MID3';
           }
         } else if (value_num === -2) {
-          div_child.innerHTML = '18L'
+          div_child.innerHTML = '18L';
         } else if (value_num === 4) {
-          div_child.innerHTML = '36R'
+          div_child.innerHTML = '36R';
         } else {
-          div_child.innerHTML = ''
+          div_child.innerHTML = '';
         }
         value_num = value_num + 1
         hang2.appendChild(div_child)
@@ -2025,7 +3050,7 @@ export default {
       this.flag = true
       this.mouseXstart = window.event.screenX
       console.log('this.mouseXstart', this.mouseXstart)
-      const mySlider = this.$refs.mySlider
+      let mySlider = this.$refs.mySlider
       this.initLeft = parseInt(mySlider.style.left.replace('px', ''))
     },
     startMove(event) {
@@ -2035,8 +3060,8 @@ export default {
         console.log('this.mouseX', this.mouseX)
         this.distance = this.mouseX - this.mouseXstart
         console.log('距离变化', this.distance)
-        const mySlider = this.$refs.mySlider
-        mySlider.style.left = this.initLeft + this.distance + 'px'
+        let mySlider = this.$refs.mySlider
+        mySlider.style.left = this.initLeft + this.distance + 'px';
         console.log('鼠标结束距离', this.mouseX)
         console.log('元素左间距', mySlider.style.left)
       }
@@ -2128,50 +3153,29 @@ export default {
   z-index: 10;
   bottom: 43%;
   left: 1%;
-  width: 0.8rem;
-  height: 0.28rem;
-  background-color: #242236;
-  border-radius: 5px;
-}
-#menu11 {
-  display: none;
-  position: absolute;
-  z-index: 10;
-  bottom: 43%;
-  left: 1%;
-  width: 0.8rem;
-  height: 0.28rem;
-  background: rgba(227, 222, 255, 1);
-  border-radius: 4px;
-  border: 1px solid rgba(59, 55, 87, 1);
 }
 #menu2 {
   position: absolute;
   z-index: 10;
   bottom: 43%;
   left: 8%;
-  width: 0.8rem;
-  height: 0.28rem;
-  background-color: #242236;
-  border-radius: 5px;
-}
-#menu22 {
-  display: none;
-  position: absolute;
-  z-index: 10;
-  bottom: 43%;
-  left: 8%;
-  width: 0.8rem;
-  height: 0.28rem;
-  background: rgba(227, 222, 255, 1);
-  border-radius: 4px;
-  border: 1px solid rgba(59, 55, 87, 1);
 }
 .nearmenu {
-  color: white;
+  color: #3B3757;
   font-size: 14px;
   list-style: none;
   margin: 5px;
+  width: 0.8rem;
+  height: 0.28rem;
+  line-height: 0.26rem;
+  background:rgba(227,222,255,1);
+  border-radius:4px;
+  border:1px solid rgba(59,55,87,1);
+  &.sp {
+    background:rgba(36,34,54,1);
+    border:1px solid rgba(36,34,54,1);
+    color: #fff;
+  }
 }
 .input {
   position: absolute;
@@ -2444,13 +3448,18 @@ export default {
   line-height: 22px;
   float: left;
 }
-#tag {
+#tag0, #tagZBAA36, #tag, #tag36 {
   top: 35%;
   left: 1%;
   position: absolute;
   z-index: 12;
   width: 100%;
   height: 70%;
+  opacity: 0;
+  &.sp {
+    opacity: 1;
+    z-index: 13;
+  }
 }
 #Y {
   font-size: 14px;
@@ -2525,114 +3534,117 @@ export default {
   text-align: center;
   margin: 10%;
 }
-// #tone {
-//   position: absolute;
-//   z-index: 10;
-//   top: 5%;
-//   right: 1%;
-//   background: rgba(36, 34, 54, 1);
-//   box-shadow: 0px 12px 32px 1px rgba(16, 15, 23, 0.15);
-//   border-radius: 4px;
-//   width: 1.62rem;
-//   height: 1.64rem;
-// }
-// #tonenameback {
-//   float: left;
-//   width: 100%;
-//   height: 20%;
-// }
-// #stringR {
-//     margin-top: 0.12rem;
-//     width: 0.02rem;
-//     height: 0.16rem;
-//     background: #05892a;
-//     border-radius: 2px;
-//     left: 0.2rem;
-//     position: absolute;
-//     float:left;
-// }
-// #pointgroundname {
-//   width:1.25rem;
-//   height:0.25rem;
-//   font-size:14px;
-//   font-family:PingFangSC-Medium,PingFang SC;
-//   font-weight:500;
-//   color:rgba(225,225,225,1);
-//   line-height:21px;
-//   padding: 4px;
-//   float: left;
-//   margin-left: 0.25rem;
-//   margin-top: 0.05rem;
-// }
-// #ruletwo {
-//   width: 100%;
-//   height: 3px;
-//   margin-top: 23%;
-//   border: none;
-//   border-top: 2px solid #555555;
-// }
-// #small {
-//   width: 0.16rem;
-//   height: 0.32rem;
-//   position: absolute;
-//   float: left;
-//   left: 10%;
-//   background: rgba(11, 211, 167, 1);
-//   border-radius: 2px 2px 0px 0px;
-//   top: 30%;
-// }
-// #smallname {
-//   font-size: 0.14rem;
-//   float: left;
-//   margin-left: 0.5rem;
-//   margin-top: -0.35rem;
-//   font-family:PingFangSC-Medium,PingFang SC;
-//   font-weight:500;
-//   color:#888;
-//   line-height:18px;
-// }
-// #centre {
-//   width: 0.16rem;
-//   height: 0.32rem;
-//   position: absolute;
-//   float: left;
-//   left: 10%;
-//   border-radius: 2px 2px 0px 0px;
-//   background: rgba(255, 190, 58, 1);
-//   top: 50%;
-// }
-// #centrename {
-//   font-size: 0.14rem;
-//   float: left;
-//   margin-left: 0.5rem;
-//   margin-top: -1.18rem;
-//   font-family:PingFangSC-Medium,PingFang SC;
-//   font-weight:500;
-//   color:#888;
-//   line-height:18px;
-// }
-// #big {
-//   width: 0.16rem;
-//   height: 0.32rem;
-//   position: absolute;
-//   float: left;
-//   left: 10%;
-//   border-radius: 0px 0px 2px 2px;
-//   background: rgba(255, 44, 85, 1);
-//   top: 70%;
-// }
-// #bigname {
-//   font-size: 0.14rem;
-//   float: left;
-//   margin-left: 0.5rem;
-//   margin-top:-2rem;
-//   font-family:PingFangSC-Medium,PingFang SC;
-//   font-weight:500;
-//   color:#888;
-//   line-height:18px;
-// }
+#tone {
+  position: absolute;
+  z-index: 10;
+  top: 5%;
+  right: 1%;
+  background: rgba(36, 34, 54, 1);
+  box-shadow: 0px 12px 32px 1px rgba(16, 15, 23, 0.15);
+  border-radius: 4px;
+  width: 1.62rem;
+  height: 1.64rem;
+}
+#tonenameback {
+  float: left;
+  width: 100%;
+  height: 20%;
+}
+#stringR {
+    margin-top: 0.12rem;
+    width: 0.02rem;
+    height: 0.16rem;
+    background: #05892a;
+    border-radius: 2px;
+    left: 0.2rem;
+    position: absolute;
+    float:left;
+}
+#pointgroundname {
+  width:1.25rem;
+  height:0.25rem;
+  font-size:14px;
+  font-family:PingFangSC-Medium,PingFang SC;
+  font-weight:500;
+  color:rgba(225,225,225,1);
+  line-height:21px;
+  padding: 4px;
+  float: left;
+  margin-left: 0.25rem;
+  margin-top: 0.05rem;
+}
+#ruletwo {
+  width: 100%;
+  height: 3px;
+  margin-top: 23%;
+  border: none;
+  border-top: 2px solid #555555;
+}
+#small {
+  width: 0.16rem;
+  height: 0.32rem;
+  position: absolute;
+  float: left;
+  left: 10%;
+  background: rgba(11, 211, 167, 1);
+  border-radius: 2px 2px 0px 0px;
+  top: 30%;
+}
+#smallname {
+  font-size: 0.14rem;
+  float: left;
+  margin-left: 0.5rem;
+  margin-top: -0.35rem;
+  font-family:PingFangSC-Medium,PingFang SC;
+  font-weight:500;
+  color:#888;
+  line-height:18px;
+}
+#centre {
+  width: 0.16rem;
+  height: 0.32rem;
+  position: absolute;
+  float: left;
+  left: 10%;
+  border-radius: 2px 2px 0px 0px;
+  background: rgba(255, 190, 58, 1);
+  top: 50%;
+}
+#centrename {
+  font-size: 0.14rem;
+  float: left;
+  margin-left: 0.5rem;
+  margin-top: -1.18rem;
+  font-family:PingFangSC-Medium,PingFang SC;
+  font-weight:500;
+  color:#888;
+  line-height:18px;
+}
+#big {
+  width: 0.16rem;
+  height: 0.32rem;
+  position: absolute;
+  float: left;
+  left: 10%;
+  border-radius: 0px 0px 2px 2px;
+  background: rgba(255, 44, 85, 1);
+  top: 70%;
+}
+#bigname {
+  font-size: 0.14rem;
+  float: left;
+  margin-left: 0.5rem;
+  margin-top:-2rem;
+  font-family:PingFangSC-Medium,PingFang SC;
+  font-weight:500;
+  color:#888;
+  line-height:18px;
+}
 .tag {
   display: flex;
+}
+.tag36 {
+  display:flex;
 }
 #windEcharts {
   height: 98%;
@@ -2679,18 +3691,33 @@ export default {
   height:0.8rem;
   top:0.05rem;
   left:0.05rem;
+  opacity: 0.5;
+  cursor: pointer;
+  &.sp {
+    opacity: 1;
+  }
 }
 .menunameshort{
   width:1rem;
   height:1rem;
   top:0.05rem;
   left:0.05rem;
+  opacity: 0.5;
+  cursor: pointer;
+  &.sp {
+    opacity: 1;
+  }
 }
 .menunamelong{
   widows:1.2rem;
   height:1.2rem;
   top:0.05rem;
   left:0.05rem;
+  opacity: 0.5;
+  cursor: pointer;
+  &.sp {
+    opacity: 1;
+  }
 }
 .station_hover_container div span:nth-child(odd) {
   font-size: 0.125rem;

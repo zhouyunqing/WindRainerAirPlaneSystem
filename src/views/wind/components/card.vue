@@ -21,7 +21,9 @@ export default {
     position: fixed;
     top: 20px;
     right: 20px;
+    z-index: 1;
     font-size: 0.14rem;
+    font-weight: 500;
     color: #888;
     border: none;
     background: #242236;
@@ -32,7 +34,6 @@ export default {
       border-bottom: 1px #45416F solid;
       padding: 0 0.16rem 0 0.21rem;
       font-size: 0.15rem;
-      font-weight:500;
       color:rgba(225,225,225,1);
       position: relative;
       &::before {

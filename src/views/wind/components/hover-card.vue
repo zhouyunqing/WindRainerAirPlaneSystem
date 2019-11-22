@@ -1,0 +1,91 @@
+<template>
+  <el-card class="box-card" :body-style="{ padding: '0px' }">
+    <div class="title">{{ site }}</div>
+    <ul class="item">
+      <li>
+        <span>地面风速：</span>
+        <em>{{ parseFloat(detail.SPD[0]).toFixed(2) }}m/s</em>
+      </li>
+      <li>
+        <span>一小时降水量：</span>
+        <em>{{ parseFloat(detail.RAIN[0]).toFixed(1) }}mm</em>
+      </li>
+      <li>
+        <span>地面风向：</span>
+        <em>{{ parseInt(detail.DIR[0]) }}°</em>
+      </li>
+      <li>
+        <span>相对湿度：</span>
+        <em>{{ parseInt(detail.RH[0]) }}%</em>
+      </li>
+      <li>
+        <span>温度：</span>
+        <em>{{ parseInt(detail.T[0] - 272.15) }}℃</em>
+      </li>
+      <li>
+        <span>修正海平面气压：</span>
+        <em>{{ parseInt(detail.SLP[0]) }}hPa</em>
+      </li>
+    </ul>
+    <div class="time">数据时间(UTC)：{{ time }}</div>
+  </el-card>
+</template>
+<script>
+export default {
+  props: ['site', 'detail', 'time'],
+  data() {
+    return {}
+  }
+}
+</script>
+<style lang="scss" scoped>
+.box-card {
+  position: fixed;
+  z-index: 1;
+  font-size: 0.14rem;
+  font-weight: 500;
+  color: #888;
+  border: none;
+  background: rgba(36,34,54,1);
+  box-shadow: 0px 12px 32px 1px rgba(16,15,23,0.15);
+  border-radius: 4px;
+  text-align: left;
+  width: 4rem;
+  font-size: 0.15rem;
+  font-weight: 400;
+  color: #aaaaaa;
+  pointer-events: none;
+  .title {
+    height: 0.46rem;
+    line-height: 0.46rem;
+    padding: 0 0.24rem;
+    color: #ffffff;
+    font-size: 0.2rem;
+    border-bottom: 1px #45416F solid;
+    font-weight: 500;
+  }
+  .item {
+    display: flex;
+    margin: 0;
+    padding: 0.15rem;
+    list-style: none;
+    flex-wrap: wrap;
+    li {
+      width: 50%;
+      line-height: 0.22rem;
+      flex-shrink: 0;
+      em {
+        font-style: normal;
+        color: #ffffff;
+      }
+    }
+  }
+  .time {
+    font-weight: 400;
+    color: rgba(170,170,170,1);
+    font-size: 0.12rem;
+    padding: 0 0.15rem 0.15rem 0.15rem;
+  }
+}
+</style>
+
