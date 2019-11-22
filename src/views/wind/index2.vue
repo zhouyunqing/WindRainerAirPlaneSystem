@@ -43,7 +43,7 @@
     <!-- 平面风展示 底部图表 end -->
 
     <!-- 九站点 hover时展示的 card start -->
-    <hoverCard v-if="isHoverShow" :index="hoverIndex" :site="hoverSite" :detail="info" :style="hoverStyle" :time="params.starttime" />
+    <hoverCard v-if="isHoverShow && hoverSite != 'ZBAA'" :index="hoverIndex" :site="hoverSite" :detail="info" :style="hoverStyle" :time="params.starttime" />
     <!-- 九站点 hover时展示的 card end -->
 
     <!-- 剖面风 start -->

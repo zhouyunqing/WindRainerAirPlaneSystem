@@ -635,9 +635,9 @@ export default {
     .content-tab {
       display: flex;
       color: #fff;
-      height: 0.82rem;
+      height: 0.6rem;
       align-items: center;
-      padding: 0 0.16rem;
+      padding: 0.1rem 0.16rem 0;
       .time {
         flex-shrink: 0;
         width: 1.9rem;
@@ -713,11 +713,11 @@ export default {
       -webkit-transition: height 0.3s; /* Safari 和 Chrome */
       -o-transition: height 0.3s; /* Opera */
       &.sp {
-        height: 2.2rem;
+        height: 2rem;
       }
       .chart-wrap {
-        height: 2.2rem;
-        padding-bottom: 0.16rem;
+        height: 2rem;
+        // padding-bottom: 0.16rem;
       }
     }
   }
