@@ -425,6 +425,28 @@ export default {
       activeWind: "planewind",
       sliderTime: new Date(new Date().toLocaleDateString()),
       runwayTime: 1,
+      nowDate:"",
+      nowTime:"",
+      minDate:"",
+      minH:"",      
+      maxDate:"",
+      maxH:"",      
+      min24Date:"",
+      max24H:"",
+      min24H:"",
+      max24Date:"",
+      minHours:[],
+      maxHours:[],
+      min24Hours:[],
+      max24Hours:[],
+      mintimes:[],      
+      min24times:[],
+      agoT : [],
+      fluteT : [],
+      ago12T : [],
+      flute24T : [],
+      times:[],
+      times24:[],
       heightLevel: 0,
       isShow: true,
       isHoverShow: false, //悬浮数据框显示控制
@@ -470,11 +492,87 @@ export default {
     };
   },
   methods: {
+    getWinTime(){
+
+      var date0 = new Date();
+      this.nowDate = date0.getFullYear()+"-"+(date0.getMonth()+1) + "-" +date0.getDate()
+      this.nowTime = date0.getHours()<10?('0'+date0.getHours()):date0.getHours()
+      
+      var date = new Date();     //1. js获取当前时间
+      var min = date.setTime(date.getTime()-6*60*60*1000)
+      this.minDate = date.getFullYear()+"-"+(date.getMonth()+1) + "-" +date.getDate()
+      this.minH = date.getHours() < 10 ? ('0' + date.getHours()) : date.getHours()
+
+      var date1 = new Date();     //1. js获取当前时间
+      var max = date1.setTime(date1.getTime()+6*60*60*1000)
+      this.maxDate = date1.getFullYear()+"-"+(date1.getMonth()+1) + "-" +date1.getDate()  
+      this.maxH = date1.getHours() < 10 ? ('0' + date1.getHours()) : date1.getHours()
+      
+      var date2 = new Date();     //1. js获取当前时间
+      var min24 = date2.setTime(date2.getTime()-12*60*60*1000)
+      this.min24Date = date2.getFullYear()+"-" + (date2.getMonth()+1) + "-" + date2.getDate()
+      this.min24H = date2.getHours() < 10 ? ('0' + date2.getHours()) : date2.getHours()
+
+      var date3 = new Date();     //1. js获取当前时间
+      var max24 = date3.setTime(date3.getTime()+24*60*60*1000)
+      this.max24Date = date3.getFullYear()+"-" + (date3.getMonth()+1) + "-" + date3.getDate()
+      this.max24H = date3.getHours() < 10 ? ('0' + date3.getHours()) : date3.getHours()
+      
+      
+      for (let i=6;i>0;i--){
+        let date1 = new Date()
+        let ago = date1.setTime(date1.getTime()-i*60*60*1000)
+        let agoDate = date1.getFullYear()+"-"+(date1.getMonth()+1) + "-" +date1.getDate()
+        let agoH = date1.getHours() < 10 ? ('0' + date1.getHours()) : date1.getHours()
+        let agoTime = agoDate+" "+agoH+":00:00"
+        this.minHours.push(date1.getHours()+"时")
+        this.agoT.push(agoTime)
+      }
+      for (let i=1;i<=6;i++){
+        let date = new Date()
+        let flute = date.setTime(date.getTime()+i*60*60*1000)
+        let fluteDate = date.getFullYear()+"-"+(date.getMonth()+1) + "-" +date.getDate()
+        let fluteH = date.getHours() < 10 ? ('0' + date.getHours()) : date.getHours()
+        let fluteTime = fluteDate+" "+fluteH+":00:00"
+        
+        this.fluteT.push(fluteTime)
+        this.maxHours.push(date.getHours()+"时")
+      }
+      for (let i=11;i>0;i--){
+        let date = new Date()
+        let ago12 = date.setTime(date.getTime()-i*60*60*1000)
+        let ago12Date = date.getFullYear()+"-"+(date.getMonth()+1) + "-" +date.getDate()
+        let ago12H = date.getHours() < 10 ? ('0' + date.getHours()) : date.getHours()
+        let ago12Time = ago12Date+" "+ago12H+":00:00"
+        this.ago12T.push(ago12Time)
+        this.min24Hours.push(date.getHours()+"时")
+      }
+      for (let i=1;i<=24;i++){
+        let date = new Date()
+        let flute24 = date.setTime(date.getTime()+i*60*60*1000)
+        let flute24Date = date.getFullYear()+"-"+(date.getMonth()+1) + "-" +date.getDate()
+        let flute24H = date.getHours() < 10 ? ('0' + date.getHours()) : date.getHours()
+        let flute24Time = flute24Date+" "+flute24H+":00:00"
+        this.flute24T.push(flute24Time)
+        this.max24Hours.push(date.getHours()+"时")
+      }
+
+
+      
+      this.minHours.push("当前")      
+      this.min24Hours.push("当前")
+      this.mintimes=this.minHours.concat(this.maxHours)
+      this.min24times = this.min24Hours.concat(this.max24Hours)
+      this.times=this.agoT.concat(this.fluteT)
+      this.times24 = this.ago12T.concat(this.flute24T)
+
+    },
     changeChartTab(type) {
       // this.isTab = type
     },
     changeMenu(type) {
-      this.stationname = 'ZBAA'
+      
+      this.stationname = 'ZBAA';
       let info = {};
       let params = {};
       params.datacode = "ZBAA";
@@ -489,8 +587,8 @@ export default {
       info.url = url;
       if( type == 0 ) {
         //整场
-        params.starttime = "2019-11-17 06:00:00";
-        params.endtime = "2019-11-17 18:00:00";
+        params.starttime = this.minDate+" "+this.minH+":00:00";
+        params.endtime = this.maxDate+" "+this.maxH+":00:00";
         this.$store.dispatch("station/getRankInfo", info).then(res => {
           // 获取零米高度其他数据
           if (res.data.returnCode == 0) {
@@ -505,8 +603,8 @@ export default {
           this.potail0(Echarts0);
         });
       } else {
-        params.starttime = "2019-11-17 06:00:00";
-        params.endtime = "2019-11-19 06:00:00";
+        params.starttime = this.max24Date+" "+this.max24H+":00:00";
+        params.endtime = this.max24Date+" "+this.max24H+":00:00";
         this.$store.dispatch("station/getRankInfo", info).then(res => {
           // 获取零米高度其他数据
           if (res.data.returnCode == 0) {
@@ -1009,11 +1107,12 @@ export default {
     //整场
       let info = {};
       let params = {};
+      console.log(this.minDate+" "+this.minH+":00:00");
       params.datacode = "ZBAA";
       params.airport = "ZBAA";
       params.runway = "runway1,runway2,runway3";
-      params.starttime = "2019-11-17 06:00:00";
-      params.endtime = "2019-11-17 18:00:00";
+      params.starttime = this.minDate+" "+this.minH+":00:00";
+      params.endtime = this.maxDate+" "+this.maxH+":00:00";
       params.site = "ZBAA";
       params.resolution = "1000M";
       params.dataset = "RAIN,SLP,RH,T,PSFC,U,V,DIR,SPD";
@@ -1040,8 +1139,8 @@ export default {
       params.datacode = "ZBAA";
       params.airport = "ZBAA";
       params.runway = "runway1,runway2,runway3";
-      params.starttime = "2019-11-17 06:00:00";
-      params.endtime = "2019-11-19 06:00:00";
+      params.starttime = this.min36Date+" "+this.min36H+":00:00";
+      params.endtime = this.max36Date+" "+this.max36H+":00:00";
       params.site = "ZBAA";
       params.resolution = "1000M";
       params.dataset = "RAIN,SLP,RH,T,PSFC,U,V,DIR,SPD";
@@ -1070,8 +1169,8 @@ export default {
       params.airport = "ZBAA";
       params.runway = "runway1,runway2,runway3";
       params.dataset = "U,V,DIR,SPD";
-      params.starttime = "2019-11-17 06:00:00";
-      params.endtime = "2019-11-17 18:00:00";
+      params.starttime = this.minDate+" "+this.minH+":00:00";
+      params.endtime = this.maxDate+" "+this.maxH+":00:00";
       params.resolution = "1000M";
       params.hight = "0010m";
       url = "http://161.189.11.216:8090/gis/BJPEK/RunwaysForecast";
@@ -1080,8 +1179,7 @@ export default {
       this.$store.dispatch("station/getRankInfo", info).then(res => {
         // 按高度获取风数据
         if (res.data.returnCode == 0) {
-          this.windInfo = res.data.runways;
-          console.log(this.windInfo+"-------------------------");
+          this.windInfo = res.data.runways;          
         } else {
           this.$message.error(res.data.returnMessage);
         }
@@ -1091,8 +1189,8 @@ export default {
       params.datacode = "ZBAA";
       params.airport = "ZBAA";
       params.runway = "runway1,runway2,runway3";
-      params.starttime = "2019-11-17 06:00:00";
-      params.endtime = "2019-11-17 18:00:00";
+      params.starttime = this.minDate+" "+this.minH+":00:00";
+      params.endtime = this.maxDate+" "+this.maxH+":00:00";
       params.resolution = "1000M";
       params.dataset = "SLP,RH,T,PSFC";
       params.hight = "0002m";
@@ -1112,8 +1210,8 @@ export default {
       params.datacode = "ZBAA";
       params.airport = "ZBAA";
       params.runway = "runway1,runway2,runway3";
-      params.starttime = "2019-11-09 06:00:00";
-      params.endtime = "2019-11-09 18:00:00";
+      params.starttime = this.minDate+" "+this.minH+":00:00";
+      params.endtime = this.maxDate+" "+this.maxH+":00:00";
       params.resolution = "1000M";
       params.dataset = "RAIN";
       params.hight = "0000m";
@@ -1136,8 +1234,8 @@ export default {
       params.airport = "ZBAA";
       params.runway = "runway1,runway2,runway3";
       params.dataset = "U,V,DIR,SPD";
-      params.starttime = "2019-11-17 06:00:00";
-      params.endtime = "2019-11-19 06:00:00";
+      params.starttime = this.min24Date+" "+this.min24H+":00:00";
+      params.endtime = this.max24Date+" "+this.max24H+":00:00";
       params.resolution = "1000M";
       params.hight = "0010m";
       url = "http://161.189.11.216:8090/gis/BJPEK/RunwaysForecast";
@@ -1145,7 +1243,6 @@ export default {
       info.params = params;
       this.$store.dispatch("station/getRankInfo", info).then(res => {
         // 按高度获取风数据
-        console.log('------>>>>>', res)
         if (res.data.returnCode == 0) {
           this.wind36Info = res.data.runways;
         } else {
@@ -1161,8 +1258,8 @@ export default {
       params.datacode = "ZBAA";
       params.airport = "ZBAA";
       params.runway = "runway1,runway2,runway3";
-      params.starttime = "2019-11-17 06:00:00";
-      params.endtime = "2019-11-17 06:00:00";
+      params.starttime = this.min24Date+" "+this.min24H+":00:00";
+      params.endtime = this.max24Date+" "+this.max24H+":00:00";
       params.resolution = "1000M";
       params.dataset = "SLP,RH,T,PSFC";
       params.hight = "0002m";
@@ -1182,8 +1279,8 @@ export default {
       params.datacode = "ZBAA";
       params.airport = "ZBAA";
       params.runway = "runway1,runway2,runway3";
-      params.starttime = "2019-11-09 06:00:00";
-      params.endtime = "2019-11-11 06:00:00";
+      params.starttime = this.min24Date+" "+this.min24H+":00:00";
+      params.endtime = this.max24Date+" "+this.max24H+":00:00";
       params.resolution = "1000M";
       params.dataset = "RAIN";
       params.hight = "0000m";
@@ -1316,7 +1413,6 @@ export default {
           if (other[this.infoType[i]] != undefined) {
             this.info[this.infoType[i]] = other[this.infoType[i]][1];
           }
-          // console.log(this.info, other[this.infoType[i]], other[this.infoType[i]].length)
           if (rain[this.infoType[i]] != undefined) {
             this.info[this.infoType[i]] = rain[this.infoType[i]][index];
           }
@@ -1570,36 +1666,8 @@ export default {
     },
     potail0(Echarts0) {
       let Data = {
-        times: [
-          "2019-11-17 06:00:00",
-          "2019-11-17 07:00:00",
-          "2019-11-17 08:00:00",
-          "2019-11-17 09:00:00",
-          "2019-11-17 10:00:00",
-          "2019-11-17 11:00:00",
-          "2019-11-17 12:00:00",
-          "2019-11-17 13:00:00",
-          "2019-11-17 14:00:00",
-          "2019-11-17 15:00:00",
-          "2019-11-17 16:00:00",
-          "2019-11-17 17:00:00",
-          "2019-11-17 18:00:00"
-        ],
-        timeData: [
-          "-6h",
-          "-5h",
-          "-4h",
-          "-3h",
-          "-2h",
-          "-1h",
-          "当前",
-          "+1h",
-          "+2h",
-          "+3h",
-          "+4h",
-          "+5h",
-          "+6h"
-        ],
+        times: this.times,
+        timeData: this.mintimes,
         windxData: this.info.DIR,
         rhData: this.info.RH,
         slpData: this.info.SLP,
@@ -1607,7 +1675,7 @@ export default {
         rainData: this.info.RAIN,
         temData: this.info.SPD      
       };
-      let colors = ['#FF6863','#6EAB40'];
+      let colors = ['rgba(136, 136, 136, 1)','rgba(136, 136, 136, 1)'];
       let ZBAAoption = {
         color:colors,
         backgroundColor: "transparent",
@@ -1774,10 +1842,10 @@ export default {
         yAxis: [
           {
             type: "value",
-            name: "风速 m/s                                ",
+            name: "风速               m/s     ",
             scale: true,
             position: "left",
-            offset: -20,
+            offset: -0,
             nameLocation:"end",
             nameGap:-0,
           
@@ -1787,6 +1855,25 @@ export default {
             splitLine: { show: false }
           }
         ],
+        visualMap: {
+           top:500,
+           smooth:false,
+            pieces: [{
+                gt: 0,
+                lte: 5,
+                color: '#0bd3a7'
+            },  {
+                gt: 5,
+                lte: 17,
+                color: '#ffbe3a'
+            }, {
+                gt: 17,
+                color: '#ff2c55'
+            } ],
+            outOfRange: {
+                color: '#999'
+            }
+        },
         series: [
           {
             name: "风速",
@@ -1794,9 +1881,28 @@ export default {
             step: false,
             color: colors[0],
            // label: { normal: { show: false, position: "top" } },
-           // lineStyle: { color: "#fff" },
-           // itemStyle: { opacity: 0  },
-            smooth: true,
+           // lineStyle: { color: "#fff" },            
+           // smooth: true,
+           markLine: {
+                symbol:"none",
+                silent: true,
+                data: [{
+                    yAxis: 5
+                }, {
+                    yAxis: 17
+                }]
+            },
+            // areaStyle: {
+            //     normal: {
+            //         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+            //             offset: 0,
+            //             color: '#00FFDC'
+            //         }, {
+            //             offset: 1,
+            //             color: '#242236'
+            //         }])
+            //     }
+            // },
             data: Data.temData
           }
         ]
@@ -1812,36 +1918,8 @@ export default {
    
     potail(Echarts1, id, runway) {
       let Data = {
-        times: [
-          "2019-11-17 06:00:00",
-          "2019-11-17 07:00:00",
-          "2019-11-17 08:00:00",
-          "2019-11-17 09:00:00",
-          "2019-11-17 10:00:00",
-          "2019-11-17 11:00:00",
-          "2019-11-17 12:00:00",
-          "2019-11-17 13:00:00",
-          "2019-11-17 14:00:00",
-          "2019-11-17 15:00:00",
-          "2019-11-17 16:00:00",
-          "2019-11-17 17:00:00",
-          "2019-11-17 18:00:00"
-        ],
-        timeData: [
-          "-6h",
-          "-5h",
-          "-4h",
-          "-3h",
-          "-2h",
-          "-1h",
-          "当前",
-          "+1h",
-          "+2h",
-          "+3h",
-          "+4h",
-          "+5h",
-          "+6h"
-        ],
+        times: this.times,
+        timeData: this.mintimes,
         windxData: this.windInfo[runway][id].DIR,
         rhData: this.otherInfo[runway][id].RH,
         slpData: this.otherInfo[runway][id].SLP,
@@ -1851,7 +1929,7 @@ export default {
 
         
       };
-      let colors = ['#FF6863','#6EAB40'];
+      let colors = ['rgba(136, 136, 136, 1)','rgba(136, 136, 136, 1)'];
       let SLPoption = {
         color:colors,
         backgroundColor: "transparent",
@@ -2019,10 +2097,10 @@ export default {
         yAxis: [
           {
             type: "value",
-            name: "风速 m/s                                ",
+            name: "风速               m/s     ",
             scale: true,
             position: "left",
-            offset: -20,
+            offset: 0,
             nameLocation:"end",
             nameGap:-0,
           
@@ -2032,6 +2110,24 @@ export default {
             splitLine: { show: false }
           }
         ],
+        visualMap: {
+            top:500,
+            pieces: [{
+                gt: 0,
+                lte: 5,
+                color: '#0bd3a7'
+            },  {
+                gt: 5,
+                lte: 17,
+                color: '#ffbe3a'
+            }, {
+                gt: 17,
+                color: '#ff2c55'
+            } ],
+            outOfRange: {
+                color: '#999'
+            }
+        },
         series: [
           {
             name: "风速",
@@ -2041,7 +2137,17 @@ export default {
            // label: { normal: { show: false, position: "top" } },
            // lineStyle: { color: "#fff" },
            // itemStyle: { opacity: 0  },
-            smooth: true,
+           // smooth: true,
+           markLine: {
+                symbol:"none",
+                silent: true,
+                data: [{
+                    yAxis: 5
+                }, {
+                    yAxis: 17
+                }]
+            },
+            
             data: Data.temData
           }
         ]
@@ -2057,108 +2163,9 @@ export default {
 
 potailZBAA36(EchartsZBAA36, id, runway) {
       let Data = {
-        times: [
-          "2019-11-15 00:00:00",
-          "2019-11-15 01:00:00",
-          "2019-11-15 02:00:00",
-          "2019-11-15 03:00:00",
-          "2019-11-15 04:00:00",
-          "2019-11-15 05:00:00",
-          "2019-11-15 06:00:00",
-          "2019-11-15 07:00:00",
-          "2019-11-15 08:00:00",
-          "2019-11-15 09:00:00",
-          "2019-11-15 10:00:00",
-          "2019-11-15 11:00:00",
-          "2019-11-15 12:00:00",
-          "2019-11-15 13:00:00",
-          "2019-11-15 14:00:00",
-          "2019-11-15 15:00:00",
-          "2019-11-15 16:00:00",
-          "2019-11-15 17:00:00",
-          "2019-11-15 18:00:00",
-          "2019-11-15 19:00:00",
-          "2019-11-15 20:00:00",
-          "2019-11-15 21:00:00",
-          "2019-11-15 22:00:00",
-          "2019-11-15 23:00:00",
-          "2019-11-16 00:00:00",
-          "2019-11-16 01:00:00",
-          "2019-11-16 02:00:00",
-          "2019-11-16 03:00:00",
-          "2019-11-16 04:00:00",
-          "2019-11-16 05:00:00",
-          "2019-11-16 06:00:00",
-          "2019-11-16 07:00:00",
-          "2019-11-16 08:00:00",
-          "2019-11-16 09:00:00",
-          "2019-11-16 10:00:00",
-          "2019-11-16 11:00:00",
-          "2019-11-16 12:00:00",
-          "2019-11-16 13:00:00",
-          "2019-11-16 14:00:00",
-          "2019-11-16 15:00:00",
-          "2019-11-16 16:00:00",
-          "2019-11-16 17:00:00",
-          "2019-11-16 18:00:00",
-          "2019-11-16 19:00:00",
-          "2019-11-16 20:00:00",
-          "2019-11-16 21:00:00",
-          "2019-11-16 22:00:00",
-          "2019-11-16 23:00:00",
-          "2019-11-17 00:00:00"
-        ],
-        timeZBAA36Data: [
-          "-12h",
-          "-11h",
-          "-10h",
-          "-9h",
-          "-8h",
-          "-7h",
-          "-6h",
-          "-5h",
-          "-4h",
-          "-3h",
-          "-2h",
-          "-1h",
-          "当前",
-          "+1h",
-          "+2h",
-          "+3h",
-          "+3h",
-          "+4h",
-          "+5h",
-          "+6h",
-          "+7h",
-          "+8h",
-          "+9h",
-          "+10h",
-          "+11h",
-          "+12h",
-          "+13h",
-          "+14h",
-          "+15h",
-          "+16h",
-          "+17h",
-          "+18h",
-          "+19h",
-          "+20h",
-          "+21h",
-          "+22h",
-          "+23h",
-          "+24h",
-          "+25h",
-          "+26h",
-          "+27h",
-          "+28h",
-          "+29h",
-          "+30h",
-          "+31h",
-          "+32h",
-          "+33h",
-          "+34h",
-          "+35h",
-        ],
+        times: this.times24,
+        timeZBAA36Data: this.min24times,
+        
         windxData: this.zbaa36Info.DIR,
         rhData: this.zbaa36Info.RH,
         slpData: this.zbaa36Info.SLP,
@@ -2166,7 +2173,7 @@ potailZBAA36(EchartsZBAA36, id, runway) {
         rainData: this.zbaa36Info.RAIN,
         temData: this.zbaa36Info.SPD
       };
-      let colors = ['#FF6863','#6EAB40'];
+      let colors = ['rgba(136, 136, 136, 1)','rgba(136, 136, 136, 1)'];
       let ZBAASToption = {
         color:colors,
         backgroundColor: "transparent",
@@ -2333,7 +2340,7 @@ potailZBAA36(EchartsZBAA36, id, runway) {
         yAxis: [
           {
             type: "value",
-            name: "风速        m/s         ",
+            name: "风速               m/s     ",
             scale: true,
             position: "left",
             offset: 0,
@@ -2345,6 +2352,24 @@ potailZBAA36(EchartsZBAA36, id, runway) {
             splitLine: { show: false }
           }
         ],
+        visualMap: {
+            top:500,
+            pieces: [{
+                gt: 0,
+                lte: 5,
+                color: '#0bd3a7'
+            },  {
+                gt: 5,
+                lte: 17,
+                color: '#ffbe3a'
+            }, {
+                gt: 17,
+                color: '#ff2c55'
+            } ],
+            outOfRange: {
+                color: '#999'
+            }
+        },
         series: [
           {
             name: "风速",
@@ -2354,7 +2379,17 @@ potailZBAA36(EchartsZBAA36, id, runway) {
            // label: { normal: { show: false, position: "top" } },
            // lineStyle: { color: "#fff" },
            // itemStyle: { opacity: 0  },
-            smooth: true,
+           // smooth: true,
+           markLine: {
+                symbol:"none",
+                silent: true,
+                data: [{
+                    yAxis: 5
+                }, {
+                    yAxis: 17
+                }]
+            },
+           
             data: Data.temData
           }
         ]
@@ -2368,108 +2403,8 @@ potailZBAA36(EchartsZBAA36, id, runway) {
 
 potail36(Echarts36, id, runway) {
       let Data = {
-        times: [
-          "2019-11-15 00:00:00",
-          "2019-11-15 01:00:00",
-          "2019-11-15 02:00:00",
-          "2019-11-15 03:00:00",
-          "2019-11-15 04:00:00",
-          "2019-11-15 05:00:00",
-          "2019-11-15 06:00:00",
-          "2019-11-15 07:00:00",
-          "2019-11-15 08:00:00",
-          "2019-11-15 09:00:00",
-          "2019-11-15 10:00:00",
-          "2019-11-15 11:00:00",
-          "2019-11-15 12:00:00",
-          "2019-11-15 13:00:00",
-          "2019-11-15 14:00:00",
-          "2019-11-15 15:00:00",
-          "2019-11-15 16:00:00",
-          "2019-11-15 17:00:00",
-          "2019-11-15 18:00:00",
-          "2019-11-15 19:00:00",
-          "2019-11-15 20:00:00",
-          "2019-11-15 21:00:00",
-          "2019-11-15 22:00:00",
-          "2019-11-15 23:00:00",
-          "2019-11-16 00:00:00",
-          "2019-11-16 01:00:00",
-          "2019-11-16 02:00:00",
-          "2019-11-16 03:00:00",
-          "2019-11-16 04:00:00",
-          "2019-11-16 05:00:00",
-          "2019-11-16 06:00:00",
-          "2019-11-16 07:00:00",
-          "2019-11-16 08:00:00",
-          "2019-11-16 09:00:00",
-          "2019-11-16 10:00:00",
-          "2019-11-16 11:00:00",
-          "2019-11-16 12:00:00",
-          "2019-11-16 13:00:00",
-          "2019-11-16 14:00:00",
-          "2019-11-16 15:00:00",
-          "2019-11-16 16:00:00",
-          "2019-11-16 17:00:00",
-          "2019-11-16 18:00:00",
-          "2019-11-16 19:00:00",
-          "2019-11-16 20:00:00",
-          "2019-11-16 21:00:00",
-          "2019-11-16 22:00:00",
-          "2019-11-16 23:00:00",
-          "2019-11-17 00:00:00"
-        ],
-        time36Data: [
-          "-12h",
-          "-11h",
-          "-10h",
-          "-9h",
-          "-8h",
-          "-7h",
-          "-6h",
-          "-5h",
-          "-4h",
-          "-3h",
-          "-2h",
-          "-1h",
-          "当前",
-          "+1h",
-          "+2h",
-          "+3h",
-          "+3h",
-          "+4h",
-          "+5h",
-          "+6h",
-          "+7h",
-          "+8h",
-          "+9h",
-          "+10h",
-          "+11h",
-          "+12h",
-          "+13h",
-          "+14h",
-          "+15h",
-          "+16h",
-          "+17h",
-          "+18h",
-          "+19h",
-          "+20h",
-          "+21h",
-          "+22h",
-          "+23h",
-          "+24h",
-          "+25h",
-          "+26h",
-          "+27h",
-          "+28h",
-          "+29h",
-          "+30h",
-          "+31h",
-          "+32h",
-          "+33h",
-          "+34h",
-          "+35h",
-        ],
+        times: this.time24,
+        time24Data: this.min24times,
         windxData: this.wind36Info[runway][id].DIR,
         rhData: this.other36Info[runway][id].RH,
         slpData: this.other36Info[runway][id].SLP,
@@ -2477,7 +2412,7 @@ potail36(Echarts36, id, runway) {
         rainData: this.rain36Info[runway][id].RAIN,
         temData: this.wind36Info[runway][id].SPD
       };
-      let colors = ['#FF6863','#6EAB40'];
+      let colors = ['rgba(136, 136, 136, 1)','rgba(136, 136, 136, 1)'];
       let SToption = {
         color:colors,
         backgroundColor: "transparent",
@@ -2644,7 +2579,7 @@ potail36(Echarts36, id, runway) {
         yAxis: [
           {
             type: "value",
-            name: "风速        m/s         ",
+            name: "风速               m/s     ",
             scale: true,
             position: "left",
             offset: 0,
@@ -2656,6 +2591,24 @@ potail36(Echarts36, id, runway) {
             splitLine: { show: false }
           }
         ],
+        visualMap: {
+            top:500,
+            pieces: [{
+                gt: 0,
+                lte: 5,
+                color: '#0bd3a7'
+            },  {
+                gt: 5,
+                lte: 17,
+                color: '#ffbe3a'
+            }, {
+                gt: 17,
+                color: '#ff2c55'
+            } ],
+            outOfRange: {
+                color: '#999'
+            }
+        },
         series: [
           {
             name: "风速",
@@ -2665,7 +2618,17 @@ potail36(Echarts36, id, runway) {
            // label: { normal: { show: false, position: "top" } },
            // lineStyle: { color: "#fff" },
            // itemStyle: { opacity: 0  },
-            smooth: true,
+           // smooth: true,
+           markLine: {
+                symbol:"none",
+                silent: true,
+                data: [{
+                    yAxis: 5
+                }, {
+                    yAxis: 17
+                }]
+            },
+           
             data: Data.temData
           }
         ]
@@ -3019,7 +2982,7 @@ potail36(Echarts36, id, runway) {
     }
   },
   mounted() {
-    
+    this.getWinTime();
     // this.$refs.height_dom.style =
     //   "margin-left:" + ((window.innerHeight / 100) * 12 * 3 + 360) + "px;";
     this.$el.querySelector("#planewind").classList.add("active");
