@@ -2771,6 +2771,7 @@ potail36(Echarts36, id, runway) {
       this.drawDiv(finList);
     },
     formatData(data) {
+      console.log(data)
       var v = data["data"]["V"];
       var w = data["data"]["W"];
       var xlat = data["data"]["XLAT"];
