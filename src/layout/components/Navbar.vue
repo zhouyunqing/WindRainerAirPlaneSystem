@@ -8,9 +8,9 @@
       <span class="inforSpan">信息</span>
     </div> -->
     <div class="settings">
-       <img src="../../assets/images/settings.png" alt="" class="inforimage">
+      <img src="../../assets/images/settings.png" alt="" class="inforimage">
       <span class="settingsSpan">设置</span>
-     </div>
+    </div>
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
@@ -95,13 +95,13 @@ export default {
     align-items: center;
     span{
     // width:1.4rem;
-    height:0.2rem;
-    font-size:0.14rem;
-    font-weight:500;
-    color:rgba(255,255,255,1);
-    line-height:0.2rem;
+    height: 0.2rem;
+    font-size: 0.14rem;
+    font-weight: 500;
+    color: rgba(255,255,255,1);
+    line-height: 0.2rem;
   }
-   
+
   };
   height: 30%;
   overflow: hidden;
@@ -155,11 +155,7 @@ export default {
     }
 
     .avatar-container {
-      // margin-right: 30px;
-      
-
       .avatar-wrapper {
-        // margin-top: 5px;
         position: relative;
         display: flex;
         flex-flow: column nowrap;
@@ -171,22 +167,22 @@ export default {
           font-size:0.14rem;
           font-weight:500;
           color:#fff;
-          line-height:0.20rem;
+          line-height: 0.2rem;
         }
 
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
+          width: 0.4rem;
+          height: 0.4rem;
+          border-radius: 0.1rem;
         }
 
         .el-icon-caret-bottom {
           cursor: pointer;
           position: absolute;
-          right: -20px;
-          top: 25px;
-          font-size: 12px;
+          right: -0.2rem;
+          top: 0.25rem;
+          font-size: 0.12rem;
         }
       }
     }

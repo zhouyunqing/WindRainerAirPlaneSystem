@@ -1,14 +1,13 @@
 <template>
   <div class="login-container">
     <div class="login-head">
-      <img src="../../assets/images/logo.png" class="customer-logo"/>
+      <img src="../../assets/images/logo.png" class="customer-logo">
     </div>
     <div class="login-body">
       <div class="login-outer">
         <div class="login-airbg">
           <div class="slogan-panel">
-            <!-- <div class="slogan">风雨者航空气象服务</div>
-            <hr align="center"  color="#FFFFFF" width="100%" size="0.01rem">  -->
+            <!-- <div class="slogan">风雨者航空气象服务</div> -->
           </div>
         </div>
 
@@ -16,45 +15,39 @@
           <div class="title-container">
             <h3 class="title">登 录</h3>
           </div>
-        <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-          <el-form-item prop="username">
-            <span class="svg-container">
-              <svg-icon icon-class="user" />
-            </span>
-            <el-input
-              ref="username"
-              v-model="loginForm.username"
-              placeholder="用户名"
-              name="username"
-              type="text"
-              tabindex="1"
-              auto-complete="on"
-            />
-          </el-form-item>
+          <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="top">
+            <el-form-item prop="username" label="用户名">
+              <el-input
+                ref="username"
+                v-model="loginForm.username"
+                placeholder="用户名"
+                name="username"
+                type="text"
+                tabindex="1"
+                auto-complete="on"
+              />
+            </el-form-item>
 
-          <el-form-item prop="password">
-            <span class="svg-container">
-              <svg-icon icon-class="password" />
-            </span>
-            <el-input
-              :key="passwordType"
-              ref="password"
-              v-model="loginForm.password"
-              :type="passwordType"
-              placeholder="密码"
-              name="password"
-              tabindex="2"
-              auto-complete="on"
-              @keyup.enter.native="handleLogin"
-            />
-            <span class="show-pwd" @click="showPwd">
-              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-            </span>
-          </el-form-item>
+            <el-form-item prop="password" label="密码">
+              <el-input
+                :key="passwordType"
+                ref="password"
+                v-model="loginForm.password"
+                :type="passwordType"
+                placeholder="密码"
+                name="password"
+                tabindex="2"
+                auto-complete="on"
+                @keyup.enter.native="handleLogin"
+              />
+              <!-- <span class="show-pwd" @click="showPwd">
+                <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+              </span> -->
+            </el-form-item>
 
-          <el-button :loading="loading"  class="login-button" @click.native.prevent="handleLogin">登 录</el-button>
+            <el-button :loading="loading" class="login-button" @click.native.prevent="handleLogin">登 录</el-button>
 
-        </el-form>
+          </el-form>
         </div>
 
       </div>
@@ -153,18 +146,20 @@ $cursor: #000;
 
 /* reset element-ui css */
 .login-container {
-  .login-button
-  {
-    margin-top: 0.3rem;
-    width:70%;
-    background:rgba(5,137,42,1);
-    box-shadow:0px 10px 22px 2px rgba(14,21,68,0.12);
-    border-radius:0.04rem;
-    font-size:0.16rem;
-    font-family:PingFangSC-Medium,PingFang SC;
-    font-weight:500;
-    color:rgba(255,255,255,1);
-    line-height:22px;
+  .login-button {
+    background: rgba(5,137,42,1);
+    box-shadow: 0px 10px 22px 2px rgba(14,21,68,0.12);
+    border-radius: 4px;
+    border: none;
+    padding: 0;
+    margin-top: 0.26rem;
+    width: 65%;
+    height: 0.4rem;
+    line-height: 0.4rem;
+    font-size: 0.16rem;
+    font-family: PingFangSC-Medium,PingFang SC;
+    font-weight: 500;
+    color: rgba(255,255,255,1);
   }
   .el-input {
     display: inline-block;
@@ -172,12 +167,9 @@ $cursor: #000;
     width: 85%;
 
     input {
-      // background: transparent;
       border: 0px;
       -webkit-appearance: none;
       border-radius: 0px;
-      // padding: 12px 5px 12px 15px;
-      // color: $light_gray;
       height: 0.3rem;
       caret-color: $cursor;
 
@@ -189,24 +181,46 @@ $cursor: #000;
   }
 
   .el-form-item {
-    border: 1px solid rgba(139, 9, 9, 0.1);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    color: #454545;
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
     align-content: middle;
-    width: 70%;
+    margin-bottom: 0.26rem;
+    width: 65%;
+    border-bottom: 1px solid #888;
+    border-radius: 0;
+    color: #454545;
+    &.is-error {
+      border-bottom: 1px solid #ED223C;
+    }
+    &.is-success {
+      border-bottom: 1px solid #05892A;
+    }
     .el-input{
-      width: 88%;
-    } 
-    // .el-form-item__content
-    // {
-    //   line-height: 3rem;
-    // }
-  
-  
+      height: 0.3rem;
+      width: 100%;
+      input {
+        padding: 0;
+        color: #333;
+        font-weight: 500;
+      }
+    }
+    .el-form-item__label {
+      padding: 0;
+      height: 0.18rem;
+      line-height: 0.18rem;
+      font-size: 0.12rem;
+      font-weight: 400;
+      color: rgba(51,51,51,1);
+      &::before {
+        display: none;
+      }
+    }
+    .el-form-item__content {
+      height: 0.3rem;
+      line-height: 0.3rem;
+    }
+
   }
 }
 </style>
@@ -222,14 +236,13 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
 .login-container {
   min-height: 100%;
   width: 100%;
-  // background-color: $bg;
   background: $bgimg;
   overflow: hidden;
   .login-head{
     @include align-middle;
     flex: 0 0 0.3rem;
     justify-content: flex-start;
-    padding: 0.44rem 0.59rem;
+    padding: 0.45rem 0.6rem;
     z-index: 999;
     .customer-logo{
       @include wh(1.35rem,0.35rem);
@@ -247,7 +260,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
         justify-content: space-around
       };
     .login-outer {
-      @include wh(70%,5.6rem);
+      @include wh(10.2rem,5.6rem);
       @include align-middle-between;
       display: flex;
       flex-flow: row nowrap;
@@ -256,20 +269,18 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
       background:rgba(255,255,255,1);
       box-shadow:0px 0px 20px 6px rgba(0,87,33,0.09);
       border-radius:0.16rem;
-      // padding: 2.7rem 4rem;
       z-index: 999;
       .login-airbg{
         @media screen and (max-width: $width-medium){
           display: none
 
         }
-                
+
         @include wh(4.54rem,100%);
         background:$bgimgair;
         display: flex;
         border-radius: 0.16rem 0rem 0rem 0.16rem;
         @include align-center-middle;
-        // background:$bgimgair;
         .login-border{
             position: relative;
             width:100%;
@@ -278,23 +289,22 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
         .slogan-panel{
           @include align-middle;
           flex-flow: column nowrap;
-          // min-width: 20rem
           z-index: 999;
-          height: 1rem;
+          margin-bottom: 1rem;
+          font-weight: 500;
 
           @media screen and (max-width: $width-medium){
             height: 0.6rem
           }
-          
+
           .slogan{
             @include font-color-pos(0.24rem,$active-ft,left);
-            padding-bottom: 0.2rem;
+            padding-bottom: 2px;
             @media screen and (max-width: $width-medium)
             {
               font-size: 0.14rem;
               padding-bottom: 0.1rem
             }
-                
 
           }
           .minor-slogan{
@@ -302,47 +312,48 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
               @media screen and (max-width: $width-medium){
                 font-size: $fontsize-s
               }
-                         
+
+          }
+          position: relative;
+          &::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 2px;
+            right: 2px;
+            height: 1px;
+            background: #ffffff;
           }
         }
       }
 
       .login-formcontainer{
         position: relative;
-        @include wh(5.66rem,100%);
+        @include wh(5.7rem,100%);
          .login-form {
           display: flex;
           @include align-middle;
           flex-flow: column nowrap;
-          // position: relative;
-          // width: 52rem;
-          // max-width: 100%;
-          padding-top: 1rem;
-          // margin: 0 auto;
-          // overflow: hidden;
       }
-        
+
       }
-     
+
     }
-    // width:102rem;
-    // height:56rem;
   }
 
   .tips {
-    font-size: 14px;
+    font-size: 0.14rem;
     color: #fff;
-    margin-bottom: 10px;
+    margin-bottom: 0.10rem;
 
     span {
       &:first-of-type {
-        margin-right: 16px;
+        margin-right: 0.16rem;
       }
     }
   }
 
   .svg-container {
-    // padding: 6px 5px 6px 15px;
     color: $dark_gray;
     vertical-align: middle;
     width: 30px;
@@ -353,6 +364,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
     position: relative;
 
     .title {
+      margin: 0.9rem 0 0.8rem 0;
       font-family: "Noto Sans SC";
       font-size: 0.36rem;
       color: rgba(51,51,51,1);
@@ -365,7 +377,7 @@ $bgimgair:url('../../assets/images/airbg.png') center center no-repeat;
     position: absolute;
     right: 10px;
     top: 7px;
-    font-size: 16px;
+    font-size: 0.16rem;
     color: $dark_gray;
     cursor: pointer;
     user-select: none;

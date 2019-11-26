@@ -1,22 +1,31 @@
 <template>
   <div class="forecast">
-    <notice-dialog :noticeVisible='noticeVisible' :riskTypeId='riskTypeId' @save="RiskConfigList"
-                   @closeAddNotice="closeAddNotice"></notice-dialog>
+    <notice-dialog
+      :notice-visible="noticeVisible"
+      :risk-type-id="riskTypeId"
+      @save="RiskConfigList"
+      @closeAddNotice="closeAddNotice"
+    />
     <h1 class="title-font">预警</h1>
-    <el-menu :default-active="activeIndex"
-             class="el-menu-demo"
-             mode="horizontal"
-             @select="handleSelect">
+    <el-menu
+      :default-active="activeIndex"
+      class="el-menu-demo"
+      mode="horizontal"
+      @select="handleSelect"
+    >
       <el-menu-item index="notice">预警通知</el-menu-item>
       <el-menu-item index="config">预警配置</el-menu-item>
     </el-menu>
-    <div class="notice"
-         v-if="activeIndex=='notice'">
+    <div
+      v-if="activeIndex=='notice'"
+      class="notice"
+    >
       <div class="notice-header">
-        <el-input placeholder="搜索预警"
-                  prefix-icon="el-icon-search"
-                  v-model="input">
-        </el-input>
+        <el-input
+          v-model="input"
+          placeholder="搜索预警"
+          prefix-icon="el-icon-search"
+        />
         <!-- <el-button class="input-right"
                    icon="el-icon-plus"
                    @click="addNotice(-1)">
@@ -24,103 +33,135 @@
         </el-button> -->
       </div>
       <div class="notice-table">
-        <el-table 
-                  :data="tableData"
-                  @current-change="handleCurrentChange"
-                  style="width: 100%">
-          <el-table-column property="name"
-                           label="名称"
-                           :key="Math.random()">
-          </el-table-column>
-          <el-table-column property="site"
-                           label="地点"
-                           :width="noticeWidth" :key="Math.random()">
-          </el-table-column>
-          <el-table-column property="createtime"
-                           :width="noticeWidth"
-                           label="记录时间" :key="Math.random()">
-          </el-table-column>
-          <el-table-column property="severity"
-                           :width="noticeWidth" 
-                           label="预警级别" :key="Math.random()">
-          </el-table-column>
-          <el-table-column property="state"
-                           :width="noticeWidth"
-                           label="执行情况" :key="Math.random()">
-          </el-table-column>
+        <el-table
+          :data="tableData"
+          style="width: 100%"
+          @current-change="handleCurrentChange"
+        >
+          <el-table-column
+            :key="Math.random()"
+            property="name"
+            label="名称"
+          />
+          <el-table-column
+            :key="Math.random()"
+            property="site"
+            label="地点"
+            :width="noticeWidth"
+          />
+          <el-table-column
+            :key="Math.random()"
+            property="createtime"
+            :width="noticeWidth"
+            label="记录时间"
+          />
+          <el-table-column
+            :key="Math.random()"
+            property="severity"
+            :width="noticeWidth"
+            label="预警级别"
+          />
+          <el-table-column
+            :key="Math.random()"
+            property="state"
+            :width="noticeWidth"
+            label="执行情况"
+          />
           <!-- <el-table-column class="button-right"
                            property="status"
                            label="" :key="Math.random()">
             <el-button>删除</el-button >
           </el-table-column> -->
         </el-table>
-         <pagination 
-            :total="riskInfoPage.total"
-            :page.sync="riskInfoPage.listQuery.page"
-            :limit.sync="riskInfoPage.listQuery.limit"
-            @pagination="riskinfoList" />
+        <pagination
+          :total="riskInfoPage.total"
+          :page.sync="riskInfoPage.listQuery.page"
+          :limit.sync="riskInfoPage.listQuery.limit"
+          @pagination="riskinfoList"
+        />
       </div>
     </div>
 
-    <div class="notice"
-         v-if="activeIndex=='config'">
+    <div
+      v-if="activeIndex=='config'"
+      class="notice"
+    >
       <div class="notice-header">
-        <el-input placeholder="搜索预警"
-                  prefix-icon="el-icon-search"
-                  v-model="input">
-        </el-input>
-        <el-button class="input-right"
-                   icon="el-icon-plus"
-                   @click="(addNotice(-1))">
+        <el-input
+          v-model="input"
+          placeholder="搜索预警"
+          prefix-icon="el-icon-search"
+        />
+        <el-button
+          class="input-right"
+          icon="el-icon-plus"
+          @click="(addNotice(-1))"
+        >
           添加新预警
         </el-button>
       </div>
       <div class="notice-table">
         <el-table
-                  :data="tableDataConfig"
-                  @current-change="handleCurrentChange"
-                  style="width: 100%">
-          <el-table-column property="name"
-                           label="名称"
-                           :width="configWidth" :key="Math.random()">
-          </el-table-column>
-          <el-table-column property="site"
-                           label="地点"
-                           :width="configWidth" :key="Math.random()">
-          </el-table-column>
-          <el-table-column property="creater"
-                           :width="configWidth"
-                           label="收件人" :key="Math.random()">
-          </el-table-column>
-          <el-table-column :width="configWidth"
-                           label="状态" :key="Math.random()">
+          :data="tableDataConfig"
+          style="width: 100%"
+          @current-change="handleCurrentChange"
+        >
+          <el-table-column
+            :key="Math.random()"
+            property="name"
+            label="名称"
+            :width="configWidth"
+          />
+          <el-table-column
+            :key="Math.random()"
+            property="site"
+            label="地点"
+            :width="configWidth"
+          />
+          <el-table-column
+            :key="Math.random()"
+            property="creater"
+            :width="configWidth"
+            label="收件人"
+          />
+          <el-table-column
+            :key="Math.random()"
+            :width="configWidth"
+            label="状态"
+          >
             <template slot-scope="scope">
-              <el-switch v-model="scope.row.isactive"
-                         active-color="#48FF47"  disabled >
-              </el-switch>
+              <el-switch
+                v-model="scope.row.isactive"
+                active-color="#48FF47"
+                disabled
+              />
               <span v-if="scope.row.isactive">开启</span>
               <span v-else>关闭</span>
             </template>
 
           </el-table-column>
-          <el-table-column class="button-right"
-                           property="status"
-                           label="" :key="Math.random()">
+          <el-table-column
+            :key="Math.random()"
+            class="button-right"
+            property="status"
+            label=""
+          >
             <template slot-scope="scope">
               <el-button @click="addNotice(scope.row.id)">修改</el-button>
               <el-button @click="deleteRiskConfigItem(scope.row.id)">删除</el-button>
             </template>
-            
+
           </el-table-column>
 
         </el-table>
-       
-          <pagination 
-            :total="riskConfigPage.total"
-            :page.sync="riskConfigPage.listQuery.page"
-            :limit.sync="riskConfigPage.listQuery.limit"
-            @pagination="RiskConfigList" />
-       
+
+        <pagination
+          :total="riskConfigPage.total"
+          :page.sync="riskConfigPage.listQuery.page"
+          :limit.sync="riskConfigPage.listQuery.limit"
+          @pagination="RiskConfigList"
+        />
+
       </div>
     </div>
 
@@ -130,31 +171,34 @@
 <script>
 import Pagination from '@/components/Pagination'
 import noticeDialog from './noticeDialog'
-import {getOptions,getRiskConfigList,deleteRiskConfig,getRiskInfoes,getGroupList,getRiskConfig,timestampToTime} from '../../api/alert.js'
-import { constants } from 'fs';
+import { getOptions, getRiskConfigList, deleteRiskConfig, getRiskInfoes, getGroupList, getRiskConfig, timestampToTime } from '../../api/alert.js'
+import { constants } from 'fs'
 export default {
-  name: 'forecast',
-  data () {
+  name: 'Forecast',
+  components: {
+    noticeDialog,
+    Pagination
+  },
+  data() {
     return {
-      //分页控制
-      riskInfoPage:{
+      // 分页控制
+      riskInfoPage: {
         total: 0,
         listQuery: {
           page: 1,
           limit: 8
         }
       },
-      riskConfigPage:{
+      riskConfigPage: {
         total: 0,
         listQuery: {
           page: 1,
           limit: 5
         }
       },
-      
 
       noticeVisible: false,
-      riskTypeId:{},
+      riskTypeId: {},
       value: true,
       activeIndex: 'notice',
       noticeWidth: 190,
@@ -162,300 +206,293 @@ export default {
       input: '',
       tableDataConfig: [],
       tableData: [],
-      runwayHistoryData:[],
-      riskServerity:[],
-      wind_speed_options:[],
-      groupList:[],
-      allGroupList:[],
-      riskStateDic:[]
-      
+      runwayHistoryData: [],
+      riskServerity: [],
+      wind_speed_options: [],
+      groupList: [],
+      allGroupList: [],
+      riskStateDic: []
+
     }
   },
-  components: {
-    noticeDialog,
-    Pagination
+  beforeMount() {
+    this.RunwayHistoryData()
+    this.GroupList()
+    this.RiskServerity()
+    this.getRiskStateDic()
+  },
+  mounted() {
+    this.RiskConfigList()
+    this.riskinfoList()
+    // 预警通知 暂时注释下一步实现
+    this.popWindow()
   },
   methods: {
-    handleSelect (key, keyPath) {
-
+    handleSelect(key, keyPath) {
       this.activeIndex = key
     },
-    handleCurrentChange (val) {
-      this.currentRow = val;
+    handleCurrentChange(val) {
+      this.currentRow = val
     },
-    addNotice (id) {
+    addNotice(id) {
       this.initRiskTypeId(id)
       this.noticeVisible = true
     },
-    closeAddNotice () {
+    closeAddNotice() {
       this.noticeVisible = false
     },
-    riskinfoList(){
-        // params={
-        //   configId:-1,
-        //   isActive:-1,
-        //   pageSize:10,
-        //   skipped:0,
-        //   state:-1
-        // }
+    riskinfoList() {
+      // params={
+      //   configId:-1,
+      //   isActive:-1,
+      //   pageSize:10,
+      //   skipped:0,
+      //   state:-1
+      // }
 
-      let params={
-        configId:-1,
-        isActive:-1,
-        state:-1,
-        pageSize:this.riskInfoPage.listQuery.limit,
-        skipped:0
-        }
-      if(this.riskInfoPage.total>0){
-        params.skipped=(this.riskInfoPage.listQuery.page-1)*this.riskInfoPage.listQuery.limit
+      const params = {
+        configId: -1,
+        isActive: -1,
+        state: -1,
+        pageSize: this.riskInfoPage.listQuery.limit,
+        skipped: 0
       }
-      getRiskInfoes(params).then(rs=>{
-         console.log(rs);
-          this.tableData=[]
-           this.riskInfoPage.total= rs['data'].totalSize
-        for(let id in rs['data']['pagedList']){
-          let severity=this.findObjByKey(this.riskServerity,rs['data']['pagedList'][id].severity);
-          let riskstate=this.findObjByKey(this.riskStateDic,rs['data']['pagedList'][id].state);
-          let item={
-            id:rs['data']['pagedList'][id].id,
-            name:rs['data']['pagedList'][id].name,
-            site:'ZABB',
-            createtime:timestampToTime(rs['data']['pagedList'][id].createtime/1000),
-            severityId:rs['data']['pagedList'][id].severity,
-            severity:(typeof(severity) =='undefined')?this.riskServerity[0].value:severity.value,
-            stateId:rs['data']['pagedList'][id].state,
-            state:(typeof(riskstate) =='undefined')?this.riskStateDic[0].value:riskstate.value
+      if (this.riskInfoPage.total > 0) {
+        params.skipped = (this.riskInfoPage.listQuery.page - 1) * this.riskInfoPage.listQuery.limit
+      }
+      getRiskInfoes(params).then(rs => {
+        console.log(rs)
+        this.tableData = []
+        this.riskInfoPage.total = rs['data'].totalSize
+        for (const id in rs['data']['pagedList']) {
+          const severity = this.findObjByKey(this.riskServerity, rs['data']['pagedList'][id].severity)
+          const riskstate = this.findObjByKey(this.riskStateDic, rs['data']['pagedList'][id].state)
+          const item = {
+            id: rs['data']['pagedList'][id].id,
+            name: rs['data']['pagedList'][id].name,
+            site: 'ZABB',
+            createtime: timestampToTime(rs['data']['pagedList'][id].createtime / 1000),
+            severityId: rs['data']['pagedList'][id].severity,
+            severity: (typeof (severity) === 'undefined') ? this.riskServerity[0].value : severity.value,
+            stateId: rs['data']['pagedList'][id].state,
+            state: (typeof (riskstate) === 'undefined') ? this.riskStateDic[0].value : riskstate.value
           }
           this.tableData.push(item)
         }
       })
     },
-    RiskConfigList(){
-      let params={
-        isActive:-1,
-        pageSize:this.riskConfigPage.listQuery.limit,
-        skipped:0
-        }
-      if(this.riskConfigPage.total>0){
-        params.skipped=(this.riskConfigPage.listQuery.page-1)*this.riskConfigPage.listQuery.limit
+    RiskConfigList() {
+      const params = {
+        isActive: -1,
+        pageSize: this.riskConfigPage.listQuery.limit,
+        skipped: 0
       }
-      
-      getRiskConfigList(params).then(rs=>{
-        this.riskConfigPage.total=rs['data'].totalSize
-        this.tableDataConfig=[]
-          
-        for(let id in rs['data']['data']){
-          let noticemails=''
-          let t=rs['data']['data'][id].noticemails.split(",")
-          if(rs['data']['data'][id].noticemails!=''){
-            for(let i=0;i<t.length;i++){            
-              let obj=this.allGroupList.find(function(x) {
-                  return x.id == t[i];
-                }) 
-                
-              if(obj.name.length>0){
-                if(noticemails.length>0){
-                  noticemails +=','
+      if (this.riskConfigPage.total > 0) {
+        params.skipped = (this.riskConfigPage.listQuery.page - 1) * this.riskConfigPage.listQuery.limit
+      }
+
+      getRiskConfigList(params).then(rs => {
+        this.riskConfigPage.total = rs['data'].totalSize
+        this.tableDataConfig = []
+
+        for (const id in rs['data']['data']) {
+          let noticemails = ''
+          const t = rs['data']['data'][id].noticemails.split(',')
+          if (rs['data']['data'][id].noticemails != '') {
+            for (let i = 0; i < t.length; i++) {
+              const obj = this.allGroupList.find(function(x) {
+                return x.id == t[i]
+              })
+
+              if (!!obj && !!obj.name && obj.name.length > 0) {
+                if (noticemails.length > 0) {
+                  noticemails += ','
                 }
-                noticemails +=obj.name
+                noticemails += obj.name
               }
             }
           }
-         
-          
-          let item={
-            id:rs['data']['data'][id].id,
-            name:rs['data']['data'][id].name,
-            site:rs['data']['data'][id].site,
-            creater:noticemails,
-            isactive:rs['data']['data'][id].isactive
+
+          const item = {
+            id: rs['data']['data'][id].id,
+            name: rs['data']['data'][id].name,
+            site: rs['data']['data'][id].site,
+            creater: noticemails,
+            isactive: rs['data']['data'][id].isactive
           }
           this.tableDataConfig.push(item)
           // console.log(item)
         }
-        
       })
-    }
-    ,RiskServerity(){
-       getOptions({catagory:'RiskServerity'}).then(rs=>{
-        this.riskServerity=[]
-        if(rs['data']['data'].length>0){
-          this.conditionsLevel=rs['data']['data'][0].value
+    },
+    RiskServerity() {
+      getOptions({ catagory: 'RiskServerity' }).then(rs => {
+        this.riskServerity = []
+        if (rs['data']['data'].length > 0) {
+          this.conditionsLevel = rs['data']['data'][0].value
         }
-        for(let id in rs['data']['data']){
+        for (const id in rs['data']['data']) {
           this.riskServerity.push({
-             key:rs['data']['data'][id].key,
-             value:rs['data']['data'][id].value
-             })
+            key: rs['data']['data'][id].key,
+            value: rs['data']['data'][id].value
+          })
         }
       })
-    }
-    ,RunwayHistoryData(){
-      let that=this
-      getOptions({catagory:'runwayHistoryData'}).then(rs=>{
-        this.wind_speed_options=[];
-        if(rs['data']['data'].length>0){
-          this.wind_speed=rs['data']['data'][0].key;
+    },
+    RunwayHistoryData() {
+      const that = this
+      getOptions({ catagory: 'runwayHistoryData' }).then(rs => {
+        this.wind_speed_options = []
+        if (rs['data']['data'].length > 0) {
+          this.wind_speed = rs['data']['data'][0].key
         }
-        for(let id in rs['data']['data']){
-         
+        for (const id in rs['data']['data']) {
           this.wind_speed_options.push({
-             value:rs['data']['data'][id].key,
-             label:rs['data']['data'][id].value
-             })
+            value: rs['data']['data'][id].key,
+            label: rs['data']['data'][id].value
+          })
         }
-        
-        
       })
-    },getRiskStateDic(){
-      let that=this
-      getOptions({catagory:'RiskState'}).then(rs=>{
-        this.riskStatDic=[];
-        for(let id in rs['data']['data']){
+    }, getRiskStateDic() {
+      const that = this
+      getOptions({ catagory: 'RiskState' }).then(rs => {
+        this.riskStatDic = []
+        for (const id in rs['data']['data']) {
           this.riskStateDic.push({
-             key:rs['data']['data'][id].key,
-             value:rs['data']['data'][id].value
-             })
+            key: rs['data']['data'][id].key,
+            value: rs['data']['data'][id].value
+          })
         }
       })
-    }
-    ,GroupList(){
-      this.allGroupList=[]
-      this.groupList=[]
-      getGroupList({isActive:1}).then(rs=>{
-        for(let id in rs['data']['data']){
-         
+    },
+    GroupList() {
+      this.allGroupList = []
+      this.groupList = []
+      getGroupList({ isActive: 1 }).then(rs => {
+        for (const id in rs['data']['data']) {
           this.groupList.push({
             name: rs['data']['data'][id].name,
-            id:rs['data']['data'][id].id
+            id: rs['data']['data'][id].id
           })
 
           this.allGroupList.push({
             name: rs['data']['data'][id].name,
-            id:rs['data']['data'][id].id
+            id: rs['data']['data'][id].id
           })
         }
-
       })
 
-      getGroupList({isActive:0}).then(rs=>{
-        
-        for(let id in rs['data']['data']){
-         
+      getGroupList({ isActive: 0 }).then(rs => {
+        for (const id in rs['data']['data']) {
           this.allGroupList.push({
             name: rs['data']['data'][id].name,
-            id:rs['data']['data'][id].id
+            id: rs['data']['data'][id].id
           })
         }
       })
-      
     },
-    deleteRiskConfigItem(id){
-      console.log('deleteRiskConfigid='+id)
-      if(id!='undefined'){
-        deleteRiskConfig({id:id}).then(rs=>{
+    deleteRiskConfigItem(id) {
+      console.log('deleteRiskConfigid=' + id)
+      if (id != 'undefined') {
+        deleteRiskConfig({ id: id }).then(rs => {
           console.log(rs)
           this.RiskConfigList()
         })
-
       }
     },
-    initRiskTypeId(id){
-      //init item
-      let conditionList=[]
+    initRiskTypeId(id) {
+      // init item
+      let conditionList = []
       conditionList.push({
-          wind_speed:this.wind_speed_options[0].value,
-          compare:1,
-          speed:0
+        wind_speed: this.wind_speed_options[0].value,
+        compare: 1,
+        speed: 0
       })
-      
-      let groupItems=[]
-      for(let item in this.groupList){
+
+      const groupItems = []
+      for (const item in this.groupList) {
         groupItems.push({
-              name: this.groupList[item].name,
-              email: false,
-              message: false,
-              id:this.groupList[item].id,
-            })
-
-      }
-
-      this.riskTypeId={
-        name:'',
-        site:'ZABB',
-        status:true,
-        conditionsLevel:this.riskServerity[0].key,
-        conditionList:conditionList,
-        remark:'',
-        minutes:0,
-        second:0,
-        tableData:groupItems,
-        conditionListLength:conditionList.length,
-        wind_speed_options: this.wind_speed_options,
-        id:-1,
-        conditionsOptions:this.riskServerity
-      }
-      if(id>-1){
-        getRiskConfig(id).then(rs=>{
-          console.log(rs);
-
-          let data=rs['data']['data']
-          if(data.queryitems.length>0){            
-            let t=data.queryitems.split(",")
-            conditionList=[]
-            for(let len=t.length,i=0;i<len/3;i++){
-              conditionList.push({
-                  wind_speed:t[i*3],
-                  compare:(t[i*3+1]=='>'?1:2),
-                  speed:t[i*3+2]
-              })
-            }
-          }
-
-          if(data.noticemails.length>0){
-            let t=data.noticemails.split(',');
-            for(let len=t.length,i=0;i<len;i++){
-              let groupItem = groupItems.find(function(x) {
-                return x.id == t[i];
-              })
-              groupItem.email=true
-            }
-          }
-
-          if(data.noticephones.length>0){
-            let t=data.noticephones.split(',');
-            for(let len=t.length,i=0;i<len;i++){
-              let groupItem = groupItems.find(function(x) {
-                return x.id == t[i];
-              })
-              groupItem.message=true
-            }
-          }
-
-          this.riskTypeId.name=data.name
-          this.riskTypeId.state=data.isactive
-          this.riskTypeId.conditionsLevel=data.severity
-          this.riskTypeId.conditionList=conditionList
-          this.riskTypeId.remark=data.remark
-          this.riskTypeId.minutes=data.prenoticehour
-          this.riskTypeId.second=data.prenoticemin
-          this.riskTypeId.tableData=groupItems
-          this.riskTypeId.conditionListLength=conditionList.length
-          this.riskTypeId.id=data.id
-          
+          name: this.groupList[item].name,
+          email: false,
+          message: false,
+          id: this.groupList[item].id
         })
       }
-      
-    }
-    
-    ,findObjByKey(objs,key){
-      return objs.find(function(x) {return x.key == key;})
-     }
 
-     ,popWindow(){
-        this.$notify({
-              title: '1个新的预警',
-              message:
+      this.riskTypeId = {
+        name: '',
+        site: 'ZABB',
+        status: true,
+        conditionsLevel: this.riskServerity[0].key,
+        conditionList: conditionList,
+        remark: '',
+        minutes: 0,
+        second: 0,
+        tableData: groupItems,
+        conditionListLength: conditionList.length,
+        wind_speed_options: this.wind_speed_options,
+        id: -1,
+        conditionsOptions: this.riskServerity
+      }
+      if (id > -1) {
+        getRiskConfig(id).then(rs => {
+          console.log(rs)
+
+          const data = rs['data']['data']
+          if (data.queryitems.length > 0) {
+            const t = data.queryitems.split(',')
+            conditionList = []
+            for (let len = t.length, i = 0; i < len / 3; i++) {
+              conditionList.push({
+                wind_speed: t[i * 3],
+                compare: (t[i * 3 + 1] == '>' ? 1 : 2),
+                speed: t[i * 3 + 2]
+              })
+            }
+          }
+
+          if (data.noticemails.length > 0) {
+            const t = data.noticemails.split(',')
+            for (let len = t.length, i = 0; i < len; i++) {
+              const groupItem = groupItems.find(function(x) {
+                return x.id == t[i]
+              })
+              groupItem.email = true
+            }
+          }
+
+          if (data.noticephones.length > 0) {
+            const t = data.noticephones.split(',')
+            for (let len = t.length, i = 0; i < len; i++) {
+              const groupItem = groupItems.find(function(x) {
+                return x.id == t[i]
+              })
+              groupItem.message = true
+            }
+          }
+
+          this.riskTypeId.name = data.name
+          this.riskTypeId.state = data.isactive
+          this.riskTypeId.conditionsLevel = data.severity
+          this.riskTypeId.conditionList = conditionList
+          this.riskTypeId.remark = data.remark
+          this.riskTypeId.minutes = data.prenoticehour
+          this.riskTypeId.second = data.prenoticemin
+          this.riskTypeId.tableData = groupItems
+          this.riskTypeId.conditionListLength = conditionList.length
+          this.riskTypeId.id = data.id
+        })
+      }
+    },
+
+    findObjByKey(objs, key) {
+      return objs.find(function(x) { return x.key == key })
+    },
+
+    popWindow() {
+      this.$notify({
+        title: '1个新的预警',
+        message:
                 `<div class="tips">
                 <div class= "wind_forecast" >
                   <div class="wind_forecast_tittle">大风预警</div>
@@ -485,25 +522,11 @@ export default {
                   </div>
                 </div>
             </div > `,
-              duration: 0,
-              dangerouslyUseHTMLString: true,
-              position: 'bottom-right'
-            })
-     }
-  },
-  beforeMount(){
-    this.RunwayHistoryData()
-    this.GroupList()
-    this.RiskServerity()
-    this.getRiskStateDic()
-  }
-  ,
-  mounted () {
-    
-    this.RiskConfigList()
-    this.riskinfoList()
-    //预警通知 暂时注释下一步实现
-    this.popWindow()
+        duration: 0,
+        dangerouslyUseHTMLString: true,
+        position: 'bottom-right'
+      })
+    }
   }
 }
 </script>

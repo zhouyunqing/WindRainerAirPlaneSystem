@@ -39,7 +39,7 @@ export default {
 }
 .el-notification__title {
   padding: 12px 20px;
-  font-size: 14px;
+  font-size: 0.14rem;
   font-family: PingFangSC-Medium, PingFang SC;
   font-weight: 500;
   color: rgba(255, 255, 255, 1);

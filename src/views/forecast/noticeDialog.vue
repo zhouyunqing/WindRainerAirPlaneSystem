@@ -1,120 +1,148 @@
 <template>
   <div>
-    <comfirm-delete :comfirmDeleteVisible="comfirmDeleteVisible" @closeComfirmDelete="closeComfirmDelete" @comfirmDelete="comfirmDelete"></comfirm-delete>
-    <el-dialog title="预警配置"
-               :visible.sync="noticeVisible"
-               width="30%"
-               :before-close="handleClose"
-               class="noticeDialog">
+    <comfirm-delete :comfirm-delete-visible="comfirmDeleteVisible" @closeComfirmDelete="closeComfirmDelete" @comfirmDelete="comfirmDelete" />
+    <el-dialog
+      title="预警配置"
+      :visible.sync="noticeVisible"
+      width="30%"
+      :before-close="handleClose"
+      class="noticeDialog"
+    >
       <div class="content">
         <section class="config">
           <article class="name">
             <div class="name_font">名称</div>
-            <el-input v-model="riskTypeId.name"
-                      placeholder="在这里填写报警名称"></el-input>
+            <el-input
+              v-model="riskTypeId.name"
+              placeholder="在这里填写报警名称"
+            />
           </article>
           <article class="address">
             <div class="name_font">预警地点</div>
-            <el-select class="address_select"
-                       v-model="riskTypeId.site"
-                       placeholder="请选择">
-              <el-option v-for="item in options"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
+            <el-select
+              v-model="riskTypeId.site"
+              class="address_select"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
             </el-select>
           </article>
-          <article class="status" v-if="riskTypeId.id>0">
+          <article v-if="riskTypeId.id>0" class="status">
             <div class="name_font">状态</div>
             <div class="status_body">
-              <el-switch v-model="riskTypeId.status"
-                         active-color="#13ce66">
-              </el-switch>
-              <span v-if="riskTypeId.status"
-                    class="status_font">开</span>
-              <span v-else
-                    class="status_font">关</span>
+              <el-switch
+                v-model="riskTypeId.status"
+                active-color="#13ce66"
+              />
+              <span
+                v-if="riskTypeId.status"
+                class="status_font"
+              >开</span>
+              <span
+                v-else
+                class="status_font"
+              >关</span>
             </div>
           </article>
           <article class="conditions">
             <div class="conditions_header">
               <span class="name_font">预警条件</span>
-              <el-select class="address_select"
-                         v-model="riskTypeId.conditionsLevel"
-                         placeholder="请选择">
-                <el-option v-for="item in riskTypeId.conditionsOptions"
-                           :key="item.key"
-                           :label="item.value"
-                           :value="item.key"
-                           >
-                </el-option>
+              <el-select
+                v-model="riskTypeId.conditionsLevel"
+                class="address_select"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in riskTypeId.conditionsOptions"
+                  :key="item.key"
+                  :label="item.value"
+                  :value="item.key"
+                />
               </el-select>
             </div>
             <div class="conditions_body">
-             
-              <div class="list " v-for="(itemp,index) in riskTypeId.conditionList" :key="index">
+
+              <div v-for="(itemp,index) in riskTypeId.conditionList" :key="index" class="list ">
                 <div>
-                  <el-select class="wind_speed_width"
-                             v-model="itemp.wind_speed"
-                             placeholder="请选择">
-                    <el-option v-for="item in riskTypeId.wind_speed_options"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value">
-                    </el-option>
+                  <el-select
+                    v-model="itemp.wind_speed"
+                    class="wind_speed_width"
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      v-for="item in riskTypeId.wind_speed_options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
                   </el-select>
-                  <el-select class="compare_width"
-                             v-model="itemp.compare"
-                             placeholder="请选择">
-                    <el-option v-for="item in compareOptions"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value">
-                    </el-option>
+                  <el-select
+                    v-model="itemp.compare"
+                    class="compare_width"
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      v-for="item in compareOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
                   </el-select>
-                  <el-input v-model="itemp.speed"></el-input>
+                  <el-input v-model="itemp.speed" />
                   <span class="speed_font">m/s</span>
                 </div>
                 <div>
-                  <el-button @click="addCondition" v-show="index==riskTypeId.conditionListLength-1">添加</el-button>
-                  <el-button @click="deleteCondition(index)" v-show='index>0'>删除</el-button>
+                  <el-button v-show="index==riskTypeId.conditionListLength-1" @click="addCondition">添加</el-button>
+                  <el-button v-show="index>0" @click="deleteCondition(index)">删除</el-button>
                 </div>
               </div>
             </div>
 
-            
           </article>
           <article class="note">
             <div class="name_font">备注</div>
-            <textarea name=""
-                      id=""
-                      cols="30"
-                      rows="10"
-                      placeholder="在这里填写你想要的警报信息" v-model="riskTypeId.remark"></textarea>
+            <textarea
+              id=""
+              v-model="riskTypeId.remark"
+              name=""
+              cols="30"
+              rows="10"
+              placeholder="在这里填写你想要的警报信息"
+            />
           </article>
           <article class="notice">
             <div class="name_font">预警通知</div>
             <div class="notice_body">
               <span>将在预警发生前</span>
-              <el-select class="compare_width"
-                         v-model="riskTypeId.minutes"
-                         placeholder="请选择">
-                <el-option v-for="item in minutesOptions"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value">
-                </el-option>
+              <el-select
+                v-model="riskTypeId.minutes"
+                class="compare_width"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in minutesOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
               </el-select>
               <span>小时</span>
-              <el-select class="compare_width"
-                         v-model="riskTypeId.second"
-                         placeholder="请选择">
-                <el-option v-for="item in secondOptions"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value">
-                </el-option>
+              <el-select
+                v-model="riskTypeId.second"
+                class="compare_width"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in secondOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
               </el-select>
               <span>分钟收到通知</span>
             </div>
@@ -122,28 +150,34 @@
           <article class="sendMessage">
             <div class="name_font">发送信息到群组</div>
             <div class="sendMessage_body">
-              
-              <el-table :data="riskTypeId.tableData"
-                        style="width: 100%">
-                <el-table-column prop="name"
-                                 label="姓名">
+
+              <el-table
+                :data="riskTypeId.tableData"
+                style="width: 100%"
+              >
+                <el-table-column
+                  prop="name"
+                  label="姓名"
+                >
                   <template slot-scope="scope">
-                    
-                    <i class="el-icon-user"></i><span class="table_font"
-                          v-html="scope.row.name"></span>
+
+                    <i class="el-icon-user" /><span
+                      class="table_font"
+                      v-html="scope.row.name"
+                    />
                   </template>
                 </el-table-column>
                 <el-table-column label="邮件">
                   <template slot-scope="scope">
-                    <el-checkbox v-model="scope.row.email"></el-checkbox>
+                    <el-checkbox v-model="scope.row.email" />
                   </template>
                 </el-table-column>
                 <el-table-column label="短信">
                   <template slot-scope="scope">
-                    <el-checkbox v-model="scope.row.message"></el-checkbox>
+                    <el-checkbox v-model="scope.row.message" />
                   </template>
                 </el-table-column>
-                
+
               </el-table>
             </div>
           </article>
@@ -158,16 +192,26 @@
 </template>
 <script>
 import comfirmDelete from './comfirmDelete'
-import {createRiskConfig,updateRiskConfig} from '../../api/alert.js'
+import { createRiskConfig, updateRiskConfig } from '../../api/alert.js'
 export default {
 
-  name: 'noticeDialog',
+  name: 'NoticeDialog',
   components: {
     comfirmDelete
   },
-  data () {
+  props: {
+    noticeVisible: {
+      default: false,
+      type: Boolean
+    },
+    riskTypeId: {
+      default: -1,
+      type: Object
+    }
+  },
+  data() {
     return {
-      comfirmDeleteVisible: false,    
+      comfirmDeleteVisible: false,
       options: [
         {
           label: 'ZBAA',
@@ -186,122 +230,107 @@ export default {
       ],
       secondOptions: [],
       minutesOptions: [],
-      show:false
+      show: false
     }
   },
-  mounted(){
+  mounted() {
     this.initBaseData()
   },
   methods: {
-    handleClose (done) {
+    handleClose(done) {
       this.$emit('closeAddNotice')
     },
-    comfirmDeleteOpen(){
+    comfirmDeleteOpen() {
       this.comfirmDeleteVisible = true
     },
-    closeComfirmDelete(){
+    closeComfirmDelete() {
       this.comfirmDeleteVisible = false
-    }
-    ,
-    comfirmDelete(){
-
+    },
+    comfirmDelete() {
       this.closeComfirmDelete()
       this.handleClose()
     },
-    submitCreateRiskConfig(data){
-      createRiskConfig(data).then(rs=>{
+    submitCreateRiskConfig(data) {
+      createRiskConfig(data).then(rs => {
         console.log(rs)
         this.$emit('save')
         this.handleClose()
       })
     },
-    submitUpdateRiskConfig(data){
-      updateRiskConfig(data).then(rs=>{
+    submitUpdateRiskConfig(data) {
+      updateRiskConfig(data).then(rs => {
         console.log(rs)
         this.$emit('save')
         this.handleClose()
       })
-    }
-    ,
-    addCondition(){
-      if(this.riskTypeId.wind_speed_options.length>0){
+    },
+    addCondition() {
+      if (this.riskTypeId.wind_speed_options.length > 0) {
         this.riskTypeId.conditionList.push({
-          wind_speed:this.riskTypeId.wind_speed_options[0].value,
-          compare:1,
-          speed:0
+          wind_speed: this.riskTypeId.wind_speed_options[0].value,
+          compare: 1,
+          speed: 0
         })
-        this.riskTypeId.conditionListLength=this.riskTypeId.conditionList.length
+        this.riskTypeId.conditionListLength = this.riskTypeId.conditionList.length
       }
     },
-    deleteCondition(index){
-      this.riskTypeId.conditionList.splice(index,1)
-      this.riskTypeId.conditionListLength=this.conditionList.length
-      
-    }
-    ,initBaseData(){
-      this.minutesOptions=[]
-      for(var i=0;i<24;i++){
-        this.minutesOptions.push({value:i,label:i})
+    deleteCondition(index) {
+      this.riskTypeId.conditionList.splice(index, 1)
+      this.riskTypeId.conditionListLength = this.conditionList.length
+    },
+    initBaseData() {
+      this.minutesOptions = []
+      for (var i = 0; i < 24; i++) {
+        this.minutesOptions.push({ value: i, label: i })
       }
-      
-      this.secondOptions=[]
-      for(var i=0;i<60;i++){
-        this.secondOptions.push({value:i,label:i})
-      }      
-    }
-    ,submit(){
-      let queryitems=""
-      let noticemails=""
-      let noticephones=""
-  
-      for(let index in this.riskTypeId.conditionList){
-        if(queryitems!=""){
+
+      this.secondOptions = []
+      for (var i = 0; i < 60; i++) {
+        this.secondOptions.push({ value: i, label: i })
+      }
+    },
+    submit() {
+      let queryitems = ''
+      let noticemails = ''
+      let noticephones = ''
+
+      for (const index in this.riskTypeId.conditionList) {
+        if (queryitems != '') {
           queryitems += ','
         }
-        queryitems += this.riskTypeId.conditionList[index]['wind_speed']+','+(this.riskTypeId.conditionList[index].compare==1?'>':'<')+','+this.riskTypeId.conditionList[index].speed
+        queryitems += this.riskTypeId.conditionList[index]['wind_speed'] + ',' + (this.riskTypeId.conditionList[index].compare == 1 ? '>' : '<') + ',' + this.riskTypeId.conditionList[index].speed
       }
 
-      for(let index in this.riskTypeId.tableData){
-        if(this.riskTypeId.tableData[index].email){
-          noticemails +=(noticemails=="")?this.riskTypeId.tableData[index].id:','+this.riskTypeId.tableData[index].id
+      for (const index in this.riskTypeId.tableData) {
+        if (this.riskTypeId.tableData[index].email) {
+          noticemails += (noticemails == '') ? this.riskTypeId.tableData[index].id : ',' + this.riskTypeId.tableData[index].id
         }
-        if(this.riskTypeId.tableData[index].message){
-          noticephones +=(noticephones=="")?this.riskTypeId.tableData[index].id:','+this.riskTypeId.tableData[index].id
+        if (this.riskTypeId.tableData[index].message) {
+          noticephones += (noticephones == '') ? this.riskTypeId.tableData[index].id : ',' + this.riskTypeId.tableData[index].id
         }
       }
 
-      let submitItem={
-        name:this.riskTypeId.name,
-        site:this.riskTypeId.site,
-        remark:this.riskTypeId.remark,
-        severity:this.riskTypeId.conditionsLevel,
-        source:"runwayHistoryData",
-        timespan:"2880000",
-        queryitems:queryitems,
-        prenoticehour:this.riskTypeId.minutes,
-        prenoticemin:this.riskTypeId.second,
-        noticemails:noticemails,
-        noticephones:noticephones,
-        isactive:this.riskTypeId.status
+      const submitItem = {
+        name: this.riskTypeId.name,
+        site: this.riskTypeId.site,
+        remark: this.riskTypeId.remark,
+        severity: this.riskTypeId.conditionsLevel,
+        source: 'runwayHistoryData',
+        timespan: '2880000',
+        queryitems: queryitems,
+        prenoticehour: this.riskTypeId.minutes,
+        prenoticemin: this.riskTypeId.second,
+        noticemails: noticemails,
+        noticephones: noticephones,
+        isactive: this.riskTypeId.status
       }
-      console.log(JSON.stringify(submitItem));
-      if(this.riskTypeId.id<0){
+      console.log(JSON.stringify(submitItem))
+      if (this.riskTypeId.id < 0) {
         this.submitCreateRiskConfig(submitItem)
-      }else{
-        submitItem.id=this.riskTypeId.id
+      } else {
+        submitItem.id = this.riskTypeId.id
         this.submitUpdateRiskConfig(submitItem)
       }
-
-    }
-  },
-  props: {
-    noticeVisible: {
-      default: false,
-      type: Boolean
-    },
-    riskTypeId:{
-      default:-1,
-      type: Object
     }
   }
 }

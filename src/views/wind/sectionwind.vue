@@ -4,7 +4,7 @@
       <article class="wind_header">
         <div>
           <el-input v-model="searchInput" placeholder="输入查询机场名称或拼音">
-            <i slot="prefix" class="el-input__icon el-icon-search"></i>
+            <i slot="prefix" class="el-input__icon el-icon-search" />
           </el-input>
         </div>
         <div>
@@ -12,27 +12,27 @@
           <el-button class="button_color" type="primary">部面风向展示</el-button>
         </div>
         <div class="wind_header_icon">
-          <div class="pic_icon"></div>
+          <div class="pic_icon" />
           <span>详细</span>
         </div>
       </article>
 
       <article class="wind_content">
         <div id="body">
-          <div  ref="canvas" id="canvas" class="canvas"></div>
+          <div id="canvas" ref="canvas" class="canvas" />
         </div>
       </article>
 
       <article class="wind_footer">
         <div class="wind_footer_header">
-          <el-button :class="{ 'select_color': runType=='runway1' }"  @click="changeRunway('runway1')">跑道1</el-button>
+          <el-button :class="{ 'select_color': runType=='runway1' }" @click="changeRunway('runway1')">跑道1</el-button>
           <el-button :class="{ 'select_color': runType=='runway2' }" @click="changeRunway('runway2')">跑道2</el-button>
           <el-button :class="{ 'select_color': runType=='runway3' }" @click="changeRunway('runway3')">跑道3</el-button>
         </div>
         <div class="wind_footer_body">
           <div @mousemove="startMove">
             <div class="title">
-              <div class="title_icon"></div>
+              <div class="title_icon" />
               <span>跑道一</span>
             </div>
             <ul class="progress_bar">
@@ -51,11 +51,11 @@
               <li>24h</li>
             </ul>
             <div
-              class="pentagon"
               ref="mySlider"
+              class="pentagon"
               :style="{left:mySliderLeft+'px'}"
               @mousedown="startSlider"
-            ></div>
+            />
           </div>
         </div>
       </article>
@@ -63,13 +63,13 @@
   </div>
 </template>
 <script>
-import data from "@/assets/data/j1.json";
-import request from "@/utils/request1";
+import data from '@/assets/data/j1.json'
+import request from '@/utils/request1'
 export default {
-  name: 'sectionwind',
+  name: 'Sectionwind',
   data() {
     return {
-      searchInput: "",
+      searchInput: '',
       mySliderLeft: 0,
       mouseX: 0,
       mouseXstart: 0,
@@ -77,92 +77,92 @@ export default {
       height_num: 35,
       initLeft: 0,
       runType: 'runway1'
-    };
+    }
   },
   mounted() {
-    let self = this;
+    const self = this
     request({
       url:
-        "http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=2019-11-01%2000:00:00&resolution=1000M&runway=runway1",
-      method: "get"
+        'http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=2019-11-01%2000:00:00&resolution=1000M&runway=runway1',
+      method: 'get'
     }).then(resp => {
-      self.draw(resp.data);
-    });
+      self.draw(resp.data)
+    })
   },
   methods: {
     changeRunway(type) {
       this.runType = type
-      let self = this
+      const self = this
       this.$refs.canvas.innerHTML = ''
       request({
         url:
-          "http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=2019-11-01%2000:00:00&resolution=1000M&runway=" +
+          'http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=2019-11-01%2000:00:00&resolution=1000M&runway=' +
           type,
-        method: "get"
+        method: 'get'
       }).then(resp => {
-        self.draw(resp.data);
-      });
+        self.draw(resp.data)
+      })
     },
     getSpeedIconId(speed) {
-      var t = Math.round(speed, 1);
+      var t = Math.round(speed, 1)
       // 计算风速图标
-      var iconid = 36;
+      var iconid = 36
       if (speed < 0.3) {
-        iconid = 0;
+        iconid = 0
       } else if (speed < 2.1) {
-        iconid = 2;
+        iconid = 2
       } else if (speed < 4.1) {
-        iconid = 4;
+        iconid = 4
       } else if (speed < 6.1) {
-        iconid = 6;
+        iconid = 6
       } else if (speed < 8.1) {
-        iconid = 8;
+        iconid = 8
       } else if (speed < 10.1) {
-        iconid = 10;
+        iconid = 10
       } else if (speed < 12.1) {
-        iconid = 12;
+        iconid = 12
       } else if (speed < 14.1) {
-        iconid = 14;
+        iconid = 14
       } else if (speed < 16.1) {
-        iconid = 16;
+        iconid = 16
       } else if (speed < 20.1) {
-        iconid = 20;
+        iconid = 20
       } else if (speed < 24.1) {
-        iconid = 24;
+        iconid = 24
       } else if (speed < 28.1) {
-        iconid = 28;
+        iconid = 28
       } else if (speed < 32.1) {
-        iconid = 32;
+        iconid = 32
       } else {
-        iconid = 36;
+        iconid = 36
       }
-      return iconid;
+      return iconid
     },
     draw(data) {
-      var finList = this.formatData(data);
-      this.drawDiv(finList);
+      var finList = this.formatData(data)
+      this.drawDiv(finList)
     },
     formatData(data) {
-      var v = data["data"]["V"];
-      var w = data["data"]["W"];
-      var xlat = data["data"]["XLAT"];
-      var sortList = [];
+      var v = data['data']['V']
+      var w = data['data']['W']
+      var xlat = data['data']['XLAT']
+      var sortList = []
 
-      //每行数据按纬度xlat排序
+      // 每行数据按纬度xlat排序
       for (let i = 0, len = xlat.length / this.height_num; i < len; i++) {
-        var jList = [];
+        var jList = []
         for (let j = 0; j < this.height_num; j++) {
           if (jList.length == 0) {
-            jList.push(j);
+            jList.push(j)
           } else if (
             xlat[i * this.height_num + j] <
             xlat[i * this.height_num + jList[jList.length - 1]]
           ) {
-            jList.push(j);
+            jList.push(j)
           } else if (
             xlat[i * this.height_num + j] > xlat[i * this.height_num + jList[0]]
           ) {
-            jList.unshift(j);
+            jList.unshift(j)
           } else {
             for (let k = 1, klen = jList.length; k < klen; k++) {
               if (
@@ -171,40 +171,40 @@ export default {
                 xlat[i * this.height_num + j] <
                   xlat[i * this.height_num + jList[k - 1]]
               ) {
-                jList.splice(k, 0, j);
+                jList.splice(k, 0, j)
               }
             }
           }
         }
-        sortList.push(jList);
+        sortList.push(jList)
       }
-      //整理最后的数据[xlat,w,v,speed,speed_direction]
-      var finList = [];
+      // 整理最后的数据[xlat,w,v,speed,speed_direction]
+      var finList = []
       for (let i = 0, len = xlat.length / this.height_num; i < len; i++) {
-        var xList = [];
+        var xList = []
         for (let j = 0; j < this.height_num; j++) {
           var w1 =
             w[[i * this.height_num + sortList[i][j]]] == null
               ? 0
-              : w[[i * this.height_num + sortList[i][j]]];
-          var v1 = v[[i * this.height_num + sortList[i][j]]];
-          var speed = Math.sqrt(w1 * w1 + v1 * v1);
-          var r2d = 45.0 / Math.atan(1.0);
-          var speed_dir = 0;
+              : w[[i * this.height_num + sortList[i][j]]]
+          var v1 = v[[i * this.height_num + sortList[i][j]]]
+          var speed = Math.sqrt(w1 * w1 + v1 * v1)
+          var r2d = 45.0 / Math.atan(1.0)
+          var speed_dir = 0
           if (v1 == 0 && w1 > 0) {
-            speed_dir = 0;
+            speed_dir = 0
           } else if (v1 == 0 && w1 < 0) {
-            speed_dir = 180;
+            speed_dir = 180
           } else {
             // speed_dir=Math.atan((-1*w1)/(-1/v1))*r2d
-            speed_dir = Math.atan((-1 * v1) / (-1 * w1 * 10)) * r2d;
+            speed_dir = Math.atan((-1 * v1) / (-1 * w1 * 10)) * r2d
           }
 
           if (speed_dir < 0) {
-            speed_dir = speed_dir + 360;
+            speed_dir = speed_dir + 360
           }
 
-          speed_dir += 180;
+          speed_dir += 180
           //  if(speed_dir>360){speed_dir -= 180}
           xList.push([
             xlat[i * this.height_num + sortList[i][j]],
@@ -213,84 +213,84 @@ export default {
             speed,
             speed_dir,
             i
-          ]);
+          ])
         }
-        finList.push(xList);
+        finList.push(xList)
       }
       // console.log(xlat);
       // console.log(sortList);
       // console.log(finList);
       // console.log(JSON.stringify(finList));
 
-      return finList;
+      return finList
     },
     drawDiv(finList) {
-      //draw canvas
-      var body = document.getElementById("body");
-      var canvast = document.getElementById("canvas");
-      body.removeChild(canvast);
+      // draw canvas
+      var body = document.getElementById('body')
+      var canvast = document.getElementById('canvas')
+      body.removeChild(canvast)
 
-      var canvas = document.createElement("div");
-      canvas.setAttribute("id", "canvas");
-      body.appendChild(canvas);
+      var canvas = document.createElement('div')
+      canvas.setAttribute('id', 'canvas')
+      body.appendChild(canvas)
 
       if (finList.length < 1) {
-        return;
+        return
       }
       for (let len = finList.length, j = len - 1; j >= 0; j--) {
-        var div_0 = document.createElement("div");
+        var div_0 = document.createElement('div')
         div_0.setAttribute(
-          "style",
-          "text-align:center; vertical-align: center;display:flex;"
-        );
+          'style',
+          'text-align:center; vertical-align: center;display:flex;'
+        )
         for (let i = 0, len1 = finList[0].length; i < len1; i++) {
-          var div_1 = document.createElement("div");
-          div_1.setAttribute("class", "demo");
-          var b_1 = document.createElement("b");
+          var div_1 = document.createElement('div')
+          div_1.setAttribute('class', 'demo')
+          var b_1 = document.createElement('b')
 
-          var speed = finList[j][i][3];
-          var iconid = this.getSpeedIconId(speed);
-          b_1.setAttribute("class", "icon-" + iconid);
-          var color = "";
+          var speed = finList[j][i][3]
+          var iconid = this.getSpeedIconId(speed)
+          b_1.setAttribute('class', 'icon-' + iconid)
+          var color = ''
           b_1.setAttribute(
-            "style",
-            "transform: rotate(" + Math.round(finList[j][i][4]) + "deg)" + color
-          );
-          div_1.appendChild(b_1);
-          div_0.appendChild(div_1);
+            'style',
+            'transform: rotate(' + Math.round(finList[j][i][4]) + 'deg)' + color
+          )
+          div_1.appendChild(b_1)
+          div_0.appendChild(div_1)
         }
-        var div_sp = document.createElement("div");
-        div_sp.setAttribute("class", "clear");
-        canvas.appendChild(div_sp);
-        canvas.appendChild(div_0);
+        var div_sp = document.createElement('div')
+        div_sp.setAttribute('class', 'clear')
+        canvas.appendChild(div_sp)
+        canvas.appendChild(div_0)
       }
     },
     startSlider(event) {
-      this.flag = true;
-      this.mouseXstart = window.event.screenX;
-      console.log("this.mouseXstart", this.mouseXstart);
-      let mySlider = this.$refs.mySlider;
-      this.initLeft = parseInt(mySlider.style.left.replace("px", ""));
+      this.flag = true
+      this.mouseXstart = window.event.screenX
+      console.log('this.mouseXstart', this.mouseXstart)
+      const mySlider = this.$refs.mySlider
+      this.initLeft = parseInt(mySlider.style.left.replace('px', ''))
     },
     startMove(event) {
       if (this.flag) {
-        this.mouseX = window.event.screenX;
-        console.log("this.mouseXstart", this.mouseXstart);
-        console.log("this.mouseX", this.mouseX);
-        this.distance = this.mouseX - this.mouseXstart;
-        console.log("距离变化", this.distance);
-        let mySlider = this.$refs.mySlider;
+        this.mouseX = window.event.screenX
+        console.log('this.mouseXstart', this.mouseXstart)
+        console.log('this.mouseX', this.mouseX)
+        this.distance = this.mouseX - this.mouseXstart
+        console.log('距离变化', this.distance)
+        const mySlider = this.$refs.mySlider
 
-        mySlider.style.left = this.initLeft + this.distance + "px";
-        console.log("鼠标结束距离", this.mouseX);
-        console.log("元素左间距", mySlider.style.left);
+        mySlider.style.left = this.initLeft + this.distance + 'px'
+        console.log('鼠标结束距离', this.mouseX)
+        console.log('元素左间距', mySlider.style.left)
       }
     },
     stopMove(event) {
-      this.flag = false;
+      this.flag = false
     }
   }
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -317,7 +317,7 @@ export default {
       width: 256px;
     }
     .el-button {
-      font-size: 15px;
+      font-size: 0.15rem;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(255, 255, 255, 1);
@@ -335,7 +335,7 @@ export default {
       display: flex;
       span {
         line-height: 40px;
-        font-size: 15px;
+        font-size: 0.15rem;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(0, 255, 71, 1);
@@ -374,13 +374,13 @@ export default {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
 
-      font-size: 25px;
+      font-size: 0.25rem;
     }
 
     .icon-0:before {
       content: "\e900";
       color: #1200a9;
-      font-size: 10px;
+      font-size: 0.1rem;
       position: relative;
       top: 0px;
     }
@@ -486,7 +486,7 @@ export default {
         border-radius: 4px;
         width: 37px;
         height: 20px;
-        font-size: 14px;
+        font-size: 0.14rem;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(255, 255, 255, 1);
@@ -498,7 +498,7 @@ export default {
       background: #242236;
       .title {
         display: flex;
-        font-size: 22px;
+        font-size: 0.22rem;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(255, 255, 255, 1);
@@ -529,7 +529,7 @@ export default {
           background: #242236;
           vertical-align: top;
           display: inline-block;
-          font-size: 14px;
+          font-size: 0.14rem;
           font-family: DINMittelschriftStd;
           color: rgba(187, 187, 187, 1);
           height: 28px;

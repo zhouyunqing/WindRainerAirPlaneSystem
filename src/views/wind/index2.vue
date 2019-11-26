@@ -309,10 +309,12 @@ export default {
         const sTime = utilTime.timeObj(nowTime - 6 * 60 * 60 * 1000)
         this.hoverIndex = 6
         return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
+        // return '2019-11-22 8:00:00'
       } else {
         const sTime = utilTime.timeObj(nowTime - 12 * 60 * 60 * 1000)
         this.hoverIndex = 12
         return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
+        // return '2019-11-20 8:00:00'
       }
     },
     getEndTime() {
@@ -320,9 +322,11 @@ export default {
       if (this.forecastTab === 'near') {
         const sTime = utilTime.timeObj(nowTime + 6 * 60 * 60 * 1000)
         return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
+        // return '2019-11-22 20:00:00'
       } else {
         const sTime = utilTime.timeObj(nowTime + 24 * 60 * 60 * 1000)
         return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
+        // return '2019-11-21 22:00:00'
       }
     },
     changeForecastTab(val) {
@@ -394,7 +398,7 @@ export default {
         const time0 = utilTime.timeObj(nowTime)
         // const time = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
         const level = 0
-        const time = '2019-11-13%2000:00:00';
+        const time = '2019-11-13%2000:00:00'
         this.loadwind(time, level)
       }
     },
@@ -439,7 +443,7 @@ export default {
       const nowTime = new Date().getTime()
       const time0 = utilTime.timeObj(nowTime)
       // const time2 = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
-      const time2 = '2019-11-13%2000:00:00';
+      const time2 = '2019-11-13%2000:00:00'
       this.loadwind(time2, this.heightLevel)
     },
     windToggle(type) {
