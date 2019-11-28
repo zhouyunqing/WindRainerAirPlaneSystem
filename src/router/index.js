@@ -41,40 +41,6 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-  // {
-  //   path: '/CesiumViewer',
-  //   component: Layout,
-  //   redirect: '/CesiumViewer',
-  //   children: [{
-  //     path: 'CesiumViewer',
-  //     name: 'CesiumViewer',
-  //     component: () => import('@/views/CesiumViewer/index'),
-  //     meta: { title: '风', icon: 'dashboard' }
-  //   }]
-  // },
-  // {
-  //   path: '/',
-  //   name: 'CComponent',
-  //   component: () => import(/* webpackChunkName: "cesiumContainer" */ './views/cesiumContainer.vue')
-  // },
-
-  // {
-  //   path: '/CesiumViewer',
-  //   name: 'CesiumViewer',
-  //   component: CesiumViewer
-  // },
-
-  // {
-  //   path: '/',
-  //   component: Layout,
-  //   redirect: '/wind',
-  //   children: [{
-  //     path: 'wind',
-  //     name: 'wind',
-  //     component: () => import('@/views/wind/index'),
-  //     meta: { title: '风', icon: 'feng' }
-  //   }]
-  // },
   {
     path: '/',
     component: Layout,
@@ -87,11 +53,10 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/',
+    path: '/rain',
     component: Layout,
-    redirect: '',
     children: [{
-      path: 'rain',
+      path: '',
       name: 'rain',
       // component: () => import('@/views/dashboard/index'),
       meta: { title: '降雨', icon: 'jiangyu' }
@@ -99,11 +64,10 @@ export const constantRoutes = [
   },
 
   {
-    path: '/',
+    path: '/thunder',
     component: Layout,
-    redirect: '',
     children: [{
-      path: 'thunder',
+      path: '',
       name: 'thunder',
       // component: () => import('@/views/dashboard/index'),
       meta: { title: '雷电', icon: 'leidian' }
@@ -111,11 +75,10 @@ export const constantRoutes = [
   },
 
   {
-    path: '/',
+    path: '/forecast',
     component: Layout,
-    redirect: '',
     children: [{
-      path: 'forecast',
+      path: '',
       name: 'forecast',
       component: () => import('@/views/forecast/Forecast'),
       meta: { title: '预警', icon: 'yujing' }
@@ -123,11 +86,10 @@ export const constantRoutes = [
   },
 
   {
-    path: '/',
+    path: '/airline',
     component: Layout,
-    redirect: '',
     children: [{
-      path: 'airline',
+      path: '',
       name: 'airline',
       // component: () => import('@/views/dashboard/index'),
       meta: { title: '航线', icon: 'hangxian' }

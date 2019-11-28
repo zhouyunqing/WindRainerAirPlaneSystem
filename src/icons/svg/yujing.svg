@@ -1,16 +1,21 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">  <image id="image0" width="40" height="40" x="0" y="0"
-    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAQAAAAm93DmAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
-AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElN
-RQfjChwAOC1eO9OEAAABlklEQVRIx+3Wv0scQRjG8c9ecuKBNstKEENsRJPi8CCVtWCTKqRJGUiV
-v8E6f0MqwTKFsQvYioVgdWCRIKliIgTDgRjuwLtDmyXoZfdmTg7ygzzFMuz7zHdn35l5Z5JL41Vl
-zLxoYF09zng3EvcUHI5rhOm1Z0BJYFJqHlo0Zwo/fHXko85tgRNWrJgYeHth376L0YGp5zJ88sFn
-55j2wCML+O6t1mjAGS/UfPPel4HIfU/c07HpNB5Y81LqyDvdgmjVM4taNoqyWTzLq1IntgpxdG05
-kVotChYBMw1923pl6dWzra8hiwMuq2iWJT1XS1PFchxwScyeOMydQWBVpus4CDzWlamGgdM4F65q
-l/naDAInGb65fqqTuwPAJApW6v5tBfY/8N8CjvaJSrj7Y4pr8S86zd1DgbPqenajgLt66maHA9ck
-DpxFAc8cSKwNAy6Z17YXncE9bfM3q+LNQ+qVmWjY9Vy+KRth+xa4gV6hqwisu5O3+l6HzDGrrlnQ
-KlXMdW4HDTTthM0xvzyS/sbi8KcBrwCbIVqupbEZaQAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0x
-MC0yN1QxNjo1Njo0NSswODowMMrVpecAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMTAtMjdUMTY6
-NTY6NDUrMDg6MDC7iB1bAAAAAElFTkSuQmCC" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54 (76480) - https://sketchapp.com -->
+    <title>icon_yujing_sel</title>
+    <desc>Created with Sketch.</desc>
+    <g id="页面1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icon-选中" transform="translate(-20.000000, -359.000000)" fill-rule="nonzero" stroke="#FFFFFF">
+            <g id="编组-51复制">
+                <g id="编组-42复制-2" transform="translate(0.000000, 344.000000)">
+                    <g id="icon_yujing_sel" transform="translate(20.000000, 15.000000)">
+                        <g id="编组-39" transform="translate(7.000000, 4.000000)">
+                            <path d="M13,2 L13,2 C18.6411942,2 23.2142857,6.57309148 23.2142857,12.2142857 L23.2142857,22 L26,27 L0,27 L2.78571429,22 L2.78571429,12.2142857 C2.78571429,6.57309148 7.35880577,2 13,2 Z" id="矩形" stroke-width="2" stroke-linejoin="round"></path>
+                            <path d="M10.5500091,28.5 C10.7816442,29.6411202 11.790521,30.5 13,30.5 C14.209479,30.5 15.2183558,29.6411202 15.4499909,28.5 L10.5500091,28.5 Z" id="路径" fill="#FFFFFF"></path>
+                            <path d="M13,1 L13,0" id="直线-23" stroke-width="3" fill="#FFFFFF" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
 </svg>

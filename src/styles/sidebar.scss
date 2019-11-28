@@ -2,7 +2,7 @@
 
   .main-container {
     min-height: 100%;
-    
+
     transition: margin-left .28s;
     margin-left: $sideBarWidth;
     position: relative;
@@ -19,84 +19,94 @@
     overflow: hidden;
     .sidebar-container {
       transition: width 0.28s;
-     
+
       width: 100%;
       background-color: $menuBg;
       height: 70%;
-  
+
       font-size: 0px;
       top: 0;
       bottom: 0;
       left: 0;
-  
-  
+
+
       // reset element-ui css
       .horizontal-collapse-transition {
         transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out;
       }
-  
+
       .scrollbar-wrapper {
         overflow-x: hidden !important;
       }
-  
+
       .el-scrollbar__bar.is-vertical {
         right: 0px;
       }
-  
+
       .el-scrollbar {
         height: 100%;
+        a {
+          &:hover,
+          &.router-link-active {
+            background: rgba(5,137,42,1);
+            .el-menu-item {
+              opacity: 1;
+            }
+          }
+          .el-menu-item {
+            opacity: 0.5;
+          }
+        }
       }
-  
+
       &.has-logo {
         .el-scrollbar {
           height: calc(100% - 50px);
         }
       }
-  
+
       .is-horizontal {
         display: none;
       }
-  
       a {
-        // display: inline-block;
+        display: block;
         width: 100%;
         overflow: hidden;
       }
-  
       .svg-icon {
         // margin-right: 1.6rem;
         width:0.4rem;
         height:0.4rem;
       }
-  
+
       .el-menu {
         border: none;
         height: 100%;
         width: 100% !important;
       }
-  
+
       // menu hover
       .submenu-title-noDropdown,
       .el-submenu__title {
         &:hover {
-          background-color: $menuHover !important;
+          background-color: transparent !important;
         }
       }
-  
+
       .is-active>.el-submenu__title {
         color: $subMenuActiveText !important;
       }
-  
+
       & .nest-menu .el-submenu>.el-submenu__title,
       & .el-submenu .el-menu-item {
         display: flex;
         flex-flow: column nowrap;
         width:0.8rem;
         height:0.88rem;
-      
+
         min-width: $sideBarWidth !important;
         background-color: $subMenuBg !important;
-  
+
         &:hover {
           background-color: $subMenuHover !important;
         }
@@ -106,13 +116,13 @@
       width: 100%;
       display: flex;
       flex-flow: column nowrap;
-    
+
       background-color: $menuBg;
       // height: 50%;
     }
 
   }
- 
+
 
   .hideSidebar {
     .sidebar-container {
@@ -206,7 +216,10 @@
   flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
- 
+  &.is-active {
+    background: transparent!important;
+  }
+
   svg{
     width: 0.4rem;
     height: 0.4rem;
@@ -219,7 +232,7 @@
     color:rgba(255,255,255,1);
     line-height:20px;
   }
-   
+
   }
 // when menu collapsed
 .el-menu--vertical {
@@ -236,7 +249,7 @@
     flex-flow: column nowrap;
     width:0.8rem;
     height:0.88rem;
-   
+
     &:hover {
       // you can use $subMenuHover
       background-color: $menuHover !important;

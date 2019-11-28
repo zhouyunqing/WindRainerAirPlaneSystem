@@ -87,12 +87,19 @@ export default {
   }
   };
   .settings{
+    padding: 0.13rem 0 0.1rem;
     width:100%;
     height:0.88rem;
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
     align-items: center;
+    opacity: 0.5;
+    cursor: pointer;
+    &:hover {
+      background: #05892a;
+      opacity: 1;
+    }
     span{
     // width:1.4rem;
     height: 0.2rem;

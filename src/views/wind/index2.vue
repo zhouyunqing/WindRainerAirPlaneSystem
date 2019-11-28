@@ -7,7 +7,7 @@
     <!-- 左上角 搜索 end -->
 
     <!-- 右侧 距地面高度 start -->
-    <div class="right-slider">
+    <!-- <div v-if="activeWind == 'plane'" class="right-slider">
       <el-slider
         v-model="heightLevel"
         :min="0"
@@ -19,7 +19,8 @@
         class="windheightcontroller"
         @change="changeHeightLevel"
       />
-    </div>
+    </div> -->
+    <slider v-if="activeWind == 'plane'" @change="changeHeightLevel" />
     <!-- 右侧 距地面高度 end -->
 
     <!-- 顶部 展示切换 start -->
@@ -36,8 +37,8 @@
     <div id="cesiumContainer" />
 
     <!-- 平面风展示 底部图表 start -->
-    <div v-show="activeWind == 'plane'">
-      <bottomCard v-if="!!info.T" :time="day" :site="clickSite" :detail="info" @change="changeForecastTab" />
+    <div v-show="!sectionwindDetail">
+      <bottomCard v-if="!!info.T" :time="day" :site="clickSite" :detail="info" :active="activeWind" @change="changeForecastTab" />
     </div>
 
     <!-- 平面风展示 底部图表 end -->
@@ -172,6 +173,7 @@
 import rightCard from './components/card.vue'
 import bottomCard from './components/chart.vue'
 import hoverCard from './components/hover-card.vue'
+import slider from './components/slider.vue'
 
 import Cesium from 'cesium/Cesium'
 import widgets from 'cesium/Widgets/widgets.css'
@@ -182,12 +184,14 @@ import ColorImage from '@/components/wind/ColorImage'
 
 import windImgUrl from '../../assets/images/windImg.png'
 import utilTime from '@/utils/time'
+import { getRunwayPointForecastData, getParabolic, getModelForecast } from '@/api/wind'
 export default {
   name: 'CesiumContainer',
   components: {
     rightCard,
     bottomCard,
-    hoverCard
+    hoverCard,
+    slider
   },
   data() {
     return {
@@ -297,7 +301,7 @@ export default {
       this.params.endtime = this.getEndTime()
       info.url = this.ip + this.url
       info.params = this.params
-      this.$store.dispatch('station/getRankInfo', info).then(res => {
+      getRunwayPointForecastData(this.params).then(res => {
         if (res.data.returnCode * 1 === 0) {
           this.info = res.data.data
           if (this.changeT) {
@@ -407,9 +411,9 @@ export default {
       } else if (val === 2) {
         const nowTime = new Date().getTime()
         const time0 = utilTime.timeObj(nowTime)
-        // const time = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
+        const time = `${time0.y}-${time0.m}-${time0.d} ${time0.hh}:00:00`
         const level = 0
-        const time = '2019-11-13%2000:00:00'
+        // const time = '2019-11-13%2000:00:00'
         this.loadwind(time, level)
       }
     },
@@ -450,16 +454,20 @@ export default {
       }
       return tip
     },
-    changeHeightLevel(time, level) {
+    changeHeightLevel(level) {
       const nowTime = new Date().getTime()
       const time0 = utilTime.timeObj(nowTime)
-      // const time2 = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
-      const time2 = '2019-11-13%2000:00:00'
-      this.loadwind(time2, this.heightLevel)
+      const time2 = `${time0.y}-${time0.m}-${time0.d} ${time0.hh}:00:00`
+      // const time2 = '2019-11-13%2000:00:00'
+      this.loadwind(time2, level)
     },
     windToggle(type) {
       if (this.activeWind == type) return
       this.activeWind = type
+      this.forecastTab = 'near'
+      this.changeT = true
+      this.clickSite = ''
+      this.getChartData('ZBAA')
       if (type == 'plane') {
         this.isLegendChange = true
         this.sectionwindDetail = false
@@ -524,8 +532,17 @@ export default {
         '&bbox=110,30,120,42&z=' +
         level +
         '&resolution=1000M' // fileOptions.dataDirectory + "wind/wind_"+time+"_L"+level+".json";
-      Cesium.Resource.fetchJson({ url: jsonPath }).then(resData => {
-        resData = resData.data
+
+      getModelForecast({
+        datacode: 'ABC',
+        dataset: 'XLONG,XLAT,U,V',
+        time: time,
+        bbox: '110,30,120,42',
+        z: level,
+        resolution: '1000M'
+      }).then(resData => {
+        resData = resData.data.data
+        console.log(resData)
         const data = {}
         data.dimensions = {}
         data.dimensions.lon = 120 // dimensions['lon'].size;
@@ -787,6 +804,9 @@ export default {
           return strMap
         }
       })
+      // Cesium.Resource.fetchJson({ url: jsonPath }).then(resData => {
+      //   resData = resData.data
+      // })
     },
     drawWindHeatLayer(data) { // 绘制风场热力图
       var points = []
@@ -987,13 +1007,15 @@ export default {
       this.runwayTime = 1
       const self = this
       this.$refs.canvas.innerHTML = ''
-      request({
-        url:
-          'http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=2019-11-01%2000:00:00&resolution=1000M&runway=' +
-          type,
-        method: 'get'
-      }).then(resp => {
-        self.draw(resp.data)
+      const time = utilTime.timeObj(new Date().getTime())
+      getParabolic({
+        dataCode: 'ABC',
+        dataSet: 'XLONG,XLAT,hight,U,V,W',
+        time: `${time.y}-${time.m}-${time.d} 00:00:00`,
+        resolution: '1000M',
+        runway: type
+      }).then(res => {
+        self.draw(res.data)
       })
     },
     draw(data) {
@@ -1197,24 +1219,21 @@ export default {
       canvas.appendChild(hang2)
     },
     changeTimeToPic() {
-      const self = this
       this.$refs.canvas.innerHTML = ''
       const timeArray = this.searchTime.split(' ')
-      const yearArray = timeArray[0].split('.')
       const secondArray = timeArray[1].split(':')
       const nowTime = new Date().getTime()
       const time0 = utilTime.timeObj(nowTime)
       // const timestr = '2019-11-01%20' + secondArray[0] + ':' + secondArray[1] + ':00'
-      const timestr = `${time0.y}-${time0.m}-${time0.d}%20${secondArray[0]}:${secondArray[1]}:00`
-      request({
-        url:
-          'http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=' +
-          timestr +
-          '&resolution=1000M&runway=' +
-          this.runType,
-        method: 'get'
-      }).then(resp => {
-        self.draw(resp.data)
+      const timestr = `${time0.y}-${time0.m}-${time0.d} ${secondArray[0]}:${secondArray[1]}:00`
+      getParabolic({
+        dataCode: 'ABC',
+        dataSet: 'XLONG,XLAT,hight,U,V,W',
+        time: timestr,
+        resolution: '1000M',
+        runway: this.runType
+      }).then(res => {
+        this.draw(res.data)
       })
     },
     changeTime() {
@@ -1360,6 +1379,7 @@ export default {
     color: #fff;
     font-weight: 500;
     font-size: 0.15rem;
+    &:hover,
     &.sp {
       background: rgba(5,137,42,1);
       box-shadow: 0px 6px 19px 0px rgba(0,0,0,0.12);
@@ -1431,7 +1451,9 @@ export default {
 .wind_content {
   position: absolute;
   top: 15%;
-  width: 91vw;
+  left: 0;
+  right: 0.2rem;
+  // width: 91vw;
 }
 .wind_content {
   .myScroll_btn_div {
@@ -1501,7 +1523,7 @@ export default {
     box-shadow: 0px 0.12rem 0.32rem 0.01rem rgba(16, 15, 23, 0.15);
     border-radius: 4px;
     position: absolute;
-    right: 10px;
+    right: 0;
     [class*=" el-icon-"],
     [class^="el-icon-"] {
       line-height: 1;

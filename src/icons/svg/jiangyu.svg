@@ -1,18 +1,20 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">  <image id="image0" width="32" height="32" x="0" y="0"
-    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAAABGdBTUEAALGPC/xhBQAAACBjSFJN
-AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElN
-RQfjChwANgHyYJLpAAACBklEQVRIx+2VMWgTURiAv/9iRN00g2noELiikVKkLi0O0g4VCw1Y0tKM
-QkOaFroI7VQQzdZBpAVzly5C2ymLGAeLXezgJLZKwSIUXBpqINEhaBqbew6JTSy9I0kXB9/wuP/u
-ve++9979/4nidE075fyTAYvtZmqxvTHAmZNuup+okFsYadHg6W1CfCRkDjQCkOObmHLlP6iz1g3t
-vZQuXR8tN22QH1edMjNVkBnVmR9v2uDZuZ+7shu7BWBsKP28fq/YlEExIj6Zq7LnxFeMNGXwULv8
-mUzl/RUHfF+vPLD+xIn7MPnYwcDbjy4LdfQFdG//Ea5b5mXe6HZaQpBCKV0LS2kKBI9cE2TJqgRi
-C1ABtqcPavH0AdtcrVwvjUmPzMqs9CyN2Rt8w3tsj7zqO0DKVY6zObE6scpmOZ5y2QHW8JvBWmgG
-8bMGkBukQ3uEQhGnIzdoAwisyJZaNqs5YI6oZdkKrAAwTPZiGsDzgizDtTl/JVPf4c4Qz1UqkZEv
-yi8+3qm7fYcAtLFf+axHy8Y+bXZLILbn6ZUw61JgXcKe3the9cEGXUYYwAjTJW/qjrqxipS8YL3m
-puyACvBWG4j+aBBgDEHsZeUcclHuAK88yfocdQQk3dYn0K5Ff9mPcayJVgQd3XJMKOeiOlXXtwTw
-1vWtAGSSDBmZdBzzb/5Y/gOaa78BlU6has2lFewAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTktMTAt
-MjdUMTY6NTQ6MDErMDg6MDC+JV8zAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE5LTEwLTI3VDE2OjU0
-OjAxKzA4OjAwz3jnjwAAAABJRU5ErkJggg==" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54 (76480) - https://sketchapp.com -->
+    <title>icon_yu_sel</title>
+    <desc>Created with Sketch.</desc>
+    <g id="页面1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linejoin="round">
+        <g id="icon-选中" transform="translate(-20.000000, -182.000000)" fill-rule="nonzero" stroke="#FFFFFF" stroke-width="2">
+            <g id="编组-51复制">
+                <g id="编组-40复制" transform="translate(0.000000, 168.000000)">
+                    <g id="icon_yu_sel" transform="translate(20.000000, 14.000000)">
+                        <g id="降雨" transform="translate(9.000000, 2.000000)">
+                            <path d="M11,34 C17.0751322,34 22,28.9258938 22,22.6666667 C22,19.8413732 20.3191086,17.4653487 16.9573259,11.538593 C16.1238928,10.0692669 14.7331046,7.40741481 12.7849614,3.55303659 L12.7849699,3.55303228 C12.2867062,2.5672236 11.0836279,2.17199024 10.0978192,2.67025387 C9.71690433,2.86278214 9.40756908,3.1721174 9.21504081,3.5530323 C7.26689647,7.40741283 5.87610755,10.0692664 5.04267405,11.538593 C1.68089135,17.4653487 0,19.8413732 0,22.6666667 C0,28.9258938 4.92486775,34 11,34 Z" id="椭圆形"></path>
+                            <path d="M4,24 C4.45301977,25.6311431 5.53475993,27.0380588 7,28" id="路径" stroke-linecap="round"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
 </svg>

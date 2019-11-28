@@ -1,25 +1,17 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">  <image id="image0" width="40" height="40" x="0" y="0"
-    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAQAAAAm93DmAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
-AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElN
-RQfjChwAOTgq/QYuAAADo0lEQVRIx83WW2/URRjH8c/2AF1KC9vS0lqQJtSC2m2VxBgM1QsxBjGe
-EuRUUC+MF74J34QavYEIFDBRSBSBKCRYFTUa6CGSYKsBaeiulUKhB9pt14tulz0bCBc+N7v/eWa+
-88zM83tmAnH314ruM0/JPY9cbINmFcYM+N61+ebAPS55pW2Cya8pn7uYDxhQhyGFZqq320K/O21Y
-yAatpnw8F2UmMGSrWtzSq1s0J67KW8r1OZKc9FVh53yRvYdVdqs0KqbKeutd1aPXeMbedSg34GjK
-GrqErc4+lDncJZ2mNWjzqHr1NurX46IZUKbDUld8ajZl5AjKs4GbVIr50jQGDTqpWZsma6wxoU+P
-iO1q/e2g6bSol+Fm9qG02GyhKWf8lDJ/uRZt6sCkMjfsMZpxjNs85Gcnsg+lwvMeQcQxV9IG1WoT
-tti4Pf5J8xR5RYtxH83FmJ02TTYJiTvnlImMoQ8acSOtrdTrVrvtoMvZS563Eu2eUmzMN7oVsqDt
-VhjT6Wpy/Xnyd5kXNOKSY4bz4CrtVOO6/XeEV1h6rZ5TbsZZ34pleat1WCJqv1tpJ1RQy2WetU7A
-ZXszPEu8bZG/HDSZ7ihcviadcRNjWZ6QRSbty8T9F7BMh0qDjmZ5LrulzPLsIYWApQlddGboAmb1
-ovVugEW2WOm6/RnZOG/daFFcGLgg5f/Lmow5MK9RlNrizaT6o4YENWcC7xSHoNesNiEiIqJB2G2d
-KTIL2qEBTzudjLFOqwu5gUG71JkV1KgRxBy+k/8qdKgxqsJ6PYlU77NRk0Xp9bL4vbnfXRpM+MBZ
-f4oaN+2EgWSvam+oErXXQg1qE4Kc1qDGTYO5IixGUIcuffoztqXeDuWJJD5lrVXaEshuzVr9lCvC
-bqNqVHtY2JRoSnlvtFNQv0OmEDNmrZXOi2HEE0IupCb+PDDuql9cV6PKGmFThkCzrRbo9VniCiBi
-lVpBFxG31AOm/ZE7bWad974jhoW85DHQrsSvjqTdIF+Z8bgVyWwMC+TLQ+J6fehrtCsyd/0MZvQZ
-9oOAzYow6JrFiQsiJ3AO+qNhIa2IkEOxXUYs9yRKMx8zuaUX14UNAnmAMcfxjGo7VIom9rsAkD7X
-VGnJA6TfbxZ4xyqjDqc+W/IB475Du4BZwTSNz9tJt5UY9YmR1Ob8FbvIu0ImBA04kLNHizbHU++T
-wkDWeRFD9uUpYDmt0IOz2zozDt0N7t4fnHntvr+x///AfwHBBh2uUWHEXgAAACV0RVh0ZGF0ZTpj
-cmVhdGUAMjAxOS0xMC0yN1QxNjo1Nzo1NiswODowMNhV1NoAAAAldEVYdGRhdGU6bW9kaWZ5ADIw
-MTktMTAtMjdUMTY6NTc6NTYrMDg6MDCpCGxmAAAAAElFTkSuQmCC" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54 (76480) - https://sketchapp.com -->
+    <title>icon_hangxian_sel</title>
+    <desc>Created with Sketch.</desc>
+    <g id="页面1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linejoin="round">
+        <g id="icon-选中" transform="translate(-20.000000, -445.000000)" fill-rule="nonzero" stroke="#FFFFFF" stroke-width="2">
+            <g id="编组-51复制">
+                <g id="编组-43复制" transform="translate(0.000000, 432.000000)">
+                    <g id="icon_hangxian_sel" transform="translate(20.000000, 13.000000)">
+                        <path d="M11.5644115,22.8311742 L17.9266211,15.9146632 L6.19258305,8.6890254 L8.57465386,6.30695657 C9.12726706,5.75434384 9.95113601,5.57423371 10.683935,5.84583603 L22.8517693,10.3556839 L28.2657324,4.44485994 C29.9263116,2.63188269 32.7421868,2.5083386 34.5551656,4.16891649 C34.6031451,4.21286285 34.6501554,4.25785582 34.6961626,4.30386297 C36.4346125,6.04231134 36.4346125,8.86089304 34.6961626,10.5993414 C34.6501554,10.6453486 34.6031451,10.6903415 34.5551656,10.7342879 L28.6443366,16.1482464 L33.1541873,28.316068 C33.4257904,29.0488678 33.2456799,29.8727379 32.693066,30.4253513 L30.3109965,32.8074188 L23.0853527,21.0733905 L16.1688359,27.4355948 L17.0606385,32.2909602 C17.1200331,32.6143307 17.0166804,32.9462366 16.7841978,33.1787189 L14.9629152,35 L11.3538587,27.6461474 L4,24.0370939 L5.82128308,22.2158124 C6.05376538,21.9833302 6.38567081,21.8799778 6.70904094,21.9393722 L11.5644115,22.8311742 Z" id="路径"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
 </svg>

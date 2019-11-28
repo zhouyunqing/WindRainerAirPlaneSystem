@@ -1,13 +1,13 @@
 <template>
   <div class="wind-chart">
-    <ul class="tab">
+    <ul v-if="active == 'plane'" class="tab">
       <li :class="{sp: forecastTab == 'near'}" @click="changeForecastTab('near')">临近预报</li>
       <li :class="{sp: forecastTab == 'short'}" @click="changeForecastTab('short')">短时预报</li>
     </ul>
     <div class="content">
       <div class="content-title">
         <div>{{ params.site || 'ZBAA' }}</div>
-        <i :class="{sp: chartShow}" @click="upAndDown" />
+        <i v-if="active == 'plane'" :class="{sp: chartShow}" @click="upAndDown" />
       </div>
       <div class="content-tab">
         <div class="time">{{ time }}</div>
@@ -56,7 +56,7 @@ import windImgUrl11 from '../../../assets/images/wind11.png'
 import windImgUrl12 from '../../../assets/images/wind12.png'
 import utilTime from '@/utils/time'
 export default {
-  props: ['time', 'site', 'detail'],
+  props: ['time', 'site', 'detail', 'active'],
   data() {
     return {
       forecastTab: 'near', // near：临近预报；short：短时预报
@@ -119,12 +119,23 @@ export default {
   watch: {
     'site'(n, o) {
       this.setChartName()
+    },
+    'active'() {
+      this.setActiveWind()
     }
   },
   mounted() {
     this.setChartName()
   },
   methods: {
+    setActiveWind() {
+      this.forecastTab = 'near'
+      if (this.active == 'section') {
+        this.chartShow = false
+      } else {
+        this.chartShow = true
+      }
+    },
     setChartName() {
       switch (this.chartTab) {
         case 'RH':
