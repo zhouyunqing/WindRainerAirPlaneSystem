@@ -211,7 +211,7 @@ export default {
     },
     potail(Echarts) {
       const Data = this.setOptionData()
-      const colors = ['#FF6863', '#6EAB40']
+      const colors = ['#0BD3A7', '#FFBE3A','#FF2C55']
       const option = {
         color: colors,
         backgroundColor: 'transparent',
@@ -220,6 +220,8 @@ export default {
           axisPointer: { type: 'cross' },
           formatter: (params, ticket, callback) => {
             const index = params[0].dataIndex
+            // var res = ``
+            // let url = "../../../../public/images/icon_xiangxia@2x.png"
             const Htm = `${(Data.times[index]).substring(0, 16)}<br>
                     ${this.chartTit.tooltip}:${this.setchartData(Data[this.chartTab][index])}${this.chartTit.tooltipUnit}&nbsp;&nbsp;
                     风向:${parseInt(Data.DIR[index])}°`
@@ -238,8 +240,8 @@ export default {
             position: 'bottom',
             offset: 0,
             nameTextStyle: { color: '#BBBBBB' },
-            axisLabel: { color: '#BBBBBB' },
-            axisTick: { show: false },
+            axisLabel: { interval:5,color: '#BBBBBB' },
+            axisTick: {alignWithLabel: true,show: true ,inside: true},
             data: Data.timeData
           },
           {
@@ -249,15 +251,15 @@ export default {
             offset: 20,
             nameGap: 35,
             axisTick: { show: false },
-            axisLine: { show: false },
-            axisLabel: {
+            axisLine: { show: false },            
+            axisLabel: {              
               show: true,
               textStyle: {
                 color: 'rgba(136, 136, 136, 1)',
                 fontSize: 14,
                 lineHeight: 20
               },
-              interval: 0,
+              interval: 5,
               formatter: value => {
                 return '{' + this.windDen(value) + '| }'
               },
@@ -358,7 +360,7 @@ export default {
               padding: [0, 0, -38]
             },
             nameLocation: 'start',
-            data: Data.DIR
+            data: Data.DIR,
           },
           {
             type: 'category',
@@ -369,9 +371,9 @@ export default {
             position: 'bottom',
             offset: 0,
             nameTextStyle: { color: '#BBBBBB' },
-            axisLabel: { color: '#BBBBBB' },
+            axisLabel: { interval: 5,color: '#BBBBBB' },
             axisTick: { show: false },
-            data: Data.timeData
+           // data: Data.timeData
           }
         ],
         yAxis: [
@@ -390,57 +392,92 @@ export default {
             // splitLine: { show: this.chartTab == 'SPD', lineStyle: { color: '#555' }}
           }
         ],
-        visualMap: {
-          top: 10,
-          right: -100,
-          smooth: false,
-          pieces: [{
-            gt: 0,
-            lte: 5,
-            color: '#0BD3A7'
-          }, {
-            gt: 5,
-            lte: 17,
-            color: '#FFBE3A'
-          }, {
-            gt: 17,
-            color: '#FF2C55'
-          }],
-          outOfRange: {
-            color: '#999'
-          }
-        },
+         visualMap: {
+           top: 10,
+           right: -100,
+           smooth: false,
+           pieces: [{
+             gt: 0,
+             lte: 5,
+             color: colors[0]
+           }, {
+             gt: 5,
+             lte: 17,
+             color: colors[1]
+          },{
+             gt: 17,
+             color: colors[2]
+           }],
+           outOfRange: {
+             color: '#999'
+           }
+         },
         series: [
           {
             name: this.chartTit.tooltip,
             type: 'line',
             step: false,
             color: '#555',
-            // color: {
-            //   type: 'linear',
-            //   x: 0,
-            //   y: 0,
-            //   x2: 0,
-            //   y2: 1,
-            //   colorStops: [{
-            //     offset: 0, color: colors[0] // 0% 处的颜色
-            //   }, {
-            //     offset: 1, color: colors[1] // 100% 处的颜色
-            //   }],
-            //   global: false
-            // },
-            // smooth: true,
+            //  color: {
+            //    type: 'linear',
+            //    x: 0,
+            //    y: 0,
+            //    x2: 0,
+            //    y2: 1,
+            //    colorStops: [{
+            //     offset: 0, color: colors[4] // 0% 处的颜色
+            //    }, {
+            //     offset: 0.25, color: colors[3] // 25% 处的颜色
+            //    },{
+            //     offset: 0.5, color: colors[2] // 50% 处的颜色
+            //    },{
+            //     offset: 0.75, color: colors[1] // 75% 处的颜色
+            //    },{
+            //     offset: 1, color: colors[0] // 100% 处的颜色
+            //    }],
+            //    global: false
+            //  },
+            smooth: false,
             data: Data[this.chartTab],
+            symbol: 'diamond',
+            itemStyle: {
+              normal: {
+                borderColor: '#fff',
+                borderWidth: 1,
+              }
+            },
             markLine: {
+              label:{
+                    show:false,
+                },
+              normal:{
+                borderWidth:1,
+                lineStyle:2,
+                label:{
+                  formatter:'',
+                }
+              },
+              areaStyle: {
+                color: new this.$echarts.graphic.LinearGradient(0, 0.2, 0, 2, [{
+                    offset: 0,
+                    color: 'rgba(0,255,220,0.15)'
+                }, {
+                    offset: 1,
+                    color: 'rgba(5,137,42,0.001)'
+                }])
+              },
               symbol: 'none',
-              silent: true,
+              silent: false,
               data: [{
+                name:'',
+                xAxis: '当前'
+              }, {
                 yAxis: 5
               }, {
                 yAxis: 17
               }]
             },
-            label: { normal: { show: true, position: 'top' }}
+            label: { normal: { show: false, position: 'top' }}
           }
         ]
       }
@@ -497,9 +534,26 @@ export default {
         sTime = nowTime - 12 * 60 * 60 * 1000
       }
       for (var i = 0; i < this.info.DIR.length; i++) {
-        const time = utilTime.timeObj(sTime + i * 60 * 60 * 1000)
-        times.push(`${time.y}-${time.m}-${time.d} ${time.hh}:00:00`)
-        if (nowTime == sTime + i * 60 * 60 * 1000) {
+        const time = utilTime.timeObj(sTime + i * 10 * 60 * 1000)
+        var mm = (time.mm)
+        
+          // 如果当前时间处于时间段内，返回true，否则返回false
+        if (mm < 10 && mm >= 0) {
+          mm = 0+"0"
+        }else if(mm < 20 && mm >=10){
+          mm = 10
+        }else if(mm < 30 && mm >=20){
+          mm = 20
+        }else if(mm < 40 && mm >=30){
+          mm = 30
+        }else if(mm < 50 && mm >=40){
+          mm = 40
+        }else if(mm <= 59 && mm >=50){
+          mm = 50
+        }
+        
+        times.push(`${time.y}-${time.m}-${time.d} ${time.hh}:${mm}:00`)
+        if (nowTime == sTime + i * 10 * 60 * 1000) {
           timeData.push('当前')
           _this.chartIndex = i
         } else {
@@ -533,7 +587,8 @@ export default {
           info = parseFloat(data).toFixed(1)
           break
         case 'T':
-          info = parseInt(data - 272.15)
+          info = parseInt(data)
+          console.log(info)
           break
         case 'SLP':
           info = parseInt(data)
@@ -635,7 +690,7 @@ export default {
     .content-tab {
       display: flex;
       color: #fff;
-      height: 0.82rem;
+      height: 0.6rem;
       align-items: center;
       padding: 0 0.16rem;
       .time {
@@ -713,11 +768,11 @@ export default {
       -webkit-transition: height 0.3s; /* Safari 和 Chrome */
       -o-transition: height 0.3s; /* Opera */
       &.sp {
-        height: 2.2rem;
+        height: 1.9rem;
       }
       .chart-wrap {
-        height: 2.2rem;
-        padding-bottom: 0.16rem;
+        height: 1.9rem;
+        // padding-bottom: 0.16rem;
       }
     }
   }

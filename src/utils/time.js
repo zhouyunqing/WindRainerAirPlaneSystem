@@ -91,7 +91,7 @@ const formatNumber = n => {
   return n[1] ? n : '0' + n
 }
 
-module.exports = {
+export default {
   timeObj: timeObj,
   formatTime: formatTime,
   formatDate: formatDate
