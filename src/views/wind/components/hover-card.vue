@@ -41,7 +41,7 @@ export default {
 <style lang="scss" scoped>
 .box-card {
   position: fixed;
-  z-index: 1;
+  z-index: 100;
   font-size: 0.14rem;
   font-weight: 500;
   color: #888;

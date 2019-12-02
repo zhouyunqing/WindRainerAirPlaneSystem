@@ -91,11 +91,6 @@ const formatNumber = n => {
   return n[1] ? n : '0' + n
 }
 
-// module.exports = {
-//   timeObj: timeObj,
-//   formatTime: formatTime,
-//   formatDate: formatDate
-// }
 export default {
   timeObj: timeObj,
   formatTime: formatTime,

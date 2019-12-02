@@ -44,7 +44,7 @@
     <!-- 平面风展示 底部图表 end -->
 
     <!-- 九站点 hover时展示的 card start -->
-    <hoverCard v-if="isHoverShow && hoverSite != 'ZBAA'" :index="hoverIndex" :site="hoverSite" :detail="info" :style="hoverStyle" :time="params.starttime" />
+    <hoverCard v-if="isHoverShow && hoverSite != 'ZBAA'" :index="hoverIndex" :site="hoverSite" :detail="info" :style="hoverStyle" :time="dataStartTime" />
     <!-- 九站点 hover时展示的 card end -->
 
     <!-- 剖面风 start -->
@@ -248,10 +248,12 @@ export default {
       info: {},
       ip: 'http://161.189.11.216:8090',
       url: '/gis/BJPEK/RunwayPointForecastData',
+      fsUrl: '/gis/BJPEK/RunwaysForecast',
       params: {
         starttime: '',
         endtime: '',
         site: '',
+        frequency: '10min',
         dataset: 'RH,SLP,T,PSFC,DIR,RAIN,SPD,U,V',
         resolution: '1000M',
         nsukey: '1MwqTdFv7hAds1SqfakVA+6H/9i2DGzSdQ2FeAkGnsRzyYPhHlRhE57L3D2K1zVP7bHZC8sT1FTrzxBoFa17MdzAMvyreQb51aAooPSDY0R+QHEXGXYDWNA0U77sHyKHNAMv/zl5yg6t1ofgEX94P2h6cyRNynxI9ESUoRn6PXgLaf0mCe7HxlFN94q6yu5q'
@@ -284,7 +286,9 @@ export default {
         }
       },
       enlarg: false,
-      enlargBottom: 3.3
+      enlargBottom: 3.3,
+      fsData: [],
+      dataStartTime: ''
     }
   },
   mounted() {
@@ -354,19 +358,52 @@ export default {
           this.$message.error(res.data.returnMessage)
         }
       })
+      this.$store.dispatch('station/getRankInfo', {
+        url: this.ip + this.fsUrl,
+        params: {
+          datacode: 'ZBAA',
+          airport: 'ZBAA',
+          runway: 'runway1,runway2,runway3',
+          starttime: '2019-11-26 16:00:00',
+          endtime: '2019-11-26 16:59:59',
+          dataset: 'SPD',
+          resolution: '1000M',
+          hight: '0010m'
+        }
+      }).then(res => {
+        if (res.data.returnCode * 1 === 0) {
+          this.fsData = res.data.runways
+        } else {
+          this.$message.error(res.data.returnMessage)
+        }
+      })
     },
     getStartTime() {
       const nowTime = new Date().getTime()
+      const dataStartTime = utilTime.timeObj(nowTime)
+      var mm = dataStartTime.mm
+      if (mm < 10 && mm >= 0) {
+        mm = 0 + '0'
+      } else if (mm < 20 && mm >= 10) {
+        mm = 10
+      } else if (mm < 30 && mm >= 20) {
+        mm = 20
+      } else if (mm < 40 && mm >= 30) {
+        mm = 30
+      } else if (mm < 50 && mm >= 40) {
+        mm = 40
+      } else if (mm <= 59 && mm >= 50) {
+        mm = 50
+      }
+      this.dataStartTime = `${dataStartTime.y}-${dataStartTime.m}-${dataStartTime.d} ${dataStartTime.hh}:${mm}:00`
       if (this.forecastTab === 'near') {
         const sTime = utilTime.timeObj(nowTime - 6 * 60 * 60 * 1000)
-        this.hoverIndex = 6
-        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
-        // return '2019-11-22 8:00:00'
+        this.hoverIndex = 6 * 6
+        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:${mm}:00`
       } else {
         const sTime = utilTime.timeObj(nowTime - 12 * 60 * 60 * 1000)
-        this.hoverIndex = 12
-        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
-        // return '2019-11-20 8:00:00'
+        this.hoverIndex = 12 * 6
+        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:${mm}:00`
       }
     },
     getEndTime() {
@@ -410,23 +447,45 @@ export default {
           url: 'http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8'
         })
       )
+      // 高德卫星   https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}   http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8
+      // 限制视角高度
+      this.viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2500// 相机的高度的最小值
+		  this.viewer.scene.screenSpaceCameraController.maximumZoomDistance = 18000000 // 相机高度的最大值
       // 摄像机定位
       const camera = this.viewer.camera
       camera.setView({
         destination: Cesium.Cartesian3.fromDegrees(
-          116.576534748692,
-          40.0780145185529,
-          500
-        ),
-        orientation: {
-          heading: 359.668148999818,
-          pitch: -88.8329210486802,
-          roll: 0.0
-        }
+          116.595534748692,
+          40.0580145185529,
+          21961.9883961571
+        )
+        /* orientation: {
+          heading: Cesium.Math.toRadians(359.668148999818),
+          pitch: Cesium.Math.toRadians(-88.8329210486802),
+          roll: Cesium.Math.toRadians(0)
+        }*/
       })
       this.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
         Cesium.ScreenSpaceEventType.LEFT_CLICK
       )
+
+      var PI = this.viewer.entities.add({
+        rectangle: {
+          coordinates: Cesium.Rectangle.fromDegrees(116.423341433386, 39.992478621508, 116.765146586308, 40.135425293208),
+          material: '../images/Pic2.png',
+          height: 2
+        }
+      })
+
+      setTimeout(() => {
+        delPI()
+      }, 4000)
+      var _this = this
+      function delPI() {
+        _this.viewer.entities.remove(PI)
+      }
+
+      /*
       // 定位北京首都机场
       this.viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(
@@ -439,7 +498,8 @@ export default {
           pitch: Cesium.Math.toRadians(-88.8329210486802),
           roll: Cesium.Math.toRadians(0)
         }
-      })
+      })*/
+
       this.viewer._cesiumWidget._creditContainer.style.display = 'none'
       Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjY5ODg0MS1lZTMxLTRmMGMtOTRhYi00N2M2YjQ3ZDMzNjgiLCJpZCI6NDgwLCJpYXQiOjE1MjUyNTE1Nzh9.5Mi3ijReKCRQ_Shupv2w-wl2eJBRLOOW3Bmeq0IL5Y4'
       const val = 2
@@ -630,12 +690,9 @@ export default {
           windDataMap,
           particleSystemOptionsMap
         )
+
         this.drawWindHeatLayer(windDataMap)
         this.viewer.entities.add({
-          show: this.isLegendChange,
-          id: 'runway1',
-          name: 'Runway',
-          station: 'runway1',
           polyline: {
             // 多线段
             positions: Cesium.Cartesian3.fromDegreesArray([
@@ -646,16 +703,11 @@ export default {
             ]), // 方位
             width: 10, // 折线的宽度（以像素为单位）
             material: new Cesium.ImageMaterialProperty({
-              image: this.drawRunWays([
-                '#0BD3A7',
-                '#86C86F',
-                '#FFBE3A',
-                '#D8C24C',
-                '#0BD3A7'
-              ])
+              image: this.drawRunWays(this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L']))
             })
           }
         })
+
         this.viewer.entities.add({
           show: !this.isLegendChange,
           id: 'wall1',
@@ -694,13 +746,7 @@ export default {
             ]), // 方位
             width: 10, // 折线的宽度（以像素为单位）
             material: new Cesium.ImageMaterialProperty({
-              image: this.drawRunWays([
-                '#FFBE3A',
-                '#FFBE3A',
-                '#FFBE3A',
-                '#FF7C46',
-                '#FF3752'
-              ])
+              image: this.drawRunWays(this.getRunWayColor(this.fsData[1], ['18L', 'MID2', '36R']))
             })
           }
         })
@@ -742,13 +788,7 @@ export default {
             ]), // 方位
             width: 10, // 折线的宽度（以像素为单位）
             material: new Cesium.ImageMaterialProperty({
-              image: this.drawRunWays([
-                '#FFBE3A',
-                '#15D2A3',
-                '#42CE8E',
-                '#A4C663',
-                '#FEBE3B'
-              ])
+              image: this.drawRunWays(this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01']))
             }),
             shadows: Cesium.ShadowMode.ENABLED
           }
@@ -774,15 +814,15 @@ export default {
             minimumHeights: [100, 100]
           }
         })
-        this.drawPoint(' 18R ', 116.575473, 40.10303, 0)
-        this.drawPoint('MID1', 116.577925, 40.088623, 0)
-        this.drawPoint(' 36L ', 116.580113, 40.074035, 0)
-        this.drawPoint(' 18L ', 116.600573, 40.089862, 1)
-        this.drawPoint('MID2', 116.603528, 40.07174, 1)
-        this.drawPoint(' 36R ', 116.605809, 40.056497, 1)
-        this.drawPoint('  19  ', 116.617997, 40.094787, 2)
-        this.drawPoint('MID3', 116.621128, 40.074618, 2)
-        this.drawPoint('  01  ', 116.623469, 40.059059, 2)
+        this.drawPoint(' 18R ', 116.575473, 40.10303, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[0], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[0])
+        this.drawPoint('MID1', 116.577925, 40.088623, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[1], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[1])
+        this.drawPoint(' 36L ', 116.580113, 40.074035, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[2], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[2])
+        this.drawPoint(' 18L ', 116.600573, 40.089862, 1, this.getRunWayColor(this.fsData[1], ['18L', 'MID2', '36R'])[0], this.getPointColor(this.fsData[1], ['18L', 'MID2', '36R'])[0])
+        this.drawPoint('MID2', 116.603528, 40.07174, 1, this.getRunWayColor(this.fsData[1], ['18L', 'MID2', '36R'])[1], this.getPointColor(this.fsData[1], ['18L', 'MID2', '36R'])[1])
+        this.drawPoint(' 36R ', 116.605809, 40.056497, 1, this.getRunWayColor(this.fsData[1], ['18L', 'MID2', '36R'])[2], this.getPointColor(this.fsData[1], ['18L', 'MID2', '36R'])[2])
+        this.drawPoint('  19  ', 116.617997, 40.094787, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[0], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[0])
+        this.drawPoint('MID3', 116.621128, 40.074618, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[1], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[1])
+        this.drawPoint(' 01 ', 116.623469, 40.059059, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[2], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[2])
         var handlerVideo = new Cesium.ScreenSpaceEventHandler(
           this.viewer.scene.canvas
         )
@@ -850,6 +890,33 @@ export default {
       //   resData = resData.data
       // })
     },
+    getRunWayColor(runWay, arr) {
+      const runWayColor = []
+      arr.forEach(item => {
+        if (runWay[item].SPD[0] > 0 && runWay[item].SPD[0] < 5) {
+          runWayColor.push('#0BD3A7')
+        } else if (runWay[item].SPD[0] >= 5 && runWay[item].SPD[0] < 17) {
+          runWayColor.push('#FFBE3A')
+        } else if (runWay[item].SPD[0] >= 17) {
+          runWayColor.push('#FF2C55')
+        }
+      })
+      return runWayColor
+    },
+    getPointColor(runWay, arr) {
+      const backColor = []
+      arr.forEach(item => {
+        if (runWay[item].SPD[0] > 0 && runWay[item].SPD[0] < 5) {
+          backColor.push('#DDFBF5')
+        } else if (runWay[item].SPD[0] >= 5 && runWay[item].SPD[0] < 17) {
+          backColor.push('#FFF1D4')
+        } else if (runWay[item].SPD[0] >= 17) {
+          backColor.push('#FFD8DF')
+        }
+      })
+      return backColor
+    },
+
     drawWindHeatLayer(data) { // 绘制风场热力图
       var points = []
       var max = 0
@@ -900,7 +967,7 @@ export default {
      * @returns {Element|HTMLElementTagNameMap[string]}
      */
     drawRunWays: function(colors) {
-      var point = [0, 0.25, 0.5, 0.75, 1]
+      var point = [0, 0.5, 1]
       var canvas = document.createElement('canvas') // 创建canvas标签
       var ctx = canvas.getContext('2d')
       var grd = ctx.createLinearGradient(0, 0, 300, 0)
@@ -921,7 +988,7 @@ export default {
      * @param lat 站点坐标
      * @param lng 站点坐标
      */
-    drawPoint(text, lat, lng, runway) {
+    drawPoint(text, lat, lng, runway, color, backcolor) {
       var r =
         '<table style="width: 200px;"><tr><th scope="col" colspan="4"  style="text-align:center;font-size:15px;">' +
         '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"></td></tr></table>'
@@ -932,13 +999,13 @@ export default {
         runway: runway,
         type: 'point',
         position: Cesium.Cartesian3.fromDegrees(lat, lng),
-        backColor: '#FFF1D4',
-        textColor: '#FFDB92',
+        backColor: backcolor,
+        textColor: color,
         label: {
           text: text,
           font: '12px Source Han Sans CN', // 字体样式
-          fillColor: Cesium.Color.fromCssColorString('#FFDB92'), // 字体颜色
-          backgroundColor: Cesium.Color.fromCssColorString('#FFF1D4'), // 背景颜色
+          fillColor: Cesium.Color.fromCssColorString(color), // 字体颜色
+          backgroundColor: Cesium.Color.fromCssColorString(backcolor), // 背景颜色
           showBackground: true, // 是否显示背景颜色
           style: Cesium.LabelStyle.FILL_AND_OUTLINE, // label样式 TEXT的样式填充以及边框
           outlineWidth: 1,
@@ -951,6 +1018,7 @@ export default {
         tooltip: { html: r, anchor: [0, -12] }
       })
     },
+
     /**
      * 站点悬浮事件，获取当前站点时间数据
      * @param movement
