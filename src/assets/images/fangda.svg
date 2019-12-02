@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54 (76480) - https://sketchapp.com -->
+    <title>icon_fangda</title>
+    <desc>Created with Sketch.</desc>
+    <g id="风" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="切图01" transform="translate(-330.000000, -282.000000)" fill-rule="nonzero" stroke="#FFFFFF" stroke-width="1.5">
+            <g id="icon_fangda.png" transform="translate(330.000000, 283.000000)">
+                <g id="编组-12" transform="translate(5.000000, 5.793103)">
+                    <g id="编组-11" transform="translate(1.000000, 0.000000)">
+                        <polyline id="路径" points="0 4.34482759 0 0 0 0 4.5 0"></polyline>
+                        <path d="M0,0 C2.11696312,2.04396439 3.61696312,3.49224025 4.5,4.34482759" id="路径"></path>
+                    </g>
+                    <g id="编组-11复制" transform="translate(14.500000, 2.413793) scale(-1, 1) translate(-14.500000, -2.413793) translate(12.000000, 0.000000)">
+                        <polyline id="路径" points="0 4.34482759 0 0 0 0 4.5 0"></polyline>
+                        <path d="M0,0 C2.11696312,2.04396439 3.61696312,3.49224025 4.5,4.34482759" id="路径"></path>
+                    </g>
+                </g>
+                <g id="编组-12复制" transform="translate(14.000000, 19.793103) scale(1, -1) translate(-14.000000, -19.793103) translate(5.000000, 17.379310)">
+                    <g id="编组-11" transform="translate(1.000000, 0.000000)">
+                        <polyline id="路径" points="0 4.34482759 0 0 0 0 4.5 0"></polyline>
+                        <path d="M0,0 C2.11696312,2.04396439 3.61696312,3.49224025 4.5,4.34482759" id="路径"></path>
+                    </g>
+                    <g id="编组-11复制" transform="translate(14.500000, 2.413793) scale(-1, 1) translate(-14.500000, -2.413793) translate(12.000000, 0.000000)">
+                        <polyline id="路径" points="0 4.34482759 0 0 0 0 4.5 0"></polyline>
+                        <path d="M0,0 C2.11696312,2.04396439 3.61696312,3.49224025 4.5,4.34482759" id="路径"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

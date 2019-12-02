@@ -1,8 +1,8 @@
 <template>
   <div :class="classObj" class="app-wrapper">
-    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
+    <!-- <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" /> -->
     <!-- <sidebar class="sidebar-container"/>
-    
+
     <div class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />
@@ -10,11 +10,10 @@
       <app-main />
     </div> -->
     <div class="sidebarcontainer-all">
-      <sidebar class="sidebar-container"/>
+      <sidebar class="sidebar-container" />
       <navbar class="navbar-container" />
     </div>
-    
-    
+
     <div class="main-container">
       <!-- <div :class="{'fixed-header':fixedHeader}">
         <navbar />
@@ -27,7 +26,6 @@
 <script>
 import { Navbar, Sidebar, AppMain } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
-
 
 export default {
   name: 'Layout',
@@ -107,6 +105,5 @@ export default {
   .sidebar-container{
     height: 5rem;
   }
-
 
 </style>

@@ -196,6 +196,7 @@ export default {
     },
     upAndDown() {
       this.chartShow = !this.chartShow
+      this.$emit('changeHeight', this.chartShow)
     },
     changeTab(name) {
       if (name == this.chartTab) return
@@ -564,6 +565,7 @@ export default {
   bottom: 0.2rem;
   left: 1rem;
   right: 0.2rem;
+  width: calc(100vw - 120px);
   font-size: 0.14rem;
   text-align: left;
   font-weight: 500;

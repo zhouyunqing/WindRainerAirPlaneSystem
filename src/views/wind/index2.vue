@@ -38,7 +38,7 @@
 
     <!-- 平面风展示 底部图表 start -->
     <div v-show="!sectionwindDetail">
-      <bottomCard v-if="!!info.T" :time="day" :site="clickSite" :detail="info" :active="activeWind" @change="changeForecastTab" />
+      <bottomCard v-if="!!info.T" :time="day" :site="clickSite" :detail="info" :active="activeWind" @change="changeForecastTab" @changeHeight="changeHeight" />
     </div>
 
     <!-- 平面风展示 底部图表 end -->
@@ -167,6 +167,11 @@
       </article>
     </div>
     <!-- 剖面风 end -->
+
+    <!-- 全屏控制 start -->
+    <!-- <div v-if="!enlarg" class="control-enlarg" :style="{ bottom: enlargBottom + 'rem' }" @click="fullScreen" />
+    <div v-else class="control-enlarg" style="background: #ff0000;" :style="{ bottom: enlargBottom + 'rem' }" @click="exitFullscreen" /> -->
+    <!-- 全屏控制 end -->
   </div>
 </template>
 <script>
@@ -277,7 +282,9 @@ export default {
             lineWidth: 4.0
           }
         }
-      }
+      },
+      enlarg: false,
+      enlargBottom: 3.3
     }
   },
   mounted() {
@@ -292,8 +299,41 @@ export default {
       time = utilTime.timeObj(nowTime)
       this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
     }, 1000)
+    window.onresize = () => {
+      this.enlarg = document.body.scrollHeight == window.screen.height
+    }
   },
   methods: {
+    changeHeight(val) {
+      if (val) {
+        this.enlargBottom = 3.3
+      } else {
+        this.enlargBottom = 1.4
+      }
+    },
+    fullScreen() {
+      var element = document.documentElement
+      if (element.requestFullscreen) {
+        element.requestFullscreen()
+      } else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen()
+      } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen()
+      } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen()
+      }
+    },
+    exitFullscreen() {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen()
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen()
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen()
+      }
+    },
     getChartData(site) {
       const info = {}
       this.params.site = site
@@ -403,6 +443,7 @@ export default {
       this.viewer._cesiumWidget._creditContainer.style.display = 'none'
       Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjY5ODg0MS1lZTMxLTRmMGMtOTRhYi00N2M2YjQ3ZDMzNjgiLCJpZCI6NDgwLCJpYXQiOjE1MjUyNTE1Nzh9.5Mi3ijReKCRQ_Shupv2w-wl2eJBRLOOW3Bmeq0IL5Y4'
       const val = 2
+      // return
       // 加载风场
       if (val === 1) {
         this.loadNetCDF(this.urlNetCDF).then(data => {
@@ -469,6 +510,7 @@ export default {
       this.clickSite = ''
       this.getChartData('ZBAA')
       if (type == 'plane') {
+        this.changeHeight(true)
         this.isLegendChange = true
         this.sectionwindDetail = false
         for (let i = 0; i < this.pointName.length; i++) {
@@ -494,6 +536,7 @@ export default {
           }
         })
       } else {
+        this.changeHeight(false)
         this.isLegendChange = false
         for (let i = 0; i < this.pointName.length; i++) {
           const entity = this.viewer.entities.getById(this.pointName[i])
@@ -526,12 +569,12 @@ export default {
         this.wind3D.colorImage = null
       }
 
-      const jsonPath =
-        'http://161.189.11.216:8090/gis/BJPEK/ModelForecast?datacode=ABC&dataset=XLONG,XLAT,U,V&time=' +
-        time +
-        '&bbox=110,30,120,42&z=' +
-        level +
-        '&resolution=1000M' // fileOptions.dataDirectory + "wind/wind_"+time+"_L"+level+".json";
+      // const jsonPath =
+      //   'http://161.189.11.216:8090/gis/BJPEK/ModelForecast?datacode=ABC&dataset=XLONG,XLAT,U,V&time=' +
+      //   time +
+      //   '&bbox=110,30,120,42&z=' +
+      //   level +
+      //   '&resolution=1000M'
 
       getModelForecast({
         datacode: 'ABC',
@@ -542,7 +585,6 @@ export default {
         resolution: '1000M'
       }).then(resData => {
         resData = resData.data.data
-        console.log(resData)
         const data = {}
         data.dimensions = {}
         data.dimensions.lon = 120 // dimensions['lon'].size;
@@ -803,7 +845,7 @@ export default {
           }
           return strMap
         }
-      })
+      }).catch((err) => {})
       // Cesium.Resource.fetchJson({ url: jsonPath }).then(resData => {
       //   resData = resData.data
       // })
@@ -1346,6 +1388,21 @@ export default {
   font-weight: normal;
   font-style: normal;
   font-display: block;
+}
+.control-enlarg {
+  position: fixed;
+  right: 0.2rem;
+  height: 0.28rem;
+  width: 0.28rem;
+  background: #242236;
+  box-shadow: 0px 12px 32px 1px rgba(16,15,23,0.15);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: bottom 0.3s;
+  -ms-transition: bottom 0.3s;
+  -moz-transition: bottom 0.3s; /* Firefox 4 */
+  -webkit-transition: bottom 0.3s; /* Safari 和 Chrome */
+  -o-transition: bottom 0.3s; /* Opera */
 }
 .wind {
   min-height: 100%;
