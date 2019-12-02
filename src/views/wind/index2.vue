@@ -1582,14 +1582,14 @@ export default {
 }
 .wind_content {
   .myScroll_btn_div {
-    padding-left: 0.9rem;
-    padding-right: 0.2rem;
+    padding-left: 0.89rem;
+    padding-right: 0.24rem;
     display: flex;
     justify-content: space-between;
     position: absolute;
     width: 91vw;
     z-index: 1002;
-    top: 30%;
+    top: 34%;
     [class*=" el-icon-"], [class^=el-icon-] {
       color:white;
       font-size: 0.2rem;
@@ -1682,9 +1682,9 @@ export default {
     #body {
       width: calc(105vh + 11rem);
     }
-    #canvas {
-      padding-left: 0.1rem;
-    }
+    // #canvas {
+    //   padding-left: 0.1rem;
+    // }
     .bottom_div {
       width: 3vh;
       margin-right: 0.3rem;
@@ -1818,7 +1818,7 @@ export default {
   right: 0.2rem;
   .wind_footer_header {
     text-align: left;
-    margin-bottom: 0.08rem;
+    margin-bottom: 0.19rem;
     height: 0.92rem;
     .select_color {
       background: #242236 !important;
@@ -1861,20 +1861,22 @@ export default {
       width: 0.12rem;
       border-width: 0.12rem 0 0;
       border-radius: 0%;
+      border-bottom-right-radius: 2px;
+      border-bottom-left-radius: 2px;
       border-style: solid;
       height: 0.1rem;
-      border-color: #fff2f2f2 transparent;
+      border-color: #F2F2F2 transparent;
     }
     /deep/.el-slider__button:before {
       content: "";
       position: absolute;
       height: 0;
       width: 0;
-      top: -0.24rem;
+      top: -0.2rem;
       left: 0;
       border-left: 0.06rem solid transparent;
       border-right: 0.06rem solid transparent;
-      border-bottom: 0.12rem solid #fff2f2f2;
+      border-bottom: 0.08rem solid #F2F2F2;
     }
     .title {
       display: flex;
