@@ -11,10 +11,12 @@ import vueResource from 'vue-resource'
 import App from './App'
 import store from './store'
 import router from './router'
-import '@/utils/rem.js'
+// import '@/utils/rem.js'
 import '@/icons' // icon
 import '@/permission' // permission control
 import moment from 'moment'
+
+// import 'lib-flexible/flexible.js'
 
 /**
  * If you don't want to use mock-server

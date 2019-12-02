@@ -48,6 +48,13 @@
 
     <!-- 剖面风 start -->
     <div v-show="activeWind == 'section' && sectionwindDetail" class="shadow">
+      <div class="wind_header_icon">
+        <img v-if="!isDetail" src="../../assets/images/profileIcon.png">
+        <span v-if="!isDetail" @click="detail(true)">详细</span>
+        <img v-if="isDetail" src="../../assets/images/reduction.png">
+        <span v-if="isDetail" @click="detail(false)">还原</span>
+      </div>
+
       <article class="wind_content">
         <div class="myScroll_btn_div">
           <div class="myScroll_btn el-icon-arrow-left" @click="moveMyScroll('left')" />
@@ -191,6 +198,7 @@ export default {
       colorImage: null,
       entity: null,
       isHoverShow: false,
+      isDetail: false,
       gradientWind: {
         '1.0': 'rgb(255,255,0)',
         '0.9': 'rgb(0,255,0)',
@@ -359,10 +367,15 @@ export default {
       if (this.forecastTab === 'near') {
         const sTime = utilTime.timeObj(nowTime + 6 * 60 * 60 * 1000)
         return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
+        // return '2019-11-22 20:00:00'
       } else {
         const sTime = utilTime.timeObj(nowTime + 24 * 60 * 60 * 1000)
         return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
+        // return '2019-11-21 22:00:00'
       }
+    },
+    detail(type) {
+      this.isDetail = type
     },
     changeForecastTab(val) {
       this.forecastTab = val
@@ -461,7 +474,7 @@ export default {
         const time0 = utilTime.timeObj(nowTime)
         // const time = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
         const level = 0
-        const time = '2019-11-13%2000:00:00';
+        const time = '2019-11-13%2000:00:00'
         this.loadwind(time, level)
       }
     },
@@ -506,7 +519,7 @@ export default {
       const nowTime = new Date().getTime()
       const time0 = utilTime.timeObj(nowTime)
       // const time2 = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:00:00`
-      const time2 = '2019-11-13%2000:00:00';
+      const time2 = '2019-11-13%2000:00:00'
       this.loadwind(time2, this.heightLevel)
     },
     windToggle(type) {
@@ -1265,7 +1278,7 @@ export default {
       const nowTime = new Date().getTime()
       const time0 = utilTime.timeObj(nowTime)
       // const timestr = '2019-11-01%20' + secondArray[0] + ':' + secondArray[1] + ':00'
-      const timestr = `${time0.y}-${time0.m}-${time0.d}%20${time0.hh}:${time0.mm}:00`
+      const timestr = `${time0.y}-${time0.m}-${time0.d}%20${secondArray[0]}:${secondArray[1]}:00`
       request({
         url:
           'http://161.189.11.216:8090/gis/BJPEK/ModelForecast/Parabolic?dataCode=ABC&dataSet=XLONG,XLAT,hight,U,V,W&time=' +
@@ -1470,6 +1483,23 @@ export default {
   z-index: 998;
   background-color: rgba(0, 0, 0, 0.5);
   display: block;
+}
+.wind_header_icon {
+  position: fixed;
+  right: 0.2rem;
+  top: 0.2rem;
+  display: flex;
+  span {
+    cursor: pointer;
+    line-height: 0.4rem;
+    font-size: 0.15rem;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: rgba(0, 255, 71, 1);
+    line-height: 21px;
+    text-shadow: 0px 5px 5px rgba(36, 34, 54, 0.14);
+    text-decoration: underline;
+  }
 }
 .wind_content {
   position: absolute;
