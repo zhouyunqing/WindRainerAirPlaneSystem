@@ -1,22 +1,22 @@
 <template>
   <div v-if="!!space.length" class="slider">
     <div ref="slider" class="slider-wrap" @click="clickSlider($event)">
-      <span v-for="(item, i) in space" :key="i" :class="{sp: item.val == 1500}" :data-key="item.key" @mousemove="hoverSapn($event, i)" @click="clickSpan($event, i)">
-        <i v-if="item.val == 1500">1500m</i>
+      <span v-for="(item, i) in space" :key="i" :class="{sp: item.key == 13}" :data-key="item.key" @mousemove="hoverSapn($event, i)" @click="clickSpan($event, i)">
+        <i v-if="item.key == 13">{{ item.val }}</i>
       </span>
       <div ref="cardSp" class="slider-card sp" :style="{ top: spClientY + 'px' }">
         <div v-if="!!space[spaceSpIndex].hPa">{{ space[spaceSpIndex].hPa }}hPa</div>
         <div class="num">
-          <span>{{ space[spaceSpIndex].val }}m</span>
-          <span>{{ space[spaceSpIndex].ft }}ft</span>
+          <span>{{ space[spaceSpIndex].val }}</span>
+          <span v-if="!!space[spaceSpIndex].ft">{{ space[spaceSpIndex].ft }}ft</span>
         </div>
       </div>
     </div>
     <div ref="card" class="slider-card" :style="{ top: clientY + 'px' }" @mousedown="dragSliderStart($event)">
       <div v-if="!!space[spaceIndex].hPa">{{ space[spaceIndex].hPa }}hPa</div>
       <div class="num">
-        <span>{{ space[spaceIndex].val }}m</span>
-        <span>{{ space[spaceIndex].ft }}ft</span>
+        <span>{{ space[spaceIndex].val }}</span>
+        <span v-if="!!space[spaceIndex].ft">{{ space[spaceIndex].ft }}ft</span>
       </div>
     </div>
   </div>
@@ -47,11 +47,15 @@ export default {
       }).then(res => {
         res.data.data.forEach(item => {
           const val = item.value.split('/')
-          item.val = val[0]
+          item.val = val[0] + 'm'
           item.ft = parseInt(Number(val[0]) * 3.28)
           item.hPa = Number(val[1]) || 0
         })
         this.space = [].concat(res.data.data).reverse()
+        this.space.push({
+          val: '地面',
+          key: '0'
+        })
         return this.space
       }).then(res => {
         const sTop = this.$refs.slider.offsetTop
@@ -90,8 +94,12 @@ export default {
         const sHeight = this.$refs.slider.offsetHeight
         if (e.clientY >= (sTop + sHeight - cHeight)) {
           this.clientY = sTop + sHeight - cHeight
+          this.spaceIndex = this.space.length - 1
+          return
         } else if (e.clientY - sTop <= 0) {
           this.clientY = sTop - cHeight
+          this.spaceIndex = 0
+          return
         } else {
           this.clientY = e.clientY - cHeight
         }
@@ -105,7 +113,7 @@ export default {
     },
     setIndex(y) {
       const sHeight = this.$refs.slider.offsetHeight
-      const sp = (sHeight / this.space.length).toFixed(2)
+      const sp = sHeight / this.space.length
       this.space.forEach((item, i) => {
         const h = y - item.sp
         if (h > 0 && h < sp) {
@@ -205,7 +213,9 @@ export default {
     .num {
       display: flex;
       justify-content: space-between;
-      min-width: 1rem;
+      span {
+        min-width: 0.5rem;
+      }
     }
   }
 }
