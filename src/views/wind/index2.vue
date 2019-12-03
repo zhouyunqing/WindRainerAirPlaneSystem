@@ -189,7 +189,7 @@ import ColorImage from '@/components/wind/ColorImage'
 
 import windImgUrl from '../../assets/images/windImg.png'
 import utilTime from '@/utils/time'
-import { getRunwayPointForecastData, getParabolic, getModelForecast } from '@/api/wind'
+import { getRunwayPointForecastData, getParabolic, getModelForecast, getRunwaysForecast } from '@/api/wind'
 export default {
   name: 'CesiumContainer',
   components: {
@@ -358,18 +358,19 @@ export default {
           this.$message.error(res.data.returnMessage)
         }
       })
-      this.$store.dispatch('station/getRankInfo', {
-        url: this.ip + this.fsUrl,
-        params: {
-          datacode: 'ZBAA',
-          airport: 'ZBAA',
-          runway: 'runway1,runway2,runway3',
-          starttime: '2019-11-26 16:00:00',
-          endtime: '2019-11-26 16:59:59',
-          dataset: 'SPD',
-          resolution: '1000M',
-          hight: '0010m'
-        }
+      const nowTime = new Date().getTime()
+      const sTime = utilTime.timeObj(nowTime)
+      getRunwaysForecast({
+        datacode: 'ZBAA',
+        airport: 'ZBAA',
+        runway: 'runway1,runway2,runway3',
+        starttime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`,
+        endtime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:59:59`,
+        // starttime: '2019-11-26 16:00:00',
+        // endtime: '2019-11-26 16:59:59',
+        dataset: 'SPD',
+        resolution: '1000M',
+        hight: '0010m'
       }).then(res => {
         if (res.data.returnCode * 1 === 0) {
           this.fsData = res.data.runways
@@ -377,6 +378,25 @@ export default {
           this.$message.error(res.data.returnMessage)
         }
       })
+      // this.$store.dispatch('station/getRankInfo', {
+      //   url: this.ip + this.fsUrl,
+      //   params: {
+      //     datacode: 'ZBAA',
+      //     airport: 'ZBAA',
+      //     runway: 'runway1,runway2,runway3',
+      //     starttime: '2019-11-26 16:00:00',
+      //     endtime: '2019-11-26 16:59:59',
+      //     dataset: 'SPD',
+      //     resolution: '1000M',
+      //     hight: '0010m'
+      //   }
+      // }).then(res => {
+      //   if (res.data.returnCode * 1 === 0) {
+      //     this.fsData = res.data.runways
+      //   } else {
+      //     this.$message.error(res.data.returnMessage)
+      //   }
+      // })
     },
     getStartTime() {
       const nowTime = new Date().getTime()
@@ -640,6 +660,7 @@ export default {
         datacode: 'ABC',
         dataset: 'XLONG,XLAT,U,V',
         time: time,
+        // time: '2019-12-02 11:00:00',
         bbox: '110,30,120,42',
         z: level,
         resolution: '1000M'
