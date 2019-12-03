@@ -366,8 +366,8 @@ export default {
         runway: 'runway1,runway2,runway3',
         starttime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`,
         endtime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:59:59`,
-        // starttime: '2019-11-26 16:00:00',
-        // endtime: '2019-11-26 16:59:59',
+        // starttime: '2019-12-02 11:00:00',
+        // endtime: '2019-12-02 11:59:59',
         dataset: 'SPD',
         resolution: '1000M',
         hight: '0010m'
@@ -378,25 +378,6 @@ export default {
           this.$message.error(res.data.returnMessage)
         }
       })
-      // this.$store.dispatch('station/getRankInfo', {
-      //   url: this.ip + this.fsUrl,
-      //   params: {
-      //     datacode: 'ZBAA',
-      //     airport: 'ZBAA',
-      //     runway: 'runway1,runway2,runway3',
-      //     starttime: '2019-11-26 16:00:00',
-      //     endtime: '2019-11-26 16:59:59',
-      //     dataset: 'SPD',
-      //     resolution: '1000M',
-      //     hight: '0010m'
-      //   }
-      // }).then(res => {
-      //   if (res.data.returnCode * 1 === 0) {
-      //     this.fsData = res.data.runways
-      //   } else {
-      //     this.$message.error(res.data.returnMessage)
-      //   }
-      // })
     },
     getStartTime() {
       const nowTime = new Date().getTime()
@@ -1146,7 +1127,9 @@ export default {
         resolution: '1000M',
         runway: type
       }).then(res => {
-        self.draw(res.data)
+        return res.data
+      }).then(res => {
+        self.draw(res)
       })
     },
     draw(data) {
