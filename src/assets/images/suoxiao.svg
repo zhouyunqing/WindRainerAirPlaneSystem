@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 56 (81588) - https://sketch.com -->
+    <title>编组 12</title>
+    <desc>Created with Sketch.</desc>
+    <g id="1.2.1版" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="平台产品" transform="translate(-1405.000000, -483.000000)" fill-rule="nonzero" stroke="#FFFFFF" stroke-width="1.5">
+            <g id="编组-13备份-2" transform="translate(1400.000000, 478.000000)">
+                <g id="编组-19" transform="translate(5.000000, 5.000000)">
+                    <g id="编组-12" transform="translate(1.000000, 1.000000)">
+                        <g id="编组-11" transform="translate(2.500000, 2.500000) scale(-1, -1) translate(-2.500000, -2.500000) ">
+                            <polyline id="路径" points="0 4.5 0 0 0 0 4.5 0"></polyline>
+                            <path d="M0,0 C2.11696312,2.11696312 3.61696312,3.61696312 4.5,4.5" id="路径"></path>
+                        </g>
+                        <g id="编组-11复制" transform="translate(13.500000, 2.500000) scale(1, -1) translate(-13.500000, -2.500000) translate(11.000000, 0.000000)">
+                            <polyline id="路径" points="0 4.5 0 0 0 0 4.5 0"></polyline>
+                            <path d="M0,0 C2.11696312,2.11696312 3.61696312,3.61696312 4.5,4.5" id="路径"></path>
+                        </g>
+                        <g id="编组-11" transform="translate(2.500000, 13.500000) scale(-1, 1) translate(-2.500000, -13.500000) translate(0.000000, 11.000000)">
+                            <polyline id="路径" points="0 4.5 0 0 0 0 4.5 0"></polyline>
+                            <path d="M0,0 C2.11696312,2.11696312 3.61696312,3.61696312 4.5,4.5" id="路径"></path>
+                        </g>
+                        <g id="编组-11复制" transform="translate(11.000000, 11.000000)">
+                            <polyline id="路径" points="0 4.5 0 0 0 0 4.5 0"></polyline>
+                            <path d="M0,0 C2.11696312,2.11696312 3.61696312,3.61696312 4.5,4.5" id="路径"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
