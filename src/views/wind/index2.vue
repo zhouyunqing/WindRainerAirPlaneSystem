@@ -703,6 +703,15 @@ export default {
           entity1 = this.viewer.entities.getById('pd3')
           entity1.show = !this.isLegendChange
         }
+        var that = this
+        for (let i = 0; i < that.pointName.length; i++) {
+          const entity = that.viewer.entities.getById(that.pointName[i])
+          if (entity && this.activeWind == 'plane') {
+            entity.show = true
+          } else if (entity && this.activeWind != 'plane') {
+            entity.show = false
+          }
+        }
 
         this.viewer.entities.add({
           polyline: {
@@ -825,9 +834,9 @@ export default {
             minimumHeights: [100, 100]
           }
         })
-        this.drawPoint(' 跑道1 ', 116.567473, 40.108623, 0, '#000', '', 'pd1')
-        this.drawPoint(' 跑道2 ', 116.590573, 40.094862, 1, '#000', '', 'pd2')
-        this.drawPoint(' 跑道3 ', 116.620469, 40.059059, 2, '#000', '', 'pd3')
+        this.drawPoint(' 跑道1 ', 116.580113, 40.074035, 0, '#000', '', 'pd1')
+        this.drawPoint(' 跑道2 ', 116.605809, 40.056497, 1, '#000', '', 'pd2')
+        this.drawPoint(' 跑道3 ', 116.623469, 40.059059, 2, '#000', '', 'pd3')
         this.drawPoint(' 18R ', 116.575473, 40.10303, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[0], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[0])
         this.drawPoint('MID1', 116.577925, 40.088623, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[1], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[1])
         this.drawPoint(' 36L ', 116.580113, 40.074035, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[2], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[2])
@@ -837,10 +846,11 @@ export default {
         this.drawPoint('  19  ', 116.617997, 40.094787, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[0], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[0])
         this.drawPoint('MID3', 116.621128, 40.074618, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[1], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[1])
         this.drawPoint(' 01 ', 116.623469, 40.059059, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[2], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[2])
+
         var handlerVideo = new Cesium.ScreenSpaceEventHandler(
           this.viewer.scene.canvas
         )
-        var that = this
+
         /**
          * 鼠标移动事件
          */
@@ -871,7 +881,11 @@ export default {
           } else {
             for (let i = 0; i < that.pointName.length; i++) {
               const entity = that.viewer.entities.getById(that.pointName[i])
-              entity.show = true
+              if (this.activeWind == 'plane') {
+                entity.show = true
+              } else {
+                entity.show = false
+              }
             }
           }
         })
@@ -1013,7 +1027,7 @@ export default {
         name: text,
         runway: runway,
         type: 'point',
-        position: Cesium.Cartesian3.fromDegrees(lat, lng, text.indexOf('跑道') >= 0 ? 2100 : 0),
+        position: Cesium.Cartesian3.fromDegrees(lat, lng, text.indexOf('跑道') >= 0 ? 0 : 0),
         backColor: backcolor,
         textColor: color,
         label: {
