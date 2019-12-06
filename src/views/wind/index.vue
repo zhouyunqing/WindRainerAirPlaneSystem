@@ -428,9 +428,9 @@ export default {
       nowDate:"",
       nowTime:"",
       minDate:"",
-      minH:"",      
+      minH:"",
       maxDate:"",
-      maxH:"",      
+      maxH:"",
       min24Date:"",
       max24H:"",
       min24H:"",
@@ -439,7 +439,7 @@ export default {
       maxHours:[],
       min24Hours:[],
       max24Hours:[],
-      mintimes:[],      
+      mintimes:[],
       min24times:[],
       agoT : [],
       fluteT : [],
@@ -497,7 +497,7 @@ export default {
       var date0 = new Date();
       this.nowDate = date0.getFullYear()+"-"+(date0.getMonth()+1) + "-" +date0.getDate()
       this.nowTime = date0.getHours()<10?('0'+date0.getHours()):date0.getHours()
-      
+
       var date = new Date();     //1. js获取当前时间
       var min = date.setTime(date.getTime()-6*60*60*1000)
       this.minDate = date.getFullYear()+"-"+(date.getMonth()+1) + "-" +date.getDate()
@@ -505,9 +505,9 @@ export default {
 
       var date1 = new Date();     //1. js获取当前时间
       var max = date1.setTime(date1.getTime()+6*60*60*1000)
-      this.maxDate = date1.getFullYear()+"-"+(date1.getMonth()+1) + "-" +date1.getDate()  
+      this.maxDate = date1.getFullYear()+"-"+(date1.getMonth()+1) + "-" +date1.getDate()
       this.maxH = date1.getHours() < 10 ? ('0' + date1.getHours()) : date1.getHours()
-      
+
       var date2 = new Date();     //1. js获取当前时间
       var min24 = date2.setTime(date2.getTime()-12*60*60*1000)
       this.min24Date = date2.getFullYear()+"-" + (date2.getMonth()+1) + "-" + date2.getDate()
@@ -517,8 +517,8 @@ export default {
       var max24 = date3.setTime(date3.getTime()+24*60*60*1000)
       this.max24Date = date3.getFullYear()+"-" + (date3.getMonth()+1) + "-" + date3.getDate()
       this.max24H = date3.getHours() < 10 ? ('0' + date3.getHours()) : date3.getHours()
-      
-      
+
+
       for (let i=6;i>0;i--){
         let date1 = new Date()
         let ago = date1.setTime(date1.getTime()-i*60*60*1000)
@@ -534,7 +534,7 @@ export default {
         let fluteDate = date.getFullYear()+"-"+(date.getMonth()+1) + "-" +date.getDate()
         let fluteH = date.getHours() < 10 ? ('0' + date.getHours()) : date.getHours()
         let fluteTime = fluteDate+" "+fluteH+":00:00"
-        
+
         this.fluteT.push(fluteTime)
         this.maxHours.push(date.getHours()+"时")
       }
@@ -558,8 +558,8 @@ export default {
       }
 
 
-      
-      this.minHours.push("当前")      
+
+      this.minHours.push("当前")
       this.min24Hours.push("当前")
       this.mintimes=this.minHours.concat(this.maxHours)
       this.min24times = this.min24Hours.concat(this.max24Hours)
@@ -571,7 +571,7 @@ export default {
       // this.isTab = type
     },
     changeMenu(type) {
-      
+
       this.stationname = 'ZBAA';
       let info = {};
       let params = {};
@@ -1173,7 +1173,7 @@ export default {
       this.$store.dispatch("station/getRankInfo", info).then(res => {
         // 按高度获取风数据
         if (res.data.returnCode == 0) {
-          this.windInfo = res.data.runways;          
+          this.windInfo = res.data.runways;
         } else {
           this.$message.error(res.data.returnMessage);
         }
@@ -1870,7 +1870,7 @@ export default {
             step: false,
             color: colors[0],
            // label: { normal: { show: false, position: "top" } },
-           // lineStyle: { color: "#fff" },            
+           // lineStyle: { color: "#fff" },
            // smooth: true,
            markLine: {
                 symbol:"none",
@@ -2132,7 +2132,7 @@ export default {
                     yAxis: 17
                 }]
             },
-            
+
             data: Data.temData
           }
         ]
@@ -2146,7 +2146,7 @@ potailZBAA36(EchartsZBAA36, id, runway) {
       let Data = {
         times: this.times24,
         timeZBAA36Data: this.min24times,
-        
+
         windxData: this.zbaa36Info.DIR,
         rhData: this.zbaa36Info.RH,
         slpData: this.zbaa36Info.SLP,
@@ -2370,7 +2370,7 @@ potailZBAA36(EchartsZBAA36, id, runway) {
                     yAxis: 17
                 }]
             },
-           
+
             data: Data.temData
           }
         ]
@@ -2608,7 +2608,7 @@ potail36(Echarts36, id, runway) {
                     yAxis: 17
                 }]
             },
-           
+
             data: Data.temData
           }
         ]
@@ -3954,14 +3954,14 @@ potail36(Echarts36, id, runway) {
   }
   .wind_content {
     .myScroll_btn_div {
-      padding-left: 0.9rem;
-      padding-right: 0.2rem;
+      padding-left: 0.89rem;
+      padding-right: 0.24rem;
       display: flex;
       justify-content: space-between;
       position: absolute;
       width: 91vw;
       z-index: 1002;
-      top: 30%;
+      top: 34%;
       [class*=" el-icon-"], [class^=el-icon-] {
         color:white;
         font-size: 0.2rem;

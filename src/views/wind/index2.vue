@@ -7,7 +7,20 @@
     <!-- 左上角 搜索 end -->
 
     <!-- 右侧 距地面高度 start -->
-    <slider v-if="activeWind == 'plane'" @change="changeHeightLevel" />
+    <!-- <div v-if="activeWind == 'plane'" class="right-slider">
+      <el-slider
+        v-model="heightLevel"
+        :min="0"
+        :max="15"
+        :step="1"
+        :show-tooltip="true"
+        :format-tooltip="showHeightLevelToolTip"
+        vertical
+        class="windheightcontroller"
+        @change="changeHeightLevel"
+      />
+    </div> -->
+    <slider v-show="activeWind == 'plane'" @change="changeHeightLevel" />
     <!-- 右侧 距地面高度 end -->
 
     <!-- 顶部 展示切换 start -->
@@ -77,6 +90,21 @@
             <div v-show="isLegendChange" id="canvas" ref="canvas" class="canvas" />
           </div>
         </el-scrollbar>
+        <div v-if="runType == 'runway1'" class="run-name">
+          <span>18R</span>
+          <span>MID1</span>
+          <span>36L</span>
+        </div>
+        <div v-if="runType == 'runway2'" class="run-name">
+          <span>18L</span>
+          <span>MID2</span>
+          <span>36R</span>
+        </div>
+        <div v-if="runType == 'runway3'" class="run-name">
+          <span>19</span>
+          <span>MID3</span>
+          <span>01</span>
+        </div>
         <div class="unit">
           <span class="length_font">(长度:KM)</span>
         </div>
@@ -155,18 +183,10 @@
     </div>
     <!-- 剖面风 end -->
 
-    <!-- 控制条 start -->
-    <div class="control" :style="{ bottom: enlargBottom + 'rem' }">
-      <div style="font-size: 0.12rem;background: #242236;color: #fff;" @click="changeHeightLevel({level: heightLevel, name: 'particle'})">粒子</div>
-      <div style="font-size: 0.12rem;">12345</div>
-      <div style="font-size: 0.12rem;background: #242236;color: #fff;" @click="changeHeightLevel({level: heightLevel, name: 'heat'})">热力图</div>
-      <!-- 全屏控制 start -->
-      <div v-if="!enlarg" class="enlarg" @click="fullScreen" />
-      <div v-else class="enlarg sp" @click="exitFullscreen" />
-      <!-- 全屏控制 end -->
-    </div>
-    <!-- 控制条 end -->
-
+    <!-- 全屏控制 start -->
+    <!-- <div v-if="!enlarg" class="control-enlarg" :style="{ bottom: enlargBottom + 'rem' }" @click="fullScreen" />
+    <div v-else class="control-enlarg" style="background: #ff0000;" :style="{ bottom: enlargBottom + 'rem' }" @click="exitFullscreen" /> -->
+    <!-- 全屏控制 end -->
   </div>
 </template>
 <script>
@@ -174,14 +194,12 @@ import rightCard from './components/card.vue'
 import bottomCard from './components/chart.vue'
 import hoverCard from './components/hover-card.vue'
 import slider from './components/slider.vue'
-
 import Cesium from 'cesium/Cesium'
 import widgets from 'cesium/Widgets/widgets.css'
 import Wind3D from '@/components/wind/wind3D.js'
 import colorTable from '@/components/wind/colorTable.js'
 import request from '@/utils/request1'
 import ColorImage from '@/components/wind/ColorImage'
-
 import windImgUrl from '../../assets/images/windImg.png'
 import utilTime from '@/utils/time'
 import { getRunwayPointForecastData, getParabolic, getModelForecast, getRunwaysForecast } from '@/api/wind'
@@ -283,15 +301,12 @@ export default {
       enlarg: false,
       enlargBottom: 3.3,
       fsData: [],
-      dataStartTime: '',
-      particle: false,
-      heatMap: false
+      dataStartTime: ''
     }
   },
   mounted() {
     this.setMap()
     this.getChartData(this.site)
-
     let nowTime = new Date().getTime()
     let time = utilTime.timeObj(nowTime)
     this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
@@ -351,6 +366,26 @@ export default {
             this.hoverSite = 'ZBAA'
             this.changeT = false
           }
+        } else {
+          this.$message.error(res.data.returnMessage)
+        }
+      })
+      const nowTime = new Date().getTime()
+      const sTime = utilTime.timeObj(nowTime)
+      getRunwaysForecast({
+        datacode: 'ZBAA',
+        airport: 'ZBAA',
+        runway: 'runway1,runway2,runway3',
+        starttime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`,
+        endtime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:59:59`,
+        // starttime: '2019-12-02 11:00:00',
+        // endtime: '2019-12-02 11:59:59',
+        dataset: 'SPD',
+        resolution: '1000M',
+        hight: '0010m'
+      }).then(res => {
+        if (res.data.returnCode * 1 === 0) {
+          this.fsData = res.data.runways
         } else {
           this.$message.error(res.data.returnMessage)
         }
@@ -446,7 +481,6 @@ export default {
       this.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
         Cesium.ScreenSpaceEventType.LEFT_CLICK
       )
-
       var PI = this.viewer.entities.add({
         rectangle: {
           coordinates: Cesium.Rectangle.fromDegrees(116.423341433386, 39.992478621508, 116.765146586308, 40.135425293208),
@@ -454,7 +488,6 @@ export default {
           height: 2
         }
       })
-
       setTimeout(() => {
         delPI()
       }, 4000)
@@ -462,7 +495,6 @@ export default {
       function delPI() {
         _this.viewer.entities.remove(PI)
       }
-
       /*
       // 定位北京首都机场
       this.viewer.camera.flyTo({
@@ -477,11 +509,9 @@ export default {
           roll: Cesium.Math.toRadians(0)
         }
       })*/
-
       this.viewer._cesiumWidget._creditContainer.style.display = 'none'
       Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjY5ODg0MS1lZTMxLTRmMGMtOTRhYi00N2M2YjQ3ZDMzNjgiLCJpZCI6NDgwLCJpYXQiOjE1MjUyNTE1Nzh9.5Mi3ijReKCRQ_Shupv2w-wl2eJBRLOOW3Bmeq0IL5Y4'
       const val = 2
-      this.setNine() // 设置9点位置
       // return
       // 加载风场
       if (val === 1) {
@@ -494,34 +524,186 @@ export default {
         const time = `${time0.y}-${time0.m}-${time0.d} ${time0.hh}:00:00`
         const level = 0
         // const time = '2019-11-13%2000:00:00'
-        // this.loadwind(time, level)
+        this.loadwind(time, level, 'start')
       }
     },
-    setNine() {
+    showHeightLevelToolTip(value) {
+      let tip = ''
+      if (value === 0) {
+        tip = '地面'
+      } else if (value === 1) {
+        tip = '30米'
+      } else if (value === 2) {
+        tip = '50米'
+      } else if (value === 3) {
+        tip = '100米'
+      } else if (value === 4) {
+        tip = '150米'
+      } else if (value === 5) {
+        tip = '200米'
+      } else if (value === 6) {
+        tip = '250米'
+      } else if (value === 7) {
+        tip = '300米'
+      } else if (value === 8) {
+        tip = '400米'
+      } else if (value === 9) {
+        tip = '500米'
+      } else if (value === 10) {
+        tip = '600米'
+      } else if (value === 11) {
+        tip = '900米'
+      } else if (value === 12) {
+        tip = '1200米'
+      } else if (value === 13) {
+        tip = '1500米'
+      } else if (value === 14) {
+        tip = '1800米'
+      } else if (value === 15) {
+        tip = '2100米'
+      }
+      return tip
+    },
+    changeHeightLevel(val) {
       const nowTime = new Date().getTime()
-      const sTime = utilTime.timeObj(nowTime)
+      const time0 = utilTime.timeObj(nowTime)
+      const time2 = `${time0.y}-${time0.m}-${time0.d} ${time0.hh}:00:00`
+      // const time2 = '2019-11-13%2000:00:00'
+      this.heightLevel = val.level
+      this.loadwind(time2, val.level, 'slider')
+    },
+    windToggle(type) {
+      if (this.activeWind == type) return
+      this.activeWind = type
+      this.forecastTab = 'near'
+      this.changeT = true
+      this.clickSite = ''
+      this.getChartData('ZBAA')
+      if (type == 'plane') {
+        this.changeHeight(true)
+        this.isLegendChange = true
+        this.sectionwindDetail = false
+        this.viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(
+            116.595534748692,
+            40.0580145185529,
+            21961.9883961571
+          )
+          // orientation: {
+          //   heading: Cesium.Math.toRadians(359.668148999818),
+          //   pitch: Cesium.Math.toRadians(-20.8329210486802),
+          //   roll: Cesium.Math.toRadians(0)
+          // }
+        })
+      } else {
+        this.changeHeight(false)
+        this.isLegendChange = false
+        this.viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(
+            116.481554,
+            39.984974,
+            6961.9883961571
+          ),
+          orientation: {
+            heading: Cesium.Math.toRadians(400.668148999818),
+            pitch: Cesium.Math.toRadians(-30.8329210486802),
+            roll: Cesium.Math.toRadians(0)
+          }
+        })
+      }
+      const nowTime = new Date().getTime()
+      const time0 = utilTime.timeObj(nowTime)
+      const time2 = `${time0.y}-${time0.m}-${time0.d} ${time0.hh}:00:00`
+      this.loadwind(time2, this.heightLevel, 'type')
+    },
+    loadwind(time, level, scene) {
       this.viewer.scene.primitives.show = false
       if (this.wind3D) {
         this.wind3D.removeWindPrimitives()
         this.wind3D.colorImage = null
       }
-      getRunwaysForecast({
-        datacode: 'ZBAA',
-        airport: 'ZBAA',
-        runway: 'runway1,runway2,runway3',
-        starttime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`,
-        endtime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:59:59`,
-        dataset: 'SPD',
-        resolution: '1000M',
-        hight: '0010m'
-      }).then(res => {
-        if (res.data.returnCode * 1 === 0) {
-          this.fsData = res.data.runways
-        } else {
-          this.$message.error(res.data.returnMessage)
+      // const jsonPath =
+      //   'http://161.189.11.216:8090/gis/BJPEK/ModelForecast?datacode=ABC&dataset=XLONG,XLAT,U,V&time=' +
+      //   time +
+      //   '&bbox=110,30,120,42&z=' +
+      //   level +
+      //   '&resolution=1000M'
+      getModelForecast({
+        datacode: 'ABC',
+        dataset: 'XLONG,XLAT,U,V',
+        time: time,
+        // time: '2019-12-02 11:00:00',
+        bbox: '110,30,120,42',
+        z: level,
+        resolution: '1000M'
+      }).then(resData => {
+        resData = resData.data.data
+        const data = {}
+        data.dimensions = {}
+        data.dimensions.lon = 120 // dimensions['lon'].size;
+        data.dimensions.lat = 120 // dimensions['lat'].size;
+        data.dimensions.lev = 1 // dimensions['lev'].size;
+        data.lon = {}
+        data.lon.array = new Float32Array(resData.XLONG)
+        data.lon.min = Math.min.apply(null, data.lon.array) // Math.min(...data.lon.array);
+        data.lon.max = Math.max.apply(null, data.lon.array) // Math.max(...data.lon.array);
+        data.lat = {}
+        data.lat.array = new Float32Array(resData.XLAT)
+        data.lat.min = Math.min.apply(null, data.lat.array) // Math.min(...data.lat.array);
+        data.lat.max = Math.max.apply(null, data.lat.array) // Math.max(...data.lat.array);
+        data.lev = {}
+        data.lev.array = new Float32Array([1.0])
+        data.lev.min = Math.min.apply(null, data.lev.array) // Math.min(...data.lev.array);
+        data.lev.max = Math.max.apply(null, data.lev.array) // Math.max(...data.lev.array);
+        data.U = {}
+        data.U.array = new Float32Array(resData.U) // new Float32Array(resData.U);
+        data.U.min = Math.min.apply(null, data.U.array) // Math.min(...data.U.array);
+        data.U.max = Math.max.apply(null, data.U.array) // Math.max(...data.U.array);
+        data.V = {}
+        data.V.array = new Float32Array(resData.V) // new Float32Array(resData.V);
+        data.V.min = Math.min.apply(null, data.V.array) // Math.min(...data.V.array);
+        data.V.max = Math.max.apply(null, data.V.array) // Math.max(...data.V.array);
+        this.windData = data
+        this.windData.colorTable = loadColorTable()
+        const particlecount = 100
+        const particleSystemOptions = {
+          particlesTextureSize: particlecount,
+          maxParticles: particlecount * particlecount,
+          particleHeight: 200.0,
+          fadeOpacity: 0.92,
+          dropRate: 0.5,
+          dropRateBump: 0.01,
+          speedFactor: 3.0,
+          lineWidth: 4
         }
-        return this.fsData
-      }).then(res => {
+        const windDataMap = this.windData
+        const particleSystemOptionsMap = particleSystemOptions
+        if (this.activeWind == 'plane') {
+          this.wind3D = new Wind3D(
+            this.viewer,
+            windDataMap,
+            particleSystemOptionsMap
+          )
+        }
+        if (scene != 'type') {
+          this.drawWindHeatLayer(windDataMap)
+        }
+
+        let entity1 = this.viewer.entities.getById('wall1')
+        if (entity1) {
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById('wall2')
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById('wall3')
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById('pd1')
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById('pd2')
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById('pd3')
+          entity1.show = !this.isLegendChange
+        }
+
         this.viewer.entities.add({
           polyline: {
             // 多线段
@@ -537,7 +719,6 @@ export default {
             })
           }
         })
-
         this.viewer.entities.add({
           show: !this.isLegendChange,
           id: 'wall1',
@@ -644,6 +825,9 @@ export default {
             minimumHeights: [100, 100]
           }
         })
+        this.drawPoint(' 跑道1 ', 116.567473, 40.108623, 0, '#000', '', 'pd1')
+        this.drawPoint(' 跑道2 ', 116.590573, 40.094862, 1, '#000', '', 'pd2')
+        this.drawPoint(' 跑道3 ', 116.620469, 40.059059, 2, '#000', '', 'pd3')
         this.drawPoint(' 18R ', 116.575473, 40.10303, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[0], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[0])
         this.drawPoint('MID1', 116.577925, 40.088623, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[1], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[1])
         this.drawPoint(' 36L ', 116.580113, 40.074035, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[2], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[2])
@@ -656,11 +840,14 @@ export default {
         var handlerVideo = new Cesium.ScreenSpaceEventHandler(
           this.viewer.scene.canvas
         )
+        var that = this
         /**
          * 鼠标移动事件
          */
         handlerVideo.setInputAction((movement) => {
-          this.pointHandler(movement)
+          if (this.activeWind == 'plane') {
+            this.pointHandler(movement)
+          }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
         /**
          * 鼠标左键点击事件
@@ -668,433 +855,6 @@ export default {
         handlerVideo.setInputAction((click) => {
           this.wallHandler(click)
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
-      }).catch(err => {
-        console.log(err)
-      })
-    },
-    showHeightLevelToolTip(value) {
-      let tip = ''
-      if (value === 0) {
-        tip = '地面'
-      } else if (value === 1) {
-        tip = '30米'
-      } else if (value === 2) {
-        tip = '50米'
-      } else if (value === 3) {
-        tip = '100米'
-      } else if (value === 4) {
-        tip = '150米'
-      } else if (value === 5) {
-        tip = '200米'
-      } else if (value === 6) {
-        tip = '250米'
-      } else if (value === 7) {
-        tip = '300米'
-      } else if (value === 8) {
-        tip = '400米'
-      } else if (value === 9) {
-        tip = '500米'
-      } else if (value === 10) {
-        tip = '600米'
-      } else if (value === 11) {
-        tip = '900米'
-      } else if (value === 12) {
-        tip = '1200米'
-      } else if (value === 13) {
-        tip = '1500米'
-      } else if (value === 14) {
-        tip = '1800米'
-      } else if (value === 15) {
-        tip = '2100米'
-      }
-      return tip
-    },
-    changeHeightLevel(val) {
-      const nowTime = new Date().getTime()
-      const time0 = utilTime.timeObj(nowTime)
-      const time2 = `${time0.y}-${time0.m}-${time0.d} ${time0.hh}:00:00`
-      this.heightLevel = val.level
-      // const time2 = '2019-11-13%2000:00:00'
-      getModelForecast({
-        datacode: 'ABC',
-        dataset: 'XLONG,XLAT,U,V',
-        time: time2,
-        bbox: '110,30,120,42',
-        z: val.level,
-        resolution: '1000M'
-      }).then(res => {
-        const resData = res.data.data
-        if (val.name == 'particle') {
-          this.particle = !this.particle
-        }
-        if (val.name == 'heat') {
-          this.heatMap = !this.heatMap
-        }
-        this.setLevel(resData)
-      }).catch(err => {
-        console.log(err)
-      })
-
-      // this.loadwind(time2, val.level)
-    },
-    setLevel(resData) {
-      this.viewer.scene.primitives.show = false
-      if (this.wind3D) {
-        this.wind3D.removeWindPrimitives()
-        this.wind3D.colorImage = null
-      }
-      const data = {}
-      data.dimensions = {}
-      data.dimensions.lon = 120 // dimensions['lon'].size;
-      data.dimensions.lat = 120 // dimensions['lat'].size;
-      data.dimensions.lev = 1 // dimensions['lev'].size;
-      data.lon = {}
-      data.lon.array = new Float32Array(resData.XLONG)
-      data.lon.min = Math.min.apply(null, data.lon.array) // Math.min(...data.lon.array);
-      data.lon.max = Math.max.apply(null, data.lon.array) // Math.max(...data.lon.array);
-      data.lat = {}
-      data.lat.array = new Float32Array(resData.XLAT)
-      data.lat.min = Math.min.apply(null, data.lat.array) // Math.min(...data.lat.array);
-      data.lat.max = Math.max.apply(null, data.lat.array) // Math.max(...data.lat.array);
-      data.lev = {}
-      data.lev.array = new Float32Array([1.0])
-      data.lev.min = Math.min.apply(null, data.lev.array) // Math.min(...data.lev.array);
-      data.lev.max = Math.max.apply(null, data.lev.array) // Math.max(...data.lev.array);
-      data.U = {}
-      data.U.array = new Float32Array(resData.U) // new Float32Array(resData.U);
-      data.U.min = Math.min.apply(null, data.U.array) // Math.min(...data.U.array);
-      data.U.max = Math.max.apply(null, data.U.array) // Math.max(...data.U.array);
-      data.V = {}
-      data.V.array = new Float32Array(resData.V) // new Float32Array(resData.V);
-      data.V.min = Math.min.apply(null, data.V.array) // Math.min(...data.V.array);
-      data.V.max = Math.max.apply(null, data.V.array) // Math.max(...data.V.array);
-      this.windData = data
-      this.windData.colorTable = this.loadColorTable()
-      if (this.particle) {
-        // 展示风粒子
-        const particlecount = 100
-        const particleSystemOptions = {
-          particlesTextureSize: particlecount,
-          maxParticles: particlecount * particlecount,
-          particleHeight: 200.0,
-          fadeOpacity: 0.92,
-          dropRate: 0.5,
-          dropRateBump: 0.01,
-          speedFactor: 3.0,
-          lineWidth: 4
-        }
-        const particleSystemOptionsMap = particleSystemOptions
-        this.wind3D = new Wind3D(
-          this.viewer,
-          data,
-          particleSystemOptionsMap
-        )
-      } else {
-        console.log('关闭风粒子')
-      }
-      if (this.heatMap) {
-        // 展示热力图
-        this.drawWindHeatLayer(data)
-      } else {
-        console.log('关闭热力图')
-      }
-    },
-    loadColorTable() {
-      const json = {
-        ncolors: 1,
-        colorTable: [1, 1, 1.0, 0.8]
-      }
-      const colorNum = json['ncolors']
-      const colorTable = json['colorTable']
-      const channel = 4
-      const colorsArray = new Float32Array(channel * colorNum)
-      for (var i = 0; i < colorNum; i++) {
-        for (var j = 0; j < channel; j++) {
-          colorsArray[channel * i + j] = colorTable[channel * i + j]
-        }
-      }
-      const result = {}
-      result.colorNum = colorNum
-      result.array = colorsArray
-      return result
-    },
-    windToggle(type) {
-      if (this.activeWind == type) return
-      this.activeWind = type
-      this.forecastTab = 'near'
-      this.changeT = true
-      this.clickSite = ''
-      this.getChartData('ZBAA')
-      if (type == 'plane') {
-        this.changeHeight(true)
-        this.isLegendChange = true
-        this.sectionwindDetail = false
-        for (let i = 0; i < this.pointName.length; i++) {
-          const entity = this.viewer.entities.getById(this.pointName[i])
-          entity.show = this.isLegendChange
-        }
-        let entity1 = this.viewer.entities.getById('wall1')
-        entity1.show = !this.isLegendChange
-        entity1 = this.viewer.entities.getById('wall2')
-        entity1.show = !this.isLegendChange
-        entity1 = this.viewer.entities.getById('wall3')
-        entity1.show = !this.isLegendChange
-        this.viewer.camera.flyTo({
-          destination: Cesium.Cartesian3.fromDegrees(
-            116.603738,
-            39.944974,
-            4961.9883961571
-          ),
-          orientation: {
-            heading: Cesium.Math.toRadians(359.668148999818),
-            pitch: Cesium.Math.toRadians(-20.8329210486802),
-            roll: Cesium.Math.toRadians(0)
-          }
-        })
-      } else {
-        this.changeHeight(false)
-        this.isLegendChange = false
-        for (let i = 0; i < this.pointName.length; i++) {
-          const entity = this.viewer.entities.getById(this.pointName[i])
-          entity.show = this.isLegendChange
-        }
-        let entity1 = this.viewer.entities.getById('wall1')
-        entity1.show = !this.isLegendChange
-        entity1 = this.viewer.entities.getById('wall2')
-        entity1.show = !this.isLegendChange
-        entity1 = this.viewer.entities.getById('wall3')
-        entity1.show = !this.isLegendChange
-        this.viewer.camera.flyTo({
-          destination: Cesium.Cartesian3.fromDegrees(
-            116.481554,
-            40.013338,
-            6961.9883961571
-          ),
-          orientation: {
-            heading: Cesium.Math.toRadians(400.668148999818),
-            pitch: Cesium.Math.toRadians(-30.8329210486802),
-            roll: Cesium.Math.toRadians(0)
-          }
-        })
-      }
-    },
-    loadwind(time, level) {
-      // this.viewer.scene.primitives.show = false
-      // if (this.wind3D) {
-      //   this.wind3D.removeWindPrimitives()
-      //   this.wind3D.colorImage = null
-      // }
-
-      // const jsonPath =
-      //   'http://161.189.11.216:8090/gis/BJPEK/ModelForecast?datacode=ABC&dataset=XLONG,XLAT,U,V&time=' +
-      //   time +
-      //   '&bbox=110,30,120,42&z=' +
-      //   level +
-      //   '&resolution=1000M'
-
-      getModelForecast({
-        datacode: 'ABC',
-        dataset: 'XLONG,XLAT,U,V',
-        time: time,
-        bbox: '110,30,120,42',
-        z: level,
-        resolution: '1000M'
-      }).then(resData => {
-        resData = resData.data.data
-        const data = {}
-        data.dimensions = {}
-        data.dimensions.lon = 120 // dimensions['lon'].size;
-        data.dimensions.lat = 120 // dimensions['lat'].size;
-        data.dimensions.lev = 1 // dimensions['lev'].size;
-        data.lon = {}
-        data.lon.array = new Float32Array(resData.XLONG)
-        data.lon.min = Math.min.apply(null, data.lon.array) // Math.min(...data.lon.array);
-        data.lon.max = Math.max.apply(null, data.lon.array) // Math.max(...data.lon.array);
-        data.lat = {}
-        data.lat.array = new Float32Array(resData.XLAT)
-        data.lat.min = Math.min.apply(null, data.lat.array) // Math.min(...data.lat.array);
-        data.lat.max = Math.max.apply(null, data.lat.array) // Math.max(...data.lat.array);
-        data.lev = {}
-        data.lev.array = new Float32Array([1.0])
-        data.lev.min = Math.min.apply(null, data.lev.array) // Math.min(...data.lev.array);
-        data.lev.max = Math.max.apply(null, data.lev.array) // Math.max(...data.lev.array);
-        data.U = {}
-        data.U.array = new Float32Array(resData.U) // new Float32Array(resData.U);
-        data.U.min = Math.min.apply(null, data.U.array) // Math.min(...data.U.array);
-        data.U.max = Math.max.apply(null, data.U.array) // Math.max(...data.U.array);
-        data.V = {}
-        data.V.array = new Float32Array(resData.V) // new Float32Array(resData.V);
-        data.V.min = Math.min.apply(null, data.V.array) // Math.min(...data.V.array);
-        data.V.max = Math.max.apply(null, data.V.array) // Math.max(...data.V.array);
-        this.windData = data
-        this.windData.colorTable = loadColorTable()
-        const particlecount = 100
-        const particleSystemOptions = {
-          particlesTextureSize: particlecount,
-          maxParticles: particlecount * particlecount,
-          particleHeight: 200.0,
-          fadeOpacity: 0.92,
-          dropRate: 0.5,
-          dropRateBump: 0.01,
-          speedFactor: 3.0,
-          lineWidth: 4
-        }
-        const windDataMap = this.windData
-        const particleSystemOptionsMap = particleSystemOptions
-        this.wind3D = new Wind3D(
-          this.viewer,
-          windDataMap,
-          particleSystemOptionsMap
-        )
-
-        this.drawWindHeatLayer(windDataMap)
-        // this.viewer.entities.add({
-        //   polyline: {
-        //     // 多线段
-        //     positions: Cesium.Cartesian3.fromDegreesArray([
-        //       116.575473,
-        //       40.10303,
-        //       116.580113,
-        //       40.074035
-        //     ]), // 方位
-        //     width: 10, // 折线的宽度（以像素为单位）
-        //     material: new Cesium.ImageMaterialProperty({
-        //       image: this.drawRunWays(this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L']))
-        //     })
-        //   }
-        // })
-
-        // this.viewer.entities.add({
-        //   show: !this.isLegendChange,
-        //   id: 'wall1',
-        //   name: 'windWall',
-        //   type: 'runway1',
-        //   wall: {
-        //     positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-        //       116.575473,
-        //       40.10303,
-        //       2100,
-        //       116.580113,
-        //       40.074035,
-        //       2100
-        //     ]),
-        //     material: new Cesium.ImageMaterialProperty({
-        //       image: windImgUrl
-        //     }),
-        //     outline: true,
-        //     //              outlineColor:Cesium.Color.fromCssColorString('#FF2C55'), //边框颜色
-        //     //              outlineWidth:15, //边框宽度
-        //     minimumHeights: [100, 100]
-        //   }
-        // })
-        // this.viewer.entities.add({
-        //   show: this.isLegendChange,
-        //   id: 'runway2',
-        //   name: 'Runway',
-        //   station: 'runway2',
-        //   polyline: {
-        //     // 多线段
-        //     positions: Cesium.Cartesian3.fromDegreesArray([
-        //       116.600573,
-        //       40.089862,
-        //       116.605809,
-        //       40.056497
-        //     ]), // 方位
-        //     width: 10, // 折线的宽度（以像素为单位）
-        //     material: new Cesium.ImageMaterialProperty({
-        //       image: this.drawRunWays(this.getRunWayColor(this.fsData[1], ['18L', 'MID2', '36R']))
-        //     })
-        //   }
-        // })
-        // this.viewer.entities.add({
-        //   show: !this.isLegendChange,
-        //   id: 'wall2',
-        //   name: 'windWall',
-        //   type: 'runway2',
-        //   wall: {
-        //     positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-        //       116.600573,
-        //       40.089862,
-        //       2100,
-        //       116.605809,
-        //       40.056497,
-        //       2100
-        //     ]),
-        //     material: new Cesium.ImageMaterialProperty({
-        //       image: windImgUrl
-        //     }),
-        //     outline: true,
-        //     minimumHeights: [100, 100]
-        //   }
-        // })
-        // this.viewer.entities.add({
-        //   show: this.isLegendChange,
-        //   id: 'runway3',
-        //   name: 'Runway',
-        //   station: 'runway3',
-        //   polyline: {
-        //     // 多线段
-        //     positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-        //       116.617997,
-        //       40.094787,
-        //       0,
-        //       116.623469,
-        //       40.059059,
-        //       0
-        //     ]), // 方位
-        //     width: 10, // 折线的宽度（以像素为单位）
-        //     material: new Cesium.ImageMaterialProperty({
-        //       image: this.drawRunWays(this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01']))
-        //     }),
-        //     shadows: Cesium.ShadowMode.ENABLED
-        //   }
-        // })
-        // this.viewer.entities.add({
-        //   show: !this.isLegendChange,
-        //   id: 'wall3',
-        //   name: 'windWall',
-        //   type: 'runway3',
-        //   wall: {
-        //     positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-        //       116.617997,
-        //       40.094787,
-        //       2100,
-        //       116.623469,
-        //       40.059059,
-        //       2100
-        //     ]),
-        //     material: new Cesium.ImageMaterialProperty({
-        //       image: windImgUrl
-        //     }),
-        //     outline: true,
-        //     minimumHeights: [100, 100]
-        //   }
-        // })
-        // this.drawPoint(' 18R ', 116.575473, 40.10303, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[0], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[0])
-        // this.drawPoint('MID1', 116.577925, 40.088623, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[1], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[1])
-        // this.drawPoint(' 36L ', 116.580113, 40.074035, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[2], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[2])
-        // this.drawPoint(' 18L ', 116.600573, 40.089862, 1, this.getRunWayColor(this.fsData[1], ['18L', 'MID2', '36R'])[0], this.getPointColor(this.fsData[1], ['18L', 'MID2', '36R'])[0])
-        // this.drawPoint('MID2', 116.603528, 40.07174, 1, this.getRunWayColor(this.fsData[1], ['18L', 'MID2', '36R'])[1], this.getPointColor(this.fsData[1], ['18L', 'MID2', '36R'])[1])
-        // this.drawPoint(' 36R ', 116.605809, 40.056497, 1, this.getRunWayColor(this.fsData[1], ['18L', 'MID2', '36R'])[2], this.getPointColor(this.fsData[1], ['18L', 'MID2', '36R'])[2])
-        // this.drawPoint('  19  ', 116.617997, 40.094787, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[0], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[0])
-        // this.drawPoint('MID3', 116.621128, 40.074618, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[1], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[1])
-        // this.drawPoint(' 01 ', 116.623469, 40.059059, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[2], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[2])
-        // var handlerVideo = new Cesium.ScreenSpaceEventHandler(
-        //   this.viewer.scene.canvas
-        // )
-        var that = this
-        // /**
-        //  * 鼠标移动事件
-        //  */
-        // handlerVideo.setInputAction((movement) => {
-        //   this.pointHandler(movement)
-        // }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
-        // /**
-        //  * 鼠标左键点击事件
-        //  */
-        // handlerVideo.setInputAction((click) => {
-        //   this.wallHandler(click)
-        // }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
         /**
          * 相机高度监听事件
          */
@@ -1172,7 +932,6 @@ export default {
       })
       return backColor
     },
-
     drawWindHeatLayer(data) { // 绘制风场热力图
       var points = []
       var max = 0
@@ -1244,17 +1003,17 @@ export default {
      * @param lat 站点坐标
      * @param lng 站点坐标
      */
-    drawPoint(text, lat, lng, runway, color, backcolor) {
+    drawPoint(text, lat, lng, runway, color, backcolor, pdId) {
       var r =
         '<table style="width: 200px;"><tr><th scope="col" colspan="4"  style="text-align:center;font-size:15px;">' +
         '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"></td></tr></table>'
       this.viewer.entities.add({
-        show: true,
-        id: text.replace(/^\s*|\s*$/g, ''),
+        show: !(text.indexOf('跑道') >= 0),
+        id: text.indexOf('跑道') >= 0 ? pdId : text.replace(/^\s*|\s*$/g, ''),
         name: text,
         runway: runway,
         type: 'point',
-        position: Cesium.Cartesian3.fromDegrees(lat, lng),
+        position: Cesium.Cartesian3.fromDegrees(lat, lng, text.indexOf('跑道') >= 0 ? 2100 : 0),
         backColor: backcolor,
         textColor: color,
         label: {
@@ -1262,7 +1021,7 @@ export default {
           font: '12px Source Han Sans CN', // 字体样式
           fillColor: Cesium.Color.fromCssColorString(color), // 字体颜色
           backgroundColor: Cesium.Color.fromCssColorString(backcolor), // 背景颜色
-          showBackground: true, // 是否显示背景颜色
+          showBackground: !(text.indexOf('跑道') >= 0), // 是否显示背景颜色
           style: Cesium.LabelStyle.FILL_AND_OUTLINE, // label样式 TEXT的样式填充以及边框
           outlineWidth: 1,
           outlineColor: Cesium.Color.BLACK,
@@ -1274,7 +1033,6 @@ export default {
         tooltip: { html: r, anchor: [0, -12] }
       })
     },
-
     /**
      * 站点悬浮事件，获取当前站点时间数据
      * @param movement
@@ -1312,7 +1070,6 @@ export default {
           }
         }
       }
-
       if (pick && pick.id.type == 'point') {
         this.entity = pick
         pick.id.label.scale = 1.5
@@ -1381,7 +1138,10 @@ export default {
         resolution: '1000M',
         runway: type
       }).then(res => {
-        self.draw(res.data)
+        this.$refs['myScrollbar'].wrap.scrollLeft = 0
+        return res.data
+      }).then(res => {
+        self.draw(res)
       })
     },
     draw(data) {
@@ -1551,38 +1311,55 @@ export default {
         }
         hang.appendChild(div_child)
       }
-      value_num = -16
-      const hang2 = document.createElement('div')
-      hang2.setAttribute(
-        'style',
-        'text-align:center;display:flex;width: fit-content;padding-left:5px;font-size: 16px;font-family: DINMittelschriftStd;color: rgba(0, 255, 71, 1);;line-height: 19px;'
-      )
-      for (let k = 0; k < 35; k++) {
-        const div_child = document.createElement('div')
-        div_child.setAttribute('class', 'demo')
-        if (value_num == 1) {
-          if (this.runType === 'runway1') {
-            div_child.innerHTML = 'MID1'
-          } else if (this.runType === 'runway2') {
-            div_child.innerHTML = 'MID2'
-          } else {
-            div_child.innerHTML = 'MID3'
-          }
-        } else if (value_num === -2) {
-          div_child.innerHTML = '18L'
-        } else if (value_num === 4) {
-          div_child.innerHTML = '36R'
-        } else {
-          div_child.innerHTML = ''
-        }
-        value_num = value_num + 1
-        hang2.appendChild(div_child)
-      }
+      // value_num = -16
+      // const hang2 = document.createElement('div')
+      // hang2.setAttribute(
+      //   'style',
+      //   'text-align:center;display:flex;width: fit-content;padding-left:5px;font-size: 16px;font-family: DINMittelschriftStd;color: rgba(0, 255, 71, 1);;line-height: 19px;'
+      // )
+      // const len = parseInt((document.body.scrollWidth - 165) / 50 / 2)
+      // for (let k = 0; k < 35; k++) {
+      //   const div_child = document.createElement('div')
+      //   div_child.setAttribute('class', 'demo')
+      //   if (this.runType === 'runway1') {
+      //     if (k == len) {
+      //       div_child.innerHTML = 'MID1'
+      //     } else if (k == (len - 2)) {
+      //       div_child.innerHTML = '18R'
+      //     } else if (k == (len + 2)) {
+      //       div_child.innerHTML = '36L'
+      //     } else {
+      //       div_child.innerHTML = ''
+      //     }
+      //   } else if (this.runType === 'runway2') {
+      //     if (k == len) {
+      //       div_child.innerHTML = 'MID2'
+      //     } else if (k == (len - 2)) {
+      //       div_child.innerHTML = '18L'
+      //     } else if (k == (len + 2)) {
+      //       div_child.innerHTML = '36R'
+      //     } else {
+      //       div_child.innerHTML = ''
+      //     }
+      //   } else {
+      //     if (k == len) {
+      //       div_child.innerHTML = 'MID3'
+      //     } else if (k == (len - 2)) {
+      //       div_child.innerHTML = '19'
+      //     } else if (k == (len + 2)) {
+      //       div_child.innerHTML = '01'
+      //     } else {
+      //       div_child.innerHTML = ''
+      //     }
+      //   }
+      //   value_num = value_num + 1
+      //   hang2.appendChild(div_child)
+      // }
       var div_sp1 = document.createElement('div')
       div_sp1.setAttribute('class', 'clear')
       canvas.appendChild(div_sp1)
       canvas.appendChild(hang)
-      canvas.appendChild(hang2)
+      // canvas.appendChild(hang2)
     },
     changeTimeToPic() {
       this.$refs.canvas.innerHTML = ''
@@ -1648,54 +1425,54 @@ export default {
         iconid = 36
       }
       return iconid
-    }
-  },
-  async loadNetCDF(filePath) {
-    return new Promise(function(resolve) {
-      const request = new XMLHttpRequest()
-      request.open('GET', filePath)
-      request.responseType = 'arraybuffer'
-      request.onload = function() {
-        var arrayToMap = function(array) {
-          return array.reduce(function(map, object) {
-            map[object.name] = object
-            return map
-          }, {})
+    },
+    async loadNetCDF(filePath) {
+      return new Promise(function(resolve) {
+        const request = new XMLHttpRequest()
+        request.open('GET', filePath)
+        request.responseType = 'arraybuffer'
+        request.onload = function() {
+          var arrayToMap = function(array) {
+            return array.reduce(function(map, object) {
+              map[object.name] = object
+              return map
+            }, {})
+          }
+          var NetCDF = new NetCDFReader(request.response)
+          const data = {}
+          var dimensions = arrayToMap(NetCDF.dimensions)
+          data.dimensions = {}
+          data.dimensions.lon = dimensions['lon'].size
+          data.dimensions.lat = dimensions['lat'].size
+          data.dimensions.lev = dimensions['lev'].size
+          var variables = arrayToMap(NetCDF.variables)
+          var uAttributes = arrayToMap(variables['U'].attributes)
+          var vAttributes = arrayToMap(variables['V'].attributes)
+          data.lon = {}
+          data.lon.array = new Float32Array(NetCDF.getDataVariable('lon').flat())
+          data.lon.min = Math.min(...data.lon.array)
+          data.lon.max = Math.max(...data.lon.array)
+          data.lat = {}
+          data.lat.array = new Float32Array(NetCDF.getDataVariable('lat').flat())
+          data.lat.min = Math.min(...data.lat.array)
+          data.lat.max = Math.max(...data.lat.array)
+          data.lev = {}
+          data.lev.array = new Float32Array(NetCDF.getDataVariable('lev').flat())
+          data.lev.min = Math.min(...data.lev.array)
+          data.lev.max = Math.max(...data.lev.array)
+          data.U = {}
+          data.U.array = new Float32Array(NetCDF.getDataVariable('U').flat())
+          data.U.min = uAttributes['min'].value
+          data.U.max = uAttributes['max'].value
+          data.V = {}
+          data.V.array = new Float32Array(NetCDF.getDataVariable('V').flat())
+          data.V.min = vAttributes['min'].value
+          data.V.max = vAttributes['max'].value
+          resolve(data)
         }
-        var NetCDF = new NetCDFReader(request.response)
-        const data = {}
-        var dimensions = arrayToMap(NetCDF.dimensions)
-        data.dimensions = {}
-        data.dimensions.lon = dimensions['lon'].size
-        data.dimensions.lat = dimensions['lat'].size
-        data.dimensions.lev = dimensions['lev'].size
-        var variables = arrayToMap(NetCDF.variables)
-        var uAttributes = arrayToMap(variables['U'].attributes)
-        var vAttributes = arrayToMap(variables['V'].attributes)
-        data.lon = {}
-        data.lon.array = new Float32Array(NetCDF.getDataVariable('lon').flat())
-        data.lon.min = Math.min(...data.lon.array)
-        data.lon.max = Math.max(...data.lon.array)
-        data.lat = {}
-        data.lat.array = new Float32Array(NetCDF.getDataVariable('lat').flat())
-        data.lat.min = Math.min(...data.lat.array)
-        data.lat.max = Math.max(...data.lat.array)
-        data.lev = {}
-        data.lev.array = new Float32Array(NetCDF.getDataVariable('lev').flat())
-        data.lev.min = Math.min(...data.lev.array)
-        data.lev.max = Math.max(...data.lev.array)
-        data.U = {}
-        data.U.array = new Float32Array(NetCDF.getDataVariable('U').flat())
-        data.U.min = uAttributes['min'].value
-        data.U.max = uAttributes['max'].value
-        data.V = {}
-        data.V.array = new Float32Array(NetCDF.getDataVariable('V').flat())
-        data.V.min = vAttributes['min'].value
-        data.V.max = vAttributes['max'].value
-        resolve(data)
-      }
-      request.send()
-    })
+        request.send()
+      })
+    }
   }
 }
 </script>
@@ -1713,36 +1490,37 @@ export default {
   font-style: normal;
   font-display: block;
 }
-.control {
+.control-enlarg {
   position: fixed;
   right: 0.2rem;
   height: 0.28rem;
-  display: flex;
-  justify-content: flex-end;
+  width: 0.28rem;
+  background: #242236;
+  box-shadow: 0px 12px 32px 1px rgba(16,15,23,0.15);
+  border-radius: 4px;
+  cursor: pointer;
   transition: bottom 0.3s;
   -ms-transition: bottom 0.3s;
   -moz-transition: bottom 0.3s; /* Firefox 4 */
   -webkit-transition: bottom 0.3s; /* Safari 和 Chrome */
   -o-transition: bottom 0.3s; /* Opera */
 }
-.enlarg {
-  height: 0.28rem;
-  width: 0.28rem;
-  box-shadow: 0px 12px 32px 1px rgba(16,15,23,0.15);
-  border-radius: 4px;
-  background: #242236 url(../../assets/images/fangda.svg) center -1px no-repeat;
-  background-size: 0.28rem 0.28rem;
-  cursor: pointer;
-  &.sp {
-    background: #242236 url(../../assets/images/suoxiao.svg) center 3px no-repeat;
-    background-size: 0.21rem 0.21rem;
-  }
-}
 .wind {
   min-height: 100%;
   #cesiumContainer {
     height: 100vh;
     width: 100%;
+  }
+}
+.run-name {
+  display: flex;
+  justify-content: center;
+  font-size: 0.16rem;
+  color: rgba(0, 255, 71, 1);
+  line-height: 0.19rem;
+  margin: -20px 0 0 0.65rem;
+  span {
+    margin: 0 0.2rem;
   }
 }
 .top-tap {
@@ -1848,14 +1626,14 @@ export default {
 }
 .wind_content {
   .myScroll_btn_div {
-    padding-left: 0.9rem;
-    padding-right: 0.2rem;
+    padding-left: 0.89rem;
+    padding-right: 0.24rem;
     display: flex;
     justify-content: space-between;
     position: absolute;
     width: 91vw;
     z-index: 1002;
-    top: 30%;
+    top: 34%;
     [class*=" el-icon-"], [class^=el-icon-] {
       color:white;
       font-size: 0.2rem;
@@ -1877,7 +1655,7 @@ export default {
     line-height: 0.19rem;
     text-align: right;
     position: relative;
-    bottom: 3vh;
+    bottom: 20px;
     span:nth-child(2) {
       margin-left: 0.03rem;
       margin-right: 0.03rem;
@@ -1948,9 +1726,9 @@ export default {
     #body {
       width: calc(105vh + 11rem);
     }
-    #canvas {
-      padding-left: 0.1rem;
-    }
+    // #canvas {
+    //   padding-left: 0.1rem;
+    // }
     .bottom_div {
       width: 3vh;
       margin-right: 0.3rem;
@@ -2084,7 +1862,7 @@ export default {
   right: 0.2rem;
   .wind_footer_header {
     text-align: left;
-    margin-bottom: 0.08rem;
+    margin-bottom: 0.19rem;
     height: 0.92rem;
     .select_color {
       background: #242236 !important;
@@ -2127,20 +1905,22 @@ export default {
       width: 0.12rem;
       border-width: 0.12rem 0 0;
       border-radius: 0%;
+      border-bottom-right-radius: 2px;
+      border-bottom-left-radius: 2px;
       border-style: solid;
       height: 0.1rem;
-      border-color: #fff2f2f2 transparent;
+      border-color: #F2F2F2 transparent;
     }
     /deep/.el-slider__button:before {
       content: "";
       position: absolute;
       height: 0;
       width: 0;
-      top: -0.24rem;
+      top: -0.2rem;
       left: 0;
       border-left: 0.06rem solid transparent;
       border-right: 0.06rem solid transparent;
-      border-bottom: 0.12rem solid #fff2f2f2;
+      border-bottom: 0.08rem solid #F2F2F2;
     }
     .title {
       display: flex;
