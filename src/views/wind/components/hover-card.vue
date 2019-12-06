@@ -56,6 +56,7 @@ export default {
   color: #aaaaaa;
   pointer-events: none;
   .title {
+    position: relative;
     height: 0.46rem;
     line-height: 0.46rem;
     padding: 0 0.24rem;
@@ -63,6 +64,16 @@ export default {
     font-size: 0.2rem;
     border-bottom: 1px #45416F solid;
     font-weight: 500;
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0.15rem;
+      top: 0.15rem;
+      bottom: 0.15rem;
+      background: rgba(0,255,71,1);
+      border-radius: 1px;
+      width: 4px;
+    }
   }
   .item {
     display: flex;

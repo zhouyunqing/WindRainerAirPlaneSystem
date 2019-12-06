@@ -73,7 +73,10 @@ export default {
     clickSlider(e) {
       const cHeight = this.$refs.cardSp.offsetHeight / 2
       this.clientY = e.clientY - cHeight
-      this.$emit('change', this.space[this.spaceIndex].key)
+      this.$emit('change', {
+        level: this.space[this.spaceIndex].key,
+        name: 'slider'
+      })
     },
     clickSpan(e, i) {
       this.spaceIndex = i
@@ -108,7 +111,10 @@ export default {
       document.onmouseup = e => {
         document.onmousemove = null
         document.onmouseup = null
-        this.$emit('change', this.space[this.spaceIndex].key)
+        this.$emit('change', {
+          level: this.space[this.spaceIndex].key,
+          name: 'slider'
+        })
       }
     },
     setIndex(y) {

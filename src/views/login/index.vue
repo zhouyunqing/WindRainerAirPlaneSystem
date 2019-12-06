@@ -112,16 +112,21 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
+          setTimeout(() => {
+            this.login()
+          }, 100)
         } else {
           console.log('error submit!!')
           return false
         }
+      })
+    },
+    login() {
+      this.$store.dispatch('user/login', this.loginForm).then(() => {
+        this.$router.push({ path: this.redirect || '/' })
+        // this.loading = false
+      }).catch(() => {
+        this.loading = false
       })
     }
   }
@@ -160,6 +165,9 @@ $cursor: #000;
     font-family: PingFangSC-Medium,PingFang SC;
     font-weight: 500;
     color: rgba(255,255,255,1);
+    &:hover {
+      background: rgba(5,137,42,0.9);
+    }
   }
   .el-input {
     display: inline-block;

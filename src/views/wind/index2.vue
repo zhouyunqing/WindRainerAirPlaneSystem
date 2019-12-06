@@ -20,7 +20,7 @@
         @change="changeHeightLevel"
       />
     </div> -->
-    <slider v-if="activeWind == 'plane'" @change="changeHeightLevel" />
+    <slider v-show="activeWind == 'plane'" @change="changeHeightLevel" />
     <!-- 右侧 距地面高度 end -->
 
     <!-- 顶部 展示切换 start -->
@@ -90,6 +90,21 @@
             <div v-show="isLegendChange" id="canvas" ref="canvas" class="canvas" />
           </div>
         </el-scrollbar>
+        <div v-if="runType == 'runway1'" class="run-name">
+          <span>18R</span>
+          <span>MID1</span>
+          <span>36L</span>
+        </div>
+        <div v-if="runType == 'runway2'" class="run-name">
+          <span>18L</span>
+          <span>MID2</span>
+          <span>36R</span>
+        </div>
+        <div v-if="runType == 'runway3'" class="run-name">
+          <span>19</span>
+          <span>MID3</span>
+          <span>01</span>
+        </div>
         <div class="unit">
           <span class="length_font">(长度:KM)</span>
         </div>
@@ -179,14 +194,12 @@ import rightCard from './components/card.vue'
 import bottomCard from './components/chart.vue'
 import hoverCard from './components/hover-card.vue'
 import slider from './components/slider.vue'
-
 import Cesium from 'cesium/Cesium'
 import widgets from 'cesium/Widgets/widgets.css'
 import Wind3D from '@/components/wind/wind3D.js'
 import colorTable from '@/components/wind/colorTable.js'
 import request from '@/utils/request1'
 import ColorImage from '@/components/wind/ColorImage'
-
 import windImgUrl from '../../assets/images/windImg.png'
 import utilTime from '@/utils/time'
 import { getRunwayPointForecastData, getParabolic, getModelForecast, getRunwaysForecast } from '@/api/wind'
@@ -294,7 +307,6 @@ export default {
   mounted() {
     this.setMap()
     this.getChartData(this.site)
-
     let nowTime = new Date().getTime()
     let time = utilTime.timeObj(nowTime)
     this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
@@ -366,8 +378,8 @@ export default {
         runway: 'runway1,runway2,runway3',
         starttime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`,
         endtime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:59:59`,
-        //  starttime: '2019-12-04 12:00:00',
-        //  endtime: '2019-12-04 12:59:59',
+        // starttime: '2019-12-02 11:00:00',
+        // endtime: '2019-12-02 11:59:59',
         dataset: 'SPD',
         resolution: '1000M',
         hight: '0010m'
@@ -378,25 +390,6 @@ export default {
           this.$message.error(res.data.returnMessage)
         }
       })
-      // this.$store.dispatch('station/getRankInfo', {
-      //   url: this.ip + this.fsUrl,
-      //   params: {
-      //     datacode: 'ZBAA',
-      //     airport: 'ZBAA',
-      //     runway: 'runway1,runway2,runway3',
-      //     starttime: '2019-11-26 16:00:00',
-      //     endtime: '2019-11-26 16:59:59',
-      //     dataset: 'SPD',
-      //     resolution: '1000M',
-      //     hight: '0010m'
-      //   }
-      // }).then(res => {
-      //   if (res.data.returnCode * 1 === 0) {
-      //     this.fsData = res.data.runways
-      //   } else {
-      //     this.$message.error(res.data.returnMessage)
-      //   }
-      // })
     },
     getStartTime() {
       const nowTime = new Date().getTime()
@@ -489,7 +482,6 @@ export default {
       this.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
         Cesium.ScreenSpaceEventType.LEFT_CLICK
       )
-
       var PI = this.viewer.entities.add({
         rectangle: {
           coordinates: Cesium.Rectangle.fromDegrees(116.423341433386, 39.992478621508, 116.765146586308, 40.135425293208),
@@ -497,7 +489,6 @@ export default {
           height: 2
         }
       })
-
       setTimeout(() => {
         delPI()
       }, 4000)
@@ -505,7 +496,6 @@ export default {
       function delPI() {
         _this.viewer.entities.remove(PI)
       }
-
       /*
       // 定位北京首都机场
       this.viewer.camera.flyTo({
@@ -520,7 +510,6 @@ export default {
           roll: Cesium.Math.toRadians(0)
         }
       })*/
-
       this.viewer._cesiumWidget._creditContainer.style.display = 'none'
       Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjY5ODg0MS1lZTMxLTRmMGMtOTRhYi00N2M2YjQ3ZDMzNjgiLCJpZCI6NDgwLCJpYXQiOjE1MjUyNTE1Nzh9.5Mi3ijReKCRQ_Shupv2w-wl2eJBRLOOW3Bmeq0IL5Y4'
       const val = 2
@@ -536,7 +525,7 @@ export default {
         const time = `${time0.y}-${time0.m}-${time0.d} ${time0.hh}:00:00`
         const level = 0
         // const time = '2019-11-13%2000:00:00'
-        this.loadwind(time, level)
+        this.loadwind(time, level, 'start')
       }
     },
     showHeightLevelToolTip(value) {
@@ -576,12 +565,13 @@ export default {
       }
       return tip
     },
-    changeHeightLevel(level) {
+    changeHeightLevel(val) {
       const nowTime = new Date().getTime()
       const time0 = utilTime.timeObj(nowTime)
       const time2 = `${time0.y}-${time0.m}-${time0.d} ${time0.hh}:00:00`
       // const time2 = '2019-11-13%2000:00:00'
-      this.loadwind(time2, level)
+      this.heightLevel = val.level
+      this.loadwind(time2, val.level, 'slider')
     },
     windToggle(type) {
       if (this.activeWind == type) return
@@ -594,45 +584,25 @@ export default {
         this.changeHeight(true)
         this.isLegendChange = true
         this.sectionwindDetail = false
-        for (let i = 0; i < this.pointName.length; i++) {
-          const entity = this.viewer.entities.getById(this.pointName[i])
-          entity.show = this.isLegendChange
-        }
-        let entity1 = this.viewer.entities.getById('wall1')
-        entity1.show = !this.isLegendChange
-        entity1 = this.viewer.entities.getById('wall2')
-        entity1.show = !this.isLegendChange
-        entity1 = this.viewer.entities.getById('wall3')
-        entity1.show = !this.isLegendChange
         this.viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(
-            116.603738,
-            39.944974,
-            4961.9883961571
-          ),
-          orientation: {
-            heading: Cesium.Math.toRadians(359.668148999818),
-            pitch: Cesium.Math.toRadians(-20.8329210486802),
-            roll: Cesium.Math.toRadians(0)
-          }
+            116.595534748692,
+            40.0580145185529,
+            21961.9883961571
+          )
+          // orientation: {
+          //   heading: Cesium.Math.toRadians(359.668148999818),
+          //   pitch: Cesium.Math.toRadians(-20.8329210486802),
+          //   roll: Cesium.Math.toRadians(0)
+          // }
         })
       } else {
         this.changeHeight(false)
         this.isLegendChange = false
-        for (let i = 0; i < this.pointName.length; i++) {
-          const entity = this.viewer.entities.getById(this.pointName[i])
-          entity.show = this.isLegendChange
-        }
-        let entity1 = this.viewer.entities.getById('wall1')
-        entity1.show = !this.isLegendChange
-        entity1 = this.viewer.entities.getById('wall2')
-        entity1.show = !this.isLegendChange
-        entity1 = this.viewer.entities.getById('wall3')
-        entity1.show = !this.isLegendChange
         this.viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(
             116.481554,
-            40.013338,
+            39.984974,
             6961.9883961571
           ),
           orientation: {
@@ -642,21 +612,23 @@ export default {
           }
         })
       }
+      const nowTime = new Date().getTime()
+      const time0 = utilTime.timeObj(nowTime)
+      const time2 = `${time0.y}-${time0.m}-${time0.d} ${time0.hh}:00:00`
+      this.loadwind(time2, this.heightLevel, 'type')
     },
-    loadwind(time, level) {
+    loadwind(time, level, scene) {
       this.viewer.scene.primitives.show = false
       if (this.wind3D) {
         this.wind3D.removeWindPrimitives()
         this.wind3D.colorImage = null
       }
-
       // const jsonPath =
       //   'http://161.189.11.216:8090/gis/BJPEK/ModelForecast?datacode=ABC&dataset=XLONG,XLAT,U,V&time=' +
       //   time +
       //   '&bbox=110,30,120,42&z=' +
       //   level +
       //   '&resolution=1000M'
-
       getModelForecast({
         datacode: 'ABC',
         dataset: 'XLONG,XLAT,U,V',
@@ -707,13 +679,41 @@ export default {
         }
         const windDataMap = this.windData
         const particleSystemOptionsMap = particleSystemOptions
-        this.wind3D = new Wind3D(
-          this.viewer,
-          windDataMap,
-          particleSystemOptionsMap
-        )
+        if (this.activeWind == 'plane') {
+          this.wind3D = new Wind3D(
+            this.viewer,
+            windDataMap,
+            particleSystemOptionsMap
+          )
+        }
+        if (scene != 'type') {
+          this.drawWindHeatLayer(windDataMap)
+        }
 
-        this.drawWindHeatLayer(windDataMap)
+        let entity1 = this.viewer.entities.getById('wall1')
+        if (entity1) {
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById('wall2')
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById('wall3')
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById('pd1')
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById('pd2')
+          entity1.show = !this.isLegendChange
+          entity1 = this.viewer.entities.getById('pd3')
+          entity1.show = !this.isLegendChange
+        }
+        var that = this
+        for (let i = 0; i < that.pointName.length; i++) {
+          const entity = that.viewer.entities.getById(that.pointName[i])
+          if (entity && this.activeWind == 'plane') {
+            entity.show = true
+          } else if (entity && this.activeWind != 'plane') {
+            entity.show = false
+          }
+        }
+
         this.viewer.entities.add({
           polyline: {
             // 多线段
@@ -729,7 +729,6 @@ export default {
             })
           }
         })
-
         this.viewer.entities.add({
           show: !this.isLegendChange,
           id: 'wall1',
@@ -836,6 +835,9 @@ export default {
             minimumHeights: [100, 100]
           }
         })
+        this.drawPoint(' 跑道1 ', 116.580113, 40.074035, 0, '#000', '', 'pd1')
+        this.drawPoint(' 跑道2 ', 116.605809, 40.056497, 1, '#000', '', 'pd2')
+        this.drawPoint(' 跑道3 ', 116.623469, 40.059059, 2, '#000', '', 'pd3')
         this.drawPoint(' 18R ', 116.575473, 40.10303, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[0], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[0])
         this.drawPoint('MID1', 116.577925, 40.088623, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[1], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[1])
         this.drawPoint(' 36L ', 116.580113, 40.074035, 0, this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[2], this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[2])
@@ -845,15 +847,18 @@ export default {
         this.drawPoint('  19  ', 116.617997, 40.094787, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[0], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[0])
         this.drawPoint('MID3', 116.621128, 40.074618, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[1], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[1])
         this.drawPoint(' 01 ', 116.623469, 40.059059, 2, this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[2], this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[2])
+
         var handlerVideo = new Cesium.ScreenSpaceEventHandler(
           this.viewer.scene.canvas
         )
-        var that = this
+
         /**
          * 鼠标移动事件
          */
         handlerVideo.setInputAction((movement) => {
-          this.pointHandler(movement)
+          if (this.activeWind == 'plane') {
+            this.pointHandler(movement)
+          }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
         /**
          * 鼠标左键点击事件
@@ -877,7 +882,11 @@ export default {
           } else {
             for (let i = 0; i < that.pointName.length; i++) {
               const entity = that.viewer.entities.getById(that.pointName[i])
-              entity.show = true
+              if (this.activeWind == 'plane') {
+                entity.show = true
+              } else {
+                entity.show = false
+              }
             }
           }
         })
@@ -938,7 +947,6 @@ export default {
       })
       return backColor
     },
-
     drawWindHeatLayer(data) { // 绘制风场热力图
       var points = []
       var max = 0
@@ -1010,17 +1018,17 @@ export default {
      * @param lat 站点坐标
      * @param lng 站点坐标
      */
-    drawPoint(text, lat, lng, runway, color, backcolor) {
+    drawPoint(text, lat, lng, runway, color, backcolor, pdId) {
       var r =
         '<table style="width: 200px;"><tr><th scope="col" colspan="4"  style="text-align:center;font-size:15px;">' +
         '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"></td></tr></table>'
       this.viewer.entities.add({
-        show: true,
-        id: text.replace(/^\s*|\s*$/g, ''),
+        show: !(text.indexOf('跑道') >= 0),
+        id: text.indexOf('跑道') >= 0 ? pdId : text.replace(/^\s*|\s*$/g, ''),
         name: text,
         runway: runway,
         type: 'point',
-        position: Cesium.Cartesian3.fromDegrees(lat, lng),
+        position: Cesium.Cartesian3.fromDegrees(lat, lng, text.indexOf('跑道') >= 0 ? 0 : 0),
         backColor: backcolor,
         textColor: color,
         label: {
@@ -1028,7 +1036,7 @@ export default {
           font: '12px Source Han Sans CN', // 字体样式
           fillColor: Cesium.Color.fromCssColorString(color), // 字体颜色
           backgroundColor: Cesium.Color.fromCssColorString(backcolor), // 背景颜色
-          showBackground: true, // 是否显示背景颜色
+          showBackground: !(text.indexOf('跑道') >= 0), // 是否显示背景颜色
           style: Cesium.LabelStyle.FILL_AND_OUTLINE, // label样式 TEXT的样式填充以及边框
           outlineWidth: 1,
           outlineColor: Cesium.Color.BLACK,
@@ -1040,7 +1048,6 @@ export default {
         tooltip: { html: r, anchor: [0, -12] }
       })
     },
-
     /**
      * 站点悬浮事件，获取当前站点时间数据
      * @param movement
@@ -1078,7 +1085,6 @@ export default {
           }
         }
       }
-
       if (pick && pick.id.type == 'point') {
         this.entity = pick
         pick.id.label.scale = 1.5
@@ -1147,7 +1153,10 @@ export default {
         resolution: '1000M',
         runway: type
       }).then(res => {
-        self.draw(res.data)
+        this.$refs['myScrollbar'].wrap.scrollLeft = 0
+        return res.data
+      }).then(res => {
+        self.draw(res)
       })
     },
     draw(data) {
@@ -1317,38 +1326,55 @@ export default {
         }
         hang.appendChild(div_child)
       }
-      value_num = -16
-      const hang2 = document.createElement('div')
-      hang2.setAttribute(
-        'style',
-        'text-align:center;display:flex;width: fit-content;padding-left:5px;font-size: 16px;font-family: DINMittelschriftStd;color: rgba(0, 255, 71, 1);;line-height: 19px;'
-      )
-      for (let k = 0; k < 35; k++) {
-        const div_child = document.createElement('div')
-        div_child.setAttribute('class', 'demo')
-        if (value_num == 1) {
-          if (this.runType === 'runway1') {
-            div_child.innerHTML = 'MID1'
-          } else if (this.runType === 'runway2') {
-            div_child.innerHTML = 'MID2'
-          } else {
-            div_child.innerHTML = 'MID3'
-          }
-        } else if (value_num === -2) {
-          div_child.innerHTML = '18L'
-        } else if (value_num === 4) {
-          div_child.innerHTML = '36R'
-        } else {
-          div_child.innerHTML = ''
-        }
-        value_num = value_num + 1
-        hang2.appendChild(div_child)
-      }
+      // value_num = -16
+      // const hang2 = document.createElement('div')
+      // hang2.setAttribute(
+      //   'style',
+      //   'text-align:center;display:flex;width: fit-content;padding-left:5px;font-size: 16px;font-family: DINMittelschriftStd;color: rgba(0, 255, 71, 1);;line-height: 19px;'
+      // )
+      // const len = parseInt((document.body.scrollWidth - 165) / 50 / 2)
+      // for (let k = 0; k < 35; k++) {
+      //   const div_child = document.createElement('div')
+      //   div_child.setAttribute('class', 'demo')
+      //   if (this.runType === 'runway1') {
+      //     if (k == len) {
+      //       div_child.innerHTML = 'MID1'
+      //     } else if (k == (len - 2)) {
+      //       div_child.innerHTML = '18R'
+      //     } else if (k == (len + 2)) {
+      //       div_child.innerHTML = '36L'
+      //     } else {
+      //       div_child.innerHTML = ''
+      //     }
+      //   } else if (this.runType === 'runway2') {
+      //     if (k == len) {
+      //       div_child.innerHTML = 'MID2'
+      //     } else if (k == (len - 2)) {
+      //       div_child.innerHTML = '18L'
+      //     } else if (k == (len + 2)) {
+      //       div_child.innerHTML = '36R'
+      //     } else {
+      //       div_child.innerHTML = ''
+      //     }
+      //   } else {
+      //     if (k == len) {
+      //       div_child.innerHTML = 'MID3'
+      //     } else if (k == (len - 2)) {
+      //       div_child.innerHTML = '19'
+      //     } else if (k == (len + 2)) {
+      //       div_child.innerHTML = '01'
+      //     } else {
+      //       div_child.innerHTML = ''
+      //     }
+      //   }
+      //   value_num = value_num + 1
+      //   hang2.appendChild(div_child)
+      // }
       var div_sp1 = document.createElement('div')
       div_sp1.setAttribute('class', 'clear')
       canvas.appendChild(div_sp1)
       canvas.appendChild(hang)
-      canvas.appendChild(hang2)
+      // canvas.appendChild(hang2)
     },
     changeTimeToPic() {
       this.$refs.canvas.innerHTML = ''
@@ -1414,54 +1440,54 @@ export default {
         iconid = 36
       }
       return iconid
-    }
-  },
-  async loadNetCDF(filePath) {
-    return new Promise(function(resolve) {
-      const request = new XMLHttpRequest()
-      request.open('GET', filePath)
-      request.responseType = 'arraybuffer'
-      request.onload = function() {
-        var arrayToMap = function(array) {
-          return array.reduce(function(map, object) {
-            map[object.name] = object
-            return map
-          }, {})
+    },
+    async loadNetCDF(filePath) {
+      return new Promise(function(resolve) {
+        const request = new XMLHttpRequest()
+        request.open('GET', filePath)
+        request.responseType = 'arraybuffer'
+        request.onload = function() {
+          var arrayToMap = function(array) {
+            return array.reduce(function(map, object) {
+              map[object.name] = object
+              return map
+            }, {})
+          }
+          var NetCDF = new NetCDFReader(request.response)
+          const data = {}
+          var dimensions = arrayToMap(NetCDF.dimensions)
+          data.dimensions = {}
+          data.dimensions.lon = dimensions['lon'].size
+          data.dimensions.lat = dimensions['lat'].size
+          data.dimensions.lev = dimensions['lev'].size
+          var variables = arrayToMap(NetCDF.variables)
+          var uAttributes = arrayToMap(variables['U'].attributes)
+          var vAttributes = arrayToMap(variables['V'].attributes)
+          data.lon = {}
+          data.lon.array = new Float32Array(NetCDF.getDataVariable('lon').flat())
+          data.lon.min = Math.min(...data.lon.array)
+          data.lon.max = Math.max(...data.lon.array)
+          data.lat = {}
+          data.lat.array = new Float32Array(NetCDF.getDataVariable('lat').flat())
+          data.lat.min = Math.min(...data.lat.array)
+          data.lat.max = Math.max(...data.lat.array)
+          data.lev = {}
+          data.lev.array = new Float32Array(NetCDF.getDataVariable('lev').flat())
+          data.lev.min = Math.min(...data.lev.array)
+          data.lev.max = Math.max(...data.lev.array)
+          data.U = {}
+          data.U.array = new Float32Array(NetCDF.getDataVariable('U').flat())
+          data.U.min = uAttributes['min'].value
+          data.U.max = uAttributes['max'].value
+          data.V = {}
+          data.V.array = new Float32Array(NetCDF.getDataVariable('V').flat())
+          data.V.min = vAttributes['min'].value
+          data.V.max = vAttributes['max'].value
+          resolve(data)
         }
-        var NetCDF = new NetCDFReader(request.response)
-        const data = {}
-        var dimensions = arrayToMap(NetCDF.dimensions)
-        data.dimensions = {}
-        data.dimensions.lon = dimensions['lon'].size
-        data.dimensions.lat = dimensions['lat'].size
-        data.dimensions.lev = dimensions['lev'].size
-        var variables = arrayToMap(NetCDF.variables)
-        var uAttributes = arrayToMap(variables['U'].attributes)
-        var vAttributes = arrayToMap(variables['V'].attributes)
-        data.lon = {}
-        data.lon.array = new Float32Array(NetCDF.getDataVariable('lon').flat())
-        data.lon.min = Math.min(...data.lon.array)
-        data.lon.max = Math.max(...data.lon.array)
-        data.lat = {}
-        data.lat.array = new Float32Array(NetCDF.getDataVariable('lat').flat())
-        data.lat.min = Math.min(...data.lat.array)
-        data.lat.max = Math.max(...data.lat.array)
-        data.lev = {}
-        data.lev.array = new Float32Array(NetCDF.getDataVariable('lev').flat())
-        data.lev.min = Math.min(...data.lev.array)
-        data.lev.max = Math.max(...data.lev.array)
-        data.U = {}
-        data.U.array = new Float32Array(NetCDF.getDataVariable('U').flat())
-        data.U.min = uAttributes['min'].value
-        data.U.max = uAttributes['max'].value
-        data.V = {}
-        data.V.array = new Float32Array(NetCDF.getDataVariable('V').flat())
-        data.V.min = vAttributes['min'].value
-        data.V.max = vAttributes['max'].value
-        resolve(data)
-      }
-      request.send()
-    })
+        request.send()
+      })
+    }
   }
 }
 </script>
@@ -1499,6 +1525,17 @@ export default {
   #cesiumContainer {
     height: 100vh;
     width: 100%;
+  }
+}
+.run-name {
+  display: flex;
+  justify-content: center;
+  font-size: 0.16rem;
+  color: rgba(0, 255, 71, 1);
+  line-height: 0.19rem;
+  margin: -20px 0 0 0.65rem;
+  span {
+    margin: 0 0.2rem;
   }
 }
 .top-tap {
@@ -1633,7 +1670,7 @@ export default {
     line-height: 0.19rem;
     text-align: right;
     position: relative;
-    bottom: 3vh;
+    bottom: 20px;
     span:nth-child(2) {
       margin-left: 0.03rem;
       margin-right: 0.03rem;

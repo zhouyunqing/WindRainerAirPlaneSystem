@@ -1,6 +1,7 @@
 import request from '../utils/request1'
-const base_url = 'http://161.189.11.216:8090'
-//获得风险配置
+// const base_url = 'http://161.189.11.216:8090'
+const base_url = 'http://52.82.54.61:8090'
+// 获得风险配置
 export function getRiskConfigList(params) {
   console.log(params)
   return request({
@@ -10,9 +11,9 @@ export function getRiskConfigList(params) {
   })
 }
 
-//获得数据字典
-//catagory=['RiskServerity','isActive','RiskSource','RiskState','runwanHistoryData']
-//RiskServerity:// {"returnCode":0,"data":[{"value":"一般","key":"1"},{"value":"紧急","key":"2"},{"value":"严重","key":"3"}],"returnMessage":"success"}
+// 获得数据字典
+// catagory=['RiskServerity','isActive','RiskSource','RiskState','runwanHistoryData']
+// RiskServerity:// {"returnCode":0,"data":[{"value":"一般","key":"1"},{"value":"紧急","key":"2"},{"value":"严重","key":"3"}],"returnMessage":"success"}
 export function getOptions(params) {
   return request({
     url: base_url + '/gis/dictionary/getOptions',
@@ -82,10 +83,9 @@ export function getRiskInfoes(params) {
   return request({
     url: base_url + '/gis/riskInfoes/getRiskInfoes',
     method: 'get',
-    params 
+    params
   })
 }
-
 
 //  删除报警记录
 export function deleteRiskInfoes(params) {
@@ -99,25 +99,25 @@ export function deleteRiskInfoes(params) {
   return request({
     url: base_url + '/gis/riskInfoes/deleteRiskInfoes',
     method: 'get',
-    params 
+    params
   })
 }
 
 export function getRiskConfig(id) {
   return request({
-    url: base_url + '/gis/riskConfig/getRiskConfig?id='+id,
+    url: base_url + '/gis/riskConfig/getRiskConfig?id=' + id,
     method: 'get'
   })
 }
 
-//时间戳转日期格式化
+// 时间戳转日期格式化
 export function timestampToTime(timestamp) {
-  var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
- var Y = date.getFullYear() + '-';
- var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
- var D = (date.getDate() < 10 ? '0'+date.getDate() : date.getDate()) + ' ';
- var h = (date.getHours() < 10 ? '0'+date.getHours() : date.getHours()) + ':';
- var m = (date.getMinutes() < 10 ? '0'+date.getMinutes() : date.getMinutes()) + ':';
- var s = (date.getSeconds() < 10 ? '0'+date.getSeconds() : date.getSeconds());
-  return Y+M+D+h+m+s;
+  var date = new Date(timestamp * 1000)//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+ var Y = date.getFullYear() + '-'
+ var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+ var D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' '
+ var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':'
+ var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':'
+ var s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds())
+  return Y + M + D + h + m + s
 }
