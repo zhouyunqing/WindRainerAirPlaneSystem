@@ -31,7 +31,7 @@
     <!-- 顶部 展示切换 end -->
 
     <!-- 右上角 图列组件 start -->
-    <rightCard v-if="activeWind == 'plane'" card-title="机场跑道地面风速" normal="正常 0-5 m/s" light="轻度 5-17 m/s" serious="严重 ≧17 m/s" />
+    <rightCard v-if="activeWind == 'plane'" card-title="机场跑道地面风速" normal="正常 0-5 m/s" light="轻度 5-17 m/s" serious="严重 >17 m/s" />
     <!-- 右上角 图列组件 end -->
 
     <div id="cesiumContainer" />
@@ -246,7 +246,7 @@ export default {
       },
       forecastTab: 'near', // near：临近预报；short：短时预报
       info: {},
-      ip: 'http://161.189.11.216:8090',
+      ip: 'http://52.82.54.61:8090',
       url: '/gis/BJPEK/RunwayPointForecastData',
       fsUrl: '/gis/BJPEK/RunwaysForecast',
       params: {
@@ -366,8 +366,8 @@ export default {
         runway: 'runway1,runway2,runway3',
         starttime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`,
         endtime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:59:59`,
-        // starttime: '2019-11-26 16:00:00',
-        // endtime: '2019-11-26 16:59:59',
+        //  starttime: '2019-12-04 12:00:00',
+        //  endtime: '2019-12-04 12:59:59',
         dataset: 'SPD',
         resolution: '1000M',
         hight: '0010m'
@@ -462,10 +462,11 @@ export default {
           url: 'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}'
         })
       })
-      this.viewer.imageryLayers.addImageryProvider(
+      var blackMarble = this.viewer.imageryLayers.addImageryProvider(
         new Cesium.UrlTemplateImageryProvider({
           url: 'http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8'
         })
+        
       )
       // 高德卫星   https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}   http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8
       // 限制视角高度
@@ -1056,7 +1057,7 @@ export default {
           this.getChartData(this.hoverSite)
           this.hoverStyle.top = movement.endPosition.y + 'px'
           this.hoverStyle.left = movement.endPosition.x + 130 + 'px'
-          this.infoTime = '2019-11-17 ' + this.showHour + ':00:00'
+          this.infoTime = '2019-12-03 ' + this.showHour + ':00:00'
         }
       } else {
         this.isHoverShow = false

@@ -27,7 +27,7 @@
         <em>{{ parseInt(detail.SLP[index]) }}hPa</em>
       </li>
     </ul>
-    <div class="time">数据时间(UTC)：{{ time }}</div>
+    <div class="time">数据更新时间：{{ time }}</div>
   </el-card>
 </template>
 <script>
