@@ -1,8 +1,8 @@
 <template>
   <div v-if="!!space.length" class="slider">
     <div ref="slider" class="slider-wrap" @click="clickSlider($event)">
-      <span v-for="(item, i) in space" :key="i" :class="{sp: item.key == 13}" :data-key="item.key" @mousemove="hoverSapn($event, i)" @click="clickSpan($event, i)">
-        <i v-if="item.key == 13">{{ item.val }}</i>
+      <span v-for="(item, i) in space" :key="i" :class="{sp: item.key == 15}" :data-key="item.key" @mousemove="hoverSapn($event, i)" @click="clickSpan($event, i)">
+        <i v-if="item.key == 15">{{ item.val }}</i>
       </span>
       <div ref="cardSp" class="slider-card sp" :style="{ top: spClientY + 'px' }">
         <div v-if="!!space[spaceSpIndex].hPa">{{ space[spaceSpIndex].hPa }}hPa</div>
