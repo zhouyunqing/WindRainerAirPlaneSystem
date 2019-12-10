@@ -37,6 +37,7 @@
       </div>
       <div class="content-chart" :class="{sp: chartShow}">
         <div ref="windEcharts" class="chart-wrap" />
+        <div class="xa-bg" />
       </div>
     </div>
   </div>
@@ -158,7 +159,7 @@ export default {
           this.chartTit = {
             tooltip: '温度',
             tooltipUnit: '℃',
-            unit:'℃',
+            unit: '℃',
             lineName: '温度(℃)'
           }
           break
@@ -229,13 +230,13 @@ export default {
     potail(Echarts) {
       const Data = this.setOptionData()
       const colors = ['#0BD3A7', '#FFBE3A', '#FF2C55']
-      
+
       const option = {
         animation: false,
         color: colors,
         backgroundColor: 'transparent',
         tooltip: { // 显示提示框
-          trigger: 'axis',//axis
+          trigger: 'axis', // axis
           axisPointer: { type: 'cross' },
           formatter: (params, ticket, callback) => {
             const index = params[0].dataIndex
@@ -252,11 +253,11 @@ export default {
           right: '5'
         },
         dataZoom: {
-          type: 'slider',//图表下方的伸缩条
- 　　  　　show : true, //是否显示
- 　  　　　realtime : true, //拖动时，是否实时更新系列的视图
-   　　　　start : 0, //伸缩条开始位置（1-100），可以随时更改
-   　　　　end : 100, //伸缩条结束位置（1-100），可以随时更改
+          type: 'slider', // 图表下方的伸缩条
+          show: true, // 是否显示
+          realtime: true, // 拖动时，是否实时更新系列的视图
+          start: 0, // 伸缩条开始位置（1-100），可以随时更改
+          end: 100, // 伸缩条结束位置（1-100），可以随时更改
           bottom: '0%',
           height: '18',
           dataBackground: {
@@ -407,7 +408,7 @@ export default {
             nameTextStyle: { color: '#BBBBBB' },
             axisLabel: { interval: 5, color: '#BBBBBB' },
             axisTick: { show: false }
-            
+
           }
         ],
         yAxis: [
@@ -418,7 +419,7 @@ export default {
             position: 'left',
             offset: 10,
             nameGap: 30,
-            nameLocation:'middle',
+            nameLocation: 'middle',
             axisTick: { lineStyle: { color: '#BBBBBB' }, inside: true },
             nameTextStyle: {
               color: '#BBBBBB'
@@ -426,11 +427,11 @@ export default {
             axisLabel: { color: '#BBBBBB' },
             splitLine: { show: false }
           }
-            // splitLine: { show: this.chartTab == 'SPD', lineStyle: { color: '#555' }}
+          // splitLine: { show: this.chartTab == 'SPD', lineStyle: { color: '#555' }}
           // },
           // {
           //   type:"value",
-          //   name: this.chartTit.unit,            
+          //   name: this.chartTit.unit,
           //   scale:false,
           //   position:'left',
           //   offset:50,
@@ -494,15 +495,15 @@ export default {
                 borderWidth: 1
               }
             },
-             areaStyle: {
-                color: new this.$echarts.graphic.LinearGradient(0, 0.3, 0, 1, [{
-                  offset: 0,
-                  color: 'rgba(0,255,220,0.15)'
-                }, {
-                  offset: 1,
-                  color: 'rgba(5,137,42,0.001)'
-                }])
-              },
+            areaStyle: {
+              color: new this.$echarts.graphic.LinearGradient(0, 0.3, 0, 1, [{
+                offset: 0,
+                color: 'rgba(0,255,220,0.15)'
+              }, {
+                offset: 1,
+                color: 'rgba(5,137,42,0.001)'
+              }])
+            },
             markLine: {
               label: {
                 show: false
@@ -514,7 +515,7 @@ export default {
                   formatter: ''
                 }
               },
-             
+
               symbol: 'none',
               silent: false,
               data: [{
@@ -535,7 +536,6 @@ export default {
       window.addEventListener('resize', (event) => {
         Echarts.resize()
       })
-      
     },
     windDen(wind) {
       if (wind >= 0 && wind <= 30) {
@@ -809,6 +809,7 @@ export default {
       }
     }
     .content-chart {
+      position: relative;
       height: 0;
       padding: 0 0.16rem;
       overflow: hidden;
@@ -821,9 +822,20 @@ export default {
         height: 1.9rem;
       }
       .chart-wrap {
+        position: relative;
+        z-index: 20;
         height: 2rem;
         margin-top: -13px;
         // padding-bottom: 0.16rem;
+      }
+      .xa-bg {
+        position: absolute;
+        bottom: 0.22rem;
+        left: 0.75rem;
+        right: 0.16rem;
+        z-index: 10;
+        background: rgba(0,0,0,0.18);
+        height: 0.17rem;
       }
     }
   }
