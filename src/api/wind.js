@@ -1,6 +1,6 @@
 import request from '../utils/request1'
-// const base_url = 'http://161.189.11.216:8090'
-const base_url = 'http://52.82.54.61:8090'
+const base_url = 'http://161.189.11.216:8090'
+// const base_url = 'http://52.82.54.61:8090'
 
 export function getOptions(params) {
   return request({

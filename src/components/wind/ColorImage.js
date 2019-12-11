@@ -53,6 +53,9 @@ class ColorImage {
     this.heatMap = this.createHeatmap(max, points, gradient)
     this.createRectangle(viewer, extent, this.heatMap)
   }
+  remove(viewer) {
+    viewer.entities.remove(this.imageEntity)
+  }
 }
 
 export default ColorImage
