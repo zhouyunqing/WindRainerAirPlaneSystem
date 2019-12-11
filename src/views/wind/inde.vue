@@ -459,7 +459,7 @@ export default {
         new Cesium.UrlTemplateImageryProvider({
           url: 'http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8'
         })
-        
+
       )
       // 高德卫星   https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}   http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8
       // 限制视角高度
