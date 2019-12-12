@@ -175,7 +175,7 @@
       <!-- 控制条 end -->
     </div>
 
-    <video id="trailer" muted autoplay loop crossorigin controls style="position:absolute;z-index:200;bottom:50px;width:25%;right:100px;">
+    <video id="trailer" muted autoplay loop crossorigin controls style="position:absolute;z-index:200;bottom:50px;width:25%;right:100px;opacity: 0;">
       <source src="/statics/20191210.mp4" type="video/mp4">
     </video>
   </div>
@@ -201,6 +201,7 @@ export default {
   },
   data() {
     return {
+      urlaaa: require('@/assets/20191210.mp4'),
       page: '', // global 全球；wind 风；land 飞机起降；route 航线；message 报文
       gray: 'https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}',
       windMap: 'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
@@ -400,12 +401,12 @@ export default {
           break
       }
       // 加载一个新的层
-      var gdsat = new Cesium.UrlTemplateImageryProvider({
-        url: this.mapBG,
-        minimumLevel: 3,
-        maximumLevel: 18
-      })
-      this.viewer.imageryLayers.addImageryProvider(gdsat)
+      // var gdsat = new Cesium.UrlTemplateImageryProvider({
+      //   url: this.mapBG,
+      //   minimumLevel: 3,
+      //   maximumLevel: 18
+      // })
+      // this.viewer.imageryLayers.addImageryProvider(gdsat)
       if (val != 'wind') {
         if (this.wind3D) {
           this.wind3D.removeWindPrimitives()
@@ -467,12 +468,16 @@ export default {
         destination: Cesium.Cartesian3.fromDegrees(116.595534748692, 40.0580145185529, 20000000)
       })
       var videoElement = document.getElementById('trailer')
-      console.log(videoElement)
       this.viewer.entities.add({
-        id: '静止卫星全球拼图',
-        rectangle: {
-          coordinates: Cesium.Rectangle.fromDegrees(-30, -75, 330, 75),
-          material: videoElement
+        polygon: {
+          hierarchy: new Cesium.PolygonHierarchy(Cesium.Cartesian3.fromDegreesArray([
+            -30, -75,
+            -75, 330,
+            330, 75,
+            75, -30
+          ])),
+          material: videoElement,
+          classificationType: Cesium.ClassificationType.BOTH
         }
       })
     },
