@@ -37,6 +37,7 @@
       </div>
       <div class="content-chart" :class="{sp: chartShow}">
         <div ref="windEcharts" class="chart-wrap" />
+        <div class="xa-bg" />
       </div>
     </div>
   </div>
@@ -142,28 +143,32 @@ export default {
           this.chartTit = {
             tooltip: '湿度',
             tooltipUnit: '%',
-            lineName: '湿度 %                     '
+            unit: '%',
+            lineName: '湿度(%)'
           }
           break
         case 'RAIN':
           this.chartTit = {
             tooltip: '降水量',
             tooltipUnit: 'mm',
-            lineName: '降水量 mm                     '
+            unit: 'mm',
+            lineName: '降水量(mm)'
           }
           break
         case 'T':
           this.chartTit = {
             tooltip: '温度',
             tooltipUnit: '℃',
-            lineName: '温度 ℃                     '
+            unit: '℃',
+            lineName: '温度(℃)'
           }
           break
         case 'SLP':
           this.chartTit = {
             tooltip: '气压',
             tooltipUnit: 'hPa',
-            lineName: '气压 hPa                     '
+            unit: 'hPa',
+            lineName: '气压(hPa)'
           }
           break
         case 'DIR':
@@ -172,7 +177,8 @@ export default {
           this.chartTit = {
             tooltip: '风速',
             tooltipUnit: 'm/s',
-            lineName: '风速 m/s                     '
+            unit: 'm/s',
+            lineName: '风速(m/s)'
           }
           break
         case 'NAME':
@@ -224,16 +230,17 @@ export default {
     potail(Echarts) {
       const Data = this.setOptionData()
       const colors = ['#0BD3A7', '#FFBE3A', '#FF2C55']
+
       const option = {
+        animation: false,
         color: colors,
         backgroundColor: 'transparent',
         tooltip: { // 显示提示框
-          trigger: 'axis',
+          trigger: 'axis', // axis
           axisPointer: { type: 'cross' },
           formatter: (params, ticket, callback) => {
             const index = params[0].dataIndex
-            // var res = ``
-            // let url = "../../../../public/images/icon_xiangxia@2x.png"
+            this.chartIndex = index
             const Htm = `${(Data.times[index]).substring(0, 16)}<br>
                     ${this.chartTit.tooltip}:${this.setchartData(Data[this.chartTab][index])}${this.chartTit.tooltipUnit}&nbsp;&nbsp;
                     风向:${parseInt(Data.DIR[index])}°`
@@ -244,6 +251,22 @@ export default {
           top: 20,
           left: '70',
           right: '5'
+        },
+        dataZoom: {
+          type: 'slider', // 图表下方的伸缩条
+          show: true, // 是否显示
+          realtime: true, // 拖动时，是否实时更新系列的视图
+          start: 0, // 伸缩条开始位置（1-100），可以随时更改
+          end: 100, // 伸缩条结束位置（1-100），可以随时更改
+          bottom: '0%',
+          height: '18',
+          dataBackground: {
+            lineStyle: { color: '#39977D' },
+            areaStyle: { color: 'rgba(57,151,125,1)' }
+          },
+          borderColor: 'rgba(57,151,125,0.2)',
+          textStyle: { color: '#39977D' },
+          xAxisIndex: [0, 1, 2, 3]
         },
         xAxis: [
           {
@@ -260,7 +283,7 @@ export default {
             name: '风向',
             type: 'category',
             position: 'bottom',
-            offset: 20,
+            offset: 15,
             nameGap: 35,
             axisTick: { show: false },
             axisLine: { show: false },
@@ -385,7 +408,7 @@ export default {
             nameTextStyle: { color: '#BBBBBB' },
             axisLabel: { interval: 5, color: '#BBBBBB' },
             axisTick: { show: false }
-            // data: Data.timeData
+
           }
         ],
         yAxis: [
@@ -394,15 +417,29 @@ export default {
             name: this.chartTit.lineName,
             scale: true,
             position: 'left',
-            offset: 0,
-            nameGap: 5,
-            nameLocation: 'end',
+            offset: 10,
+            nameGap: 30,
+            nameLocation: 'middle',
             axisTick: { lineStyle: { color: '#BBBBBB' }, inside: true },
-            nameTextStyle: { color: '#BBBBBB' },
+            nameTextStyle: {
+              color: '#BBBBBB'
+            },
             axisLabel: { color: '#BBBBBB' },
             splitLine: { show: false }
-            // splitLine: { show: this.chartTab == 'SPD', lineStyle: { color: '#555' }}
           }
+          // splitLine: { show: this.chartTab == 'SPD', lineStyle: { color: '#555' }}
+          // },
+          // {
+          //   type:"value",
+          //   name: this.chartTit.unit,
+          //   scale:false,
+          //   position:'left',
+          //   offset:50,
+          //   nameGap:-65,
+          //   nameTextStyle:{color:'#BBBBBB'},
+          //   axisLine: {show:false},
+          //   axisTick: {show:false},
+          // }
         ],
         visualMap: {
           top: 10,
@@ -451,12 +488,21 @@ export default {
             //  },
             smooth: false,
             data: Data[this.chartTab],
-            symbol: 'diamond',
+            symbol: 'circle',
             itemStyle: {
               normal: {
                 borderColor: '#fff',
                 borderWidth: 1
               }
+            },
+            areaStyle: {
+              color: new this.$echarts.graphic.LinearGradient(0, 0.3, 0, 1, [{
+                offset: 0,
+                color: 'rgba(0,255,220,0.15)'
+              }, {
+                offset: 1,
+                color: 'rgba(5,137,42,0.001)'
+              }])
             },
             markLine: {
               label: {
@@ -469,15 +515,7 @@ export default {
                   formatter: ''
                 }
               },
-              areaStyle: {
-                color: new this.$echarts.graphic.LinearGradient(0, 0.2, 0, 2, [{
-                  offset: 0,
-                  color: 'rgba(0,255,220,0.15)'
-                }, {
-                  offset: 1,
-                  color: 'rgba(5,137,42,0.001)'
-                }])
-              },
+
               symbol: 'none',
               silent: false,
               data: [{
@@ -489,6 +527,7 @@ export default {
                 yAxis: 17
               }]
             },
+            symbol: 'none',
             label: { normal: { show: false, position: 'top' }}
           }
         ]
@@ -497,12 +536,9 @@ export default {
       window.addEventListener('resize', (event) => {
         Echarts.resize()
       })
-      Echarts.on('mouseover', (obj) => {
-        this.chartIndex = obj.dataIndex
-      })
     },
     windDen(wind) {
-      if (wind > 0 && wind <= 30) {
+      if (wind >= 0 && wind <= 30) {
         return '30'
       } else if (wind > 30 && wind <= 60) {
         return '60'
@@ -571,6 +607,7 @@ export default {
         } else {
           timeData.push(`${time.hh}时`)
         }
+        // timeData.push(`${time.hh}时`)
         DIR.push(parseInt(this.info.DIR[i]))
         RH.push(parseInt(this.info.RH[i]))
         SLP.push(parseInt(this.info.SLP[i]))
@@ -772,6 +809,7 @@ export default {
       }
     }
     .content-chart {
+      position: relative;
       height: 0;
       padding: 0 0.16rem;
       overflow: hidden;
@@ -784,8 +822,20 @@ export default {
         height: 1.9rem;
       }
       .chart-wrap {
-        height: 1.9rem;
+        position: relative;
+        z-index: 20;
+        height: 2rem;
+        margin-top: -13px;
         // padding-bottom: 0.16rem;
+      }
+      .xa-bg {
+        position: absolute;
+        bottom: 0.22rem;
+        left: 0.75rem;
+        right: 0.16rem;
+        z-index: 10;
+        background: rgba(0,0,0,0.18);
+        height: 0.17rem;
       }
     }
   }

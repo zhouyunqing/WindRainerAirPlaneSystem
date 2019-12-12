@@ -15,16 +15,16 @@
         <div><span>修正海平面气压：</span><span>{{info.SLP}}hPa</span></div>
       </div>
       <div class="station_hover_footer">
-        <div class="footer_time">数据时间(UTC)：{{infoTime}}</div>
+        <div class="footer_time">数据更新时间：{{infoTime}}</div>
       </div>
     </div>
   </div>
 </template>
 <script>
 
-  import Cesium from 'cesium/Cesium';
+  import Cesium from 'cesium/Cesium'
   import ElementUI from 'element-ui'
-  import widgets from 'cesium/Widgets/widgets.css';
+  import widgets from 'cesium/Widgets/widgets.css'
 
   export default {
     data() {
@@ -77,7 +77,7 @@
 ////                tileMatrixSetID: "GoogleMapsCompatible",
 ////                show: false
 //        })
-      });
+      })
 //      this.viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
 //        url: "http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=7",
 //        //            layer: "tdtAnnoLayer",
@@ -86,11 +86,11 @@
 //        //            tileMatrixSetID: "GoogleMapsCompatible"
 //      }));
 
-      this.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
-      this.viewer.scene.globe.enableLighting = true;
+      this.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK)
+      this.viewer.scene.globe.enableLighting = true
       this.viewer.shadows = true
       //摄像机定位
-      let camera = this.viewer.camera;
+      let camera = this.viewer.camera
       camera.setView({
         destination: Cesium.Cartesian3.fromDegrees(116.576534748692, 40.0780145185529, 500),
         orientation: {
@@ -98,7 +98,7 @@
           pitch: -88.8329210486802,
           roll: 0.0
         }
-      });
+      })
 
       this.viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(116.606534748692, 40.0780145185529, 21961.9883961571),
@@ -108,7 +108,7 @@
           roll: Cesium.Math.toRadians(0)
         }
       })
-      this.viewer._cesiumWidget._creditContainer.style.display = "none";
+      this.viewer._cesiumWidget._creditContainer.style.display = "none"
       Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjY5ODg0MS1lZTMxLTRmMGMtOTRhYi00N2M2YjQ3ZDMzNjgiLCJpZCI6NDgwLCJpYXQiOjE1MjUyNTE1Nzh9.5Mi3ijReKCRQ_Shupv2w-wl2eJBRLOOW3Bmeq0IL5Y4'
       this.viewer.entities.add({
         id: "runway1",
@@ -122,7 +122,7 @@
             image: this.drawRunWays(["#0BD3A7", "#86C86F", "#FFBE3A", "#D8C24C", "#0BD3A7"])
           })
         }
-      });
+      })
       this.viewer.entities.add({
         id: "runway2",
         name: 'Runway',
@@ -135,7 +135,7 @@
             image: this.drawRunWays(["#FFBE3A", "#FFBE3A", "#FFBE3A", "#FF7C46", "#FF3752"])
           })
         }
-      });
+      })
       this.viewer.entities.add({
         id: "runway3",
         name: 'Runway',
@@ -149,7 +149,7 @@
           }),
           shadows: Cesium.ShadowMode.ENABLED
         }
-      });
+      })
       this.drawPoint(" 18R ", 116.575473, 40.10303, 0)
       this.drawPoint("MID1", 116.577925, 40.088623, 0)
       this.drawPoint(" 36L ", 116.580113, 40.074035, 0)
@@ -159,11 +159,11 @@
       this.drawPoint("  19  ", 116.617997, 40.094787, 2)
       this.drawPoint("MID3", 116.621128, 40.074618, 2)
       this.drawPoint("  01  ", 116.623469, 40.059059, 2)
-      var handlerVideo = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
+      var handlerVideo = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas)
       var that = this
       handlerVideo.setInputAction(function (movement) {
         that.pointHandler(movement)
-      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
       this.getStationInfo()
     },
     methods: {
@@ -221,19 +221,19 @@
        */
       drawRunWays: function (colors) {
         var point = [0, 0.25, 0.5, 0.75, 1]
-        var canvas = document.createElement('canvas');      //创建canvas标签
+        var canvas = document.createElement('canvas')     //创建canvas标签
         var ctx = canvas.getContext('2d');
-        var grd = ctx.createLinearGradient(0, 0, 300, 0);
+        var grd = ctx.createLinearGradient(0, 0, 300, 0)
         for (var i = 0; i < point.length; i++) {
-          grd.addColorStop(point[i], colors[i]);
+          grd.addColorStop(point[i], colors[i])
         }
-        ctx.shadowBlur = 10;
-        ctx.shadowOffsetX = 10;
-        ctx.shadowColor = "black";
-        ctx.rect(0, 0, 300, 150);
-        ctx.fillStyle = grd;
-        ctx.fill();
-        return canvas;
+        ctx.shadowBlur = 10
+        ctx.shadowOffsetX = 10
+        ctx.shadowColor = "black"
+        ctx.rect(0, 0, 300, 150)
+        ctx.fillStyle = grd
+        ctx.fill()
+        return canvas
       },
       /**
        * 画站点
@@ -242,7 +242,7 @@
        * @param lng 站点坐标
        */
       drawPoint(text, lat, lng, runway) {
-        var r = '<table style="width: 200px;"><tr><th scope="col" colspan="4"  style="text-align:center;font-size:15px;">' + '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"></td></tr></table>';
+        var r = '<table style="width: 200px;"><tr><th scope="col" colspan="4"  style="text-align:center;font-size:15px;">' + '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"></td></tr></table>'
         this.viewer.entities.add({
           id: text.replace(/^\s*|\s*$/g, ""),
           name: text,
@@ -273,7 +273,7 @@
        * @param movement
        */
       pointHandler: function (movement) {
-        var pick = this.viewer.scene.pick(movement.endPosition);
+        var pick = this.viewer.scene.pick(movement.endPosition)
         if (!pick) {
           if (this.entity && this.entity.id.label.scale != 1) {
             this.entity.id.label.scale = 1
@@ -322,32 +322,32 @@
        * @returns {string}
        */
       formateDate: function (date) {
-        var dateTime = null;
-        var dateTime = date.getFullYear() + '-';
+        var dateTime = null
+        var dateTime = date.getFullYear() + '-'
         if (("" + (date.getUTCMonth() + 1)).length == 1) {
-          dateTime += '0' + (date.getUTCMonth() + 1) + '-';
+          dateTime += '0' + (date.getUTCMonth() + 1) + '-'
         } else {
-          dateTime += date.getUTCMonth() + 1 + '-';
+          dateTime += date.getUTCMonth() + 1 + '-'
         }
         if (("" + date.getUTCDate()).length == 1) {
           dateTime += '0' + date.getUTCDate() + ' '
         } else {
-          dateTime += date.getUTCDate() + ' ';
+          dateTime += date.getUTCDate() + ' '
         }
         if (("" + date.getUTCHours()).length == 1) {
           dateTime += '0' + date.getUTCHours() + ':'
         } else {
-          dateTime += date.getUTCHours() + ':';
+          dateTime += date.getUTCHours() + ':'
         }
         if (("" + date.getUTCMinutes()).length == 1) {
           dateTime += '0' + date.getUTCMinutes() + ':'
         } else {
-          dateTime += date.getUTCMinutes() + ':';
+          dateTime += date.getUTCMinutes() + ':'
         }
         if (("" + date.getUTCSeconds()).length == 1) {
           dateTime += '0' + date.getUTCSeconds()
         } else {
-          dateTime += date.getUTCSeconds();
+          dateTime += date.getUTCSeconds()
         }
         return dateTime
       },
