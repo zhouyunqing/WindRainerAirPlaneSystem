@@ -175,6 +175,9 @@
       <!-- 控制条 end -->
     </div>
 
+    <video id="trailer" muted autoplay loop crossorigin controls style="position:absolute;z-index:200;bottom:50px;width:25%;right:100px;">
+      <source src="/statics/20191210.mp4" type="video/mp4">
+    </video>
   </div>
 </template>
 <script>
@@ -198,10 +201,11 @@ export default {
   },
   data() {
     return {
-      page: 'global', // global 全球；wind 风；land 飞机起降；route 航线；message 报文
+      page: '', // global 全球；wind 风；land 飞机起降；route 航线；message 报文
       gray: 'https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}',
-      normal: 'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
-      normal2: 'http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8',
+      windMap: 'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+      globalMap: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
+      mapBG: '',
       viewer: null,
       fsData: [],
       pointName: [
@@ -378,9 +382,11 @@ export default {
       this.page = val
       switch (val) {
         case 'wind':
+          this.mapBG = this.windMap
           this.setWindPage()
           break
         case 'global':
+          this.mapBG = this.globalMap
           this.setGlobalPage()
           break
         case 'land':
@@ -393,6 +399,13 @@ export default {
           this.setMessagePage()
           break
       }
+      // 加载一个新的层
+      var gdsat = new Cesium.UrlTemplateImageryProvider({
+        url: this.mapBG,
+        minimumLevel: 3,
+        maximumLevel: 18
+      })
+      this.viewer.imageryLayers.addImageryProvider(gdsat)
       if (val != 'wind') {
         if (this.wind3D) {
           this.wind3D.removeWindPrimitives()
@@ -404,25 +417,25 @@ export default {
         this.pointName.forEach((item, i) => {
           entity = this.viewer.entities.getById(item.id)
           if (entity) {
-            entity.show = false
+            this.viewer.entities.remove(entity)
           }
         })
         this.waysName.forEach((item, i) => {
           entity = this.viewer.entities.getById(item.id)
           if (entity) {
-            entity.show = false
+            this.viewer.entities.remove(entity)
           }
         })
         this.walls.forEach((item, i) => {
           entity = this.viewer.entities.getById(item.name)
           if (entity) {
-            entity.show = false
+            this.viewer.entities.remove(entity)
           }
         })
         this.ways.forEach((item, i) => {
           entity = this.viewer.entities.getById(item.name)
           if (entity) {
-            entity.show = false
+            this.viewer.entities.remove(entity)
           }
         })
       }
@@ -453,6 +466,15 @@ export default {
       this.viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(116.595534748692, 40.0580145185529, 20000000)
       })
+      var videoElement = document.getElementById('trailer')
+      console.log(videoElement)
+      this.viewer.entities.add({
+        id: '静止卫星全球拼图',
+        rectangle: {
+          coordinates: Cesium.Rectangle.fromDegrees(-30, -75, 330, 75),
+          material: videoElement
+        }
+      })
     },
     setLandPage() {},
     setRoutePage() {},
@@ -472,7 +494,7 @@ export default {
         timeline: false,
         navigationHelpButton: false,
         imageryProvider: new Cesium.UrlTemplateImageryProvider({
-          url: this.normal
+          url: this.gray
         })
       })
       // 去掉版权号
@@ -484,6 +506,9 @@ export default {
       // 限制视角高度
       this.viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2500// 相机的高度的最小值
       this.viewer.scene.screenSpaceCameraController.maximumZoomDistance = 18000000 // 相机高度的最大值
+      setTimeout(() => {
+        this.changePage('global')
+      }, 1000)
     },
     // 获取九点信息
     getSiteData() {
