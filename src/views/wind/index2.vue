@@ -192,6 +192,19 @@ import rightCard from './components/card.vue'
 import hoverCard from './components/hover-card.vue'
 import ColorImage from '@/components/wind/ColorImage'
 import Wind3D from '@/components/wind/wind3D.js'
+import axios from 'axios'
+var i = 0
+var t3 = 0
+var FYD = null
+var FYDen = null
+var FYDbet = null
+var FY3D = null
+var arr3 = null
+var speed = 500
+var speedSate = 1000
+var j = Date.now()
+var p3 = 0
+var onTick = null
 export default {
   components: {
     hoverCard,
@@ -369,7 +382,39 @@ export default {
         '0.3': 'rgb(0,178,255)',
         '0.0': 'rgb(0,0,255)'
       },
-      wind3D: null
+      wind3D: null,
+      satellite: [
+        {
+          'satellitename': 'FY3B',
+          'id': '3B',
+          'groundId': 'B',
+          'sername': 'ser3B',
+          'arrname': 'arr3B',
+          'width': '80.5',
+          'height': '85',
+          'imgURL': '/images/FY-3B.png'
+        },
+        {
+          'satellitename': 'FY3C',
+          'id': '3C',
+          'groundId': 'C',
+          'sername': 'ser3C',
+          'arrname': 'arr3C',
+          'width': '80.5',
+          'height': '67',
+          'imgURL': '/images/FY-3C.png'
+        },
+        {
+          'satellitename': 'FY3D',
+          'id': '3D',
+          'groundId': 'D',
+          'sername': 'ser3D',
+          'arrname': 'arr3D',
+          'width': '70',
+          'height': '100',
+          'imgURL': '/images/FY-3D.png'
+        }
+      ]
     }
   },
   mounted() {
@@ -381,6 +426,7 @@ export default {
       // global 全球；wind 风；land 飞机起降；route 航线；message 报文
       if (this.page === val) return
       this.page = val
+      this.deleteEntity()
       switch (val) {
         case 'wind':
           this.mapBG = this.windMap
@@ -407,38 +453,77 @@ export default {
       //   maximumLevel: 18
       // })
       // this.viewer.imageryLayers.addImageryProvider(gdsat)
-      if (val != 'wind') {
-        if (this.wind3D) {
-          this.wind3D.removeWindPrimitives()
+    },
+    deleteEntity() {
+      if (this.wind3D) {
+        this.wind3D.removeWindPrimitives()
+      }
+      if (this.colorImage) {
+        this.colorImage.remove(this.viewer)
+      }
+      if (onTick) {
+        this.viewer.clock.onTick.removeEventListener(onTick)
+      }
+      let entity
+      this.pointName.forEach((item, i) => {
+        entity = this.viewer.entities.getById(item.id)
+        if (entity) {
+          this.viewer.entities.remove(entity)
         }
-        if (this.colorImage) {
-          this.colorImage.remove(this.viewer)
+      })
+      this.waysName.forEach((item, i) => {
+        entity = this.viewer.entities.getById(item.id)
+        if (entity) {
+          this.viewer.entities.remove(entity)
         }
-        let entity
-        this.pointName.forEach((item, i) => {
-          entity = this.viewer.entities.getById(item.id)
-          if (entity) {
-            this.viewer.entities.remove(entity)
-          }
-        })
-        this.waysName.forEach((item, i) => {
-          entity = this.viewer.entities.getById(item.id)
-          if (entity) {
-            this.viewer.entities.remove(entity)
-          }
-        })
-        this.walls.forEach((item, i) => {
-          entity = this.viewer.entities.getById(item.name)
-          if (entity) {
-            this.viewer.entities.remove(entity)
-          }
-        })
-        this.ways.forEach((item, i) => {
-          entity = this.viewer.entities.getById(item.name)
-          if (entity) {
-            this.viewer.entities.remove(entity)
-          }
-        })
+      })
+      this.walls.forEach((item, i) => {
+        entity = this.viewer.entities.getById(item.name)
+        if (entity) {
+          this.viewer.entities.remove(entity)
+        }
+      })
+      this.ways.forEach((item, i) => {
+        entity = this.viewer.entities.getById(item.name)
+        if (entity) {
+          this.viewer.entities.remove(entity)
+        }
+      })
+      entity = this.viewer.entities.getById('静止卫星全球拼图')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+      entity = this.viewer.entities.getById('equator')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+      entity = this.viewer.entities.getById('FY4A')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+      entity = this.viewer.entities.getById('FY4A_Gray')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+      entity = this.viewer.entities.getById('JMSZ')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+      entity = this.viewer.entities.getById('FY3D')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+      entity = this.viewer.entities.getById('3D')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+      entity = this.viewer.entities.getById('D')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+      entity = this.viewer.entities.getById('arr3D')
+      if (entity) {
+        this.viewer.entities.remove(entity)
       }
     },
     setWindPage() {
@@ -465,19 +550,263 @@ export default {
     },
     setGlobalPage() {
       this.viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(116.595534748692, 40.0580145185529, 20000000)
+        destination: Cesium.Cartesian3.fromDegrees(
+          110, 40, 20000000
+        )
       })
       var videoElement = document.getElementById('trailer')
       this.viewer.entities.add({
-        polygon: {
-          hierarchy: new Cesium.PolygonHierarchy(Cesium.Cartesian3.fromDegreesArray([
-            -30, -75,
-            -75, 330,
-            330, 75,
-            75, -30
-          ])),
-          material: videoElement,
-          classificationType: Cesium.ClassificationType.BOTH
+        id: '静止卫星全球拼图',
+        rectangle: {
+          coordinates: Cesium.Rectangle.fromDegrees(-180, -90, 180, 90),
+          material: videoElement
+        }
+      })
+      this.setEquatorY4A()
+      // this.setFY3D()
+      this.dian()
+      setTimeout(() => {
+        this.playearth()
+      }, 1000)
+    },
+    setEquatorY4A() {
+      this.viewer.entities.add({
+        id: 'equator',
+        polyline: {
+          positions: Cesium.Cartesian3.fromDegreesArrayHeights([0.0, 0.0, 3000000.0, 90.0, 0.0, 3000000.0, 180.0, 1.0, 3000000.0, 270.0, 0.0, 3000000.0, 360.0, 0.0, 3000000.0]),
+          width: 1,
+          material: new Cesium.PolylineDashMaterialProperty({
+            color: Cesium.Color.YELLOW
+          })
+        }
+      })
+      this.viewer.entities.add({
+        id: 'FY4A',
+        position: Cesium.Cartesian3.fromDegrees(104.7, 0, 3000000),
+        billboard: {
+          image: '/images/FY-4A.png',
+          width: 150,
+          height: 90
+        },
+        label: {
+          text: 'FY4A',
+          name: 'FY4A',
+          font: '14pt monospace',
+          fillColor: Cesium.Color.YELLOW,
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          outlineWidth: 2,
+          verticalOrigin: Cesium.VerticalOrigin.TOP,
+          pixelOffset: new Cesium.Cartesian2(0, 40)
+        }
+      })
+      this.viewer.entities.add({
+        id: 'FY4A_Gray',
+        position: Cesium.Cartesian3.fromDegrees(104.7, 0),
+        point: {
+          pixelSize: 6,
+          color: Cesium.Color.GRAY,
+          outlineColor: Cesium.Color.WHITE,
+          outlineWidth: 1
+        }
+      })
+    },
+    setFY3D() {
+      clearInterval(t3)
+      p3 = 1
+      const SUCCESS = this.satellite
+      SUCCESS.forEach((item, i) => {
+        axios.get('/statics/SampleData/windData/fy3d.json').then(res => {
+          SUCCESS[i].name = res.data.resource
+          if (!SUCCESS[i].name) {
+            return SUCCESS
+          }
+          return SUCCESS
+        }).then(res => {
+          this.satellite = res
+          this.addEntityD('FY3D')
+        })
+      })
+    },
+    detailEntityD() {
+      clearInterval(t3)
+      console.log(!!FYD, !!FYDbet, !!FYDen, !!FY3D)
+      let entity = this.viewer.entities.getById('FY3D')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+      entity = this.viewer.entities.getById('3D')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+      entity = this.viewer.entities.getById('D')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+      entity = this.viewer.entities.getById('arr3D')
+      if (entity) {
+        this.viewer.entities.remove(entity)
+      }
+    },
+    addEntityD(name) {
+      const SUCCESS = this.satellite
+      SUCCESS.forEach((item, i) => {
+        if (item.satellitename == name) {
+          if (!!SUCCESS[i].name && SUCCESS[i].name.length > 0) {
+            console.log(SUCCESS[i].satellitename, SUCCESS[i].id, SUCCESS[i].groundId, SUCCESS[i].arrname)
+            FYDen = this.viewer.entities.add({
+              id: SUCCESS[i].satellitename,
+              position: Cesium.Cartesian3.fromDegrees(30, 30, 1000000),
+              billboard: {
+                image: SUCCESS[i].imgURL,
+                width: SUCCESS[i].width,
+                height: SUCCESS[i].height
+              },
+              label: {
+                text: SUCCESS[i].name[0].satellitename,
+                font: '14pt monospace',
+                style: Cesium.LabelStyle.FULL_AND_OUTLINE,
+                outlineWidth: 3,
+                fillColor: Cesium.Color.YELLOW,
+                verticlOrigin: Cesium.VerticalOrigin.TOP,
+                pixelOffset: new Cesium.Cartesian2(20, 45)
+              }
+            })
+            FYD = this.viewer.entities.add({
+              id: SUCCESS[i].id,
+              position: Cesium.Cartesian3.fromDegrees(30, 30),
+              point: {
+                pixelSize: 6,
+                color: Cesium.Color.GRAY,
+                outlineColor: Cesium.Color.WHITE,
+                outlineWidth: 1
+              }
+            })
+            FYDbet = this.viewer.entities.add({
+              id: SUCCESS[i].groundId,
+              polyline: {
+                positions: Cesium.Cartesian3.fromDegreesArrayHeights([0, 0, 1000000,
+                  0, 0, 1000000, 0, 0, 1000000, 0, 0, 1000000, 0, 0, 1000000, 0, 0, 1000000]),
+                width: 3,
+                material: new Cesium.PolylineDashMaterialProperty({
+                  color: Cesium.Color.YELLOW
+                })
+              }
+            })
+            FY3D = this.viewer.entities.add({
+              id: SUCCESS[i].arrname,
+              polyline: {
+                positions: Cesium.Cartesian3.fromDegreesArrayHeights([0, 0, 1000000, 0, 0, 1000000,
+                  0, 0, 1000000, 0, 0, 1000000, 0, 0, 1000000, 0, 0, 1000000]),
+                width: 3,
+                material: Cesium.Color.YELLOW
+              }
+            })
+          }
+          // this.showD(i)
+        }
+      })
+    },
+    showD(q) {
+      const SUCCESS = this.satellite
+      arr3 = SUCCESS[q].name
+      if (!!arr3 && !!arr3.length && i < arr3.length - 100) {
+        var date = arr3[i].time
+        var Latitude = arr3[i].lat
+        var Longitude = arr3[i].lon
+        var Latitude1 = arr3[i + 10].lat
+        var Longitude1 = arr3[i + 10].lon
+        var Latitude2 = arr3[i + 20].lat
+        var Longitude2 = arr3[i + 20].lon
+        var Latitude3 = arr3[i + 30].lat
+        var Longitude3 = arr3[i + 30].lon
+        var Latitude4 = arr3[i + 40].lat
+        var Longitude4 = arr3[i + 40].lon
+        var Latitude5 = arr3[i + 50].lat
+        var Longitude5 = arr3[i + 50].lon
+        var Latitude6 = arr3[i + 60].lat
+        var Longitude6 = arr3[i + 60].lon
+        var Latitude7 = arr3[i + 70].lat
+        var Longitude7 = arr3[i + 70].lon
+        var Latitude8 = arr3[i + 80].lat
+        var Longitude8 = arr3[i + 80].lon
+        var Latitude9 = arr3[i + 90].lat
+        var Longitude9 = arr3[i + 90].lon
+        var Latitude10 = arr3[i + 100].lat
+        var Longitude10 = arr3[i + 100].lon
+        FYDbet.polyline.positions = Cesium.Cartesian3.fromDegreesArrayHeights([Longitude5, Latitude5, 1000000,
+          Longitude6, Latitude6, 1000000,
+          Longitude7, Latitude7, 1000000,
+          Longitude8, Latitude8, 1000000,
+          Longitude9, Latitude9, 1000000,
+          Longitude10, Latitude10, 1000000])
+        FYD.position = Cesium.Cartesian3.fromDegrees(Longitude5, Latitude5)
+        FY3D.polyline.positions = Cesium.Cartesian3.fromDegreesArrayHeights([Longitude, Latitude, 1000000,
+          Longitude1, Latitude1, 1000000,
+          Longitude2, Latitude2, 1000000,
+          Longitude3, Latitude3, 1000000,
+          Longitude4, Latitude4, 1000000,
+          Longitude5, Latitude5, 1000000])
+        FYDen.position = Cesium.Cartesian3.fromDegrees(Longitude5, Latitude5, 1000000)
+      }
+      i++
+      if (!!arr3 && !!arr3.length && i >= arr3.length - 100) {
+        i = 0
+      }
+    },
+    playearth() {
+      var _this = this
+      onTick = function onTickCallback() {
+        var a = 0.3
+        var t = Date.now()
+        var n = (t - j) / 1e3
+        j = t
+        _this.viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, a * n)
+      }
+      this.viewer.clock.onTick.addEventListener(onTick)
+      clearInterval(t3)
+      if (p3 == 1) {
+        t3 = setInterval(() => {
+          if (this.satellite[2].name) {
+            this.showD(2)
+          }
+        }, 1000)
+      }
+    },
+    dian() {
+      var circleIn4 = new Cesium.CircleOutlineGeometry({
+        center: Cesium.Cartesian3.fromDegrees(130.31, 46.80),
+        radius: 1.0,
+        granularity: 0.001
+      })
+      var geometryIn = Cesium.CircleOutlineGeometry.createGeometry(circleIn4)
+      var float64ArrayPositionsIn = geometryIn.attributes.position.values
+      var positionsIn = [].slice.call(float64ArrayPositionsIn)
+      var oneArrL1 = positionsIn.length
+      var erArrL1 = positionsIn.length / 3
+      var er1 = new Array()
+      for (var p = 0; p < erArrL1; p++) {
+        er1[p] = new Array()
+      }
+      var k1 = 0
+      for (var o = 0; o < erArrL1; o++) {
+        for (var u = 0; u < 3; u++) {
+          er1[o][u] = positionsIn[k1]
+          k1++
+          if (k1 > oneArrL1 - 1) {
+            break
+          }
+        }
+      }
+      var posCir1 = []
+      for (var i = 0; i < er1.length; i++) {
+        posCir1.push(new Cesium.Cartesian3(er1[i][0], er1[i][1], er1[i][2]))
+      }
+      var JMS = this.viewer.entities.add({
+        id: 'JMSZ',
+        polyline: {
+          positions: posCir1,
+          width: 1,
+          material: Cesium.Color.BLUE
         }
       })
     },
@@ -511,6 +840,9 @@ export default {
       // 限制视角高度
       this.viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2500// 相机的高度的最小值
       this.viewer.scene.screenSpaceCameraController.maximumZoomDistance = 18000000 // 相机高度的最大值
+      this.viewer.camera.setView({
+        destination: Cesium.Cartesian3.fromDegrees(110, 40, 20000000)
+      })
       setTimeout(() => {
         this.changePage('global')
       }, 1000)
