@@ -426,26 +426,30 @@ export default {
       // global 全球；wind 风；land 飞机起降；route 航线；message 报文
       if (this.page === val) return
       this.page = val
+      this.viewer.entities.removeAll()
       this.deleteEntity()
-      switch (val) {
-        case 'wind':
-          this.mapBG = this.windMap
-          this.setWindPage()
-          break
-        case 'global':
-          this.mapBG = this.globalMap
-          this.setGlobalPage()
-          break
-        case 'land':
-          this.setLandPage()
-          break
-        case 'route':
-          this.setRoutePage()
-          break
-        case 'message':
-          this.setMessagePage()
-          break
-      }
+      setTimeout(() => {
+        switch (val) {
+          case 'wind':
+            this.mapBG = this.windMap
+            this.setWindPage()
+            break
+          case 'global':
+            this.mapBG = this.globalMap
+            this.setGlobalPage()
+            break
+          case 'land':
+            this.setLandPage()
+            break
+          case 'route':
+            this.setRoutePage()
+            break
+          case 'message':
+            this.setMessagePage()
+            break
+        }
+      }, 3000)
+
       // 加载一个新的层
       // var gdsat = new Cesium.UrlTemplateImageryProvider({
       //   url: this.mapBG,
@@ -464,67 +468,7 @@ export default {
       if (onTick) {
         this.viewer.clock.onTick.removeEventListener(onTick)
       }
-      let entity
-      this.pointName.forEach((item, i) => {
-        entity = this.viewer.entities.getById(item.id)
-        if (entity) {
-          this.viewer.entities.remove(entity)
-        }
-      })
-      this.waysName.forEach((item, i) => {
-        entity = this.viewer.entities.getById(item.id)
-        if (entity) {
-          this.viewer.entities.remove(entity)
-        }
-      })
-      this.walls.forEach((item, i) => {
-        entity = this.viewer.entities.getById(item.name)
-        if (entity) {
-          this.viewer.entities.remove(entity)
-        }
-      })
-      this.ways.forEach((item, i) => {
-        entity = this.viewer.entities.getById(item.name)
-        if (entity) {
-          this.viewer.entities.remove(entity)
-        }
-      })
-      entity = this.viewer.entities.getById('静止卫星全球拼图')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-      entity = this.viewer.entities.getById('equator')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-      entity = this.viewer.entities.getById('FY4A')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-      entity = this.viewer.entities.getById('FY4A_Gray')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-      entity = this.viewer.entities.getById('JMSZ')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-      entity = this.viewer.entities.getById('FY3D')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-      entity = this.viewer.entities.getById('3D')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-      entity = this.viewer.entities.getById('D')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-      entity = this.viewer.entities.getById('arr3D')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
+      clearInterval(t3)
     },
     setWindPage() {
       this.viewer.camera.flyTo({
@@ -563,7 +507,7 @@ export default {
         }
       })
       this.setEquatorY4A()
-      // this.setFY3D()
+      this.setFY3D()
       this.dian()
       setTimeout(() => {
         this.playearth()
@@ -609,6 +553,7 @@ export default {
           outlineWidth: 1
         }
       })
+      console.log('setEquatorY4A')
     },
     setFY3D() {
       clearInterval(t3)
@@ -627,32 +572,12 @@ export default {
         })
       })
     },
-    detailEntityD() {
-      clearInterval(t3)
-      console.log(!!FYD, !!FYDbet, !!FYDen, !!FY3D)
-      let entity = this.viewer.entities.getById('FY3D')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-      entity = this.viewer.entities.getById('3D')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-      entity = this.viewer.entities.getById('D')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-      entity = this.viewer.entities.getById('arr3D')
-      if (entity) {
-        this.viewer.entities.remove(entity)
-      }
-    },
     addEntityD(name) {
+      console.log('setFY3D', name)
       const SUCCESS = this.satellite
       SUCCESS.forEach((item, i) => {
         if (item.satellitename == name) {
           if (!!SUCCESS[i].name && SUCCESS[i].name.length > 0) {
-            console.log(SUCCESS[i].satellitename, SUCCESS[i].id, SUCCESS[i].groundId, SUCCESS[i].arrname)
             FYDen = this.viewer.entities.add({
               id: SUCCESS[i].satellitename,
               position: Cesium.Cartesian3.fromDegrees(30, 30, 1000000),
@@ -701,12 +626,14 @@ export default {
                 material: Cesium.Color.YELLOW
               }
             })
+            console.log('setFY3D', FY3D)
           }
           // this.showD(i)
         }
       })
     },
     showD(q) {
+      console.log('showD', q)
       const SUCCESS = this.satellite
       arr3 = SUCCESS[q].name
       if (!!arr3 && !!arr3.length && i < arr3.length - 100) {
