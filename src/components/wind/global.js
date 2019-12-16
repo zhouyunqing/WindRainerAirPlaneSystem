@@ -19,8 +19,18 @@ let FYD = null
 let FY3D = null
 let FYDen = null
 let i = 0
+const entityList = [
+  '静止卫星全球拼图',
+  'FY4A',
+  'equator',
+  'FY4A_Gray',
+  'FY3D',
+  '3D',
+  'D',
+  'arr3D'
+]
 
-const global = (viewer, name) => {
+const global = (viewer, name, state) => {
   setDian(viewer)
   if (name === 'FY4A') {
     setFY4A(viewer)
@@ -33,6 +43,9 @@ const global = (viewer, name) => {
   }
   if (name === 'stop') {
     clearTimeout(t3)
+  }
+  if (name === 'entity') {
+    setEntityState(viewer, state)
   }
 }
 
@@ -233,5 +246,15 @@ const showD = () => {
   if (!!arr3 && !!arr3.length && i >= arr3.length - 100) {
     i = 0
   }
+}
+
+const setEntityState = (viewer, state) => {
+  let entity
+  entityList.forEach(item => {
+    entity = viewer.entities.getById(item)
+    if (entity) {
+      entity.show = state
+    }
+  })
 }
 export default global

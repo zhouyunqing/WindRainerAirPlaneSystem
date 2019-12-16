@@ -208,22 +208,10 @@ import rightCard from './components/card.vue'
 import hoverCard from './components/hover-card.vue'
 import ColorImage from '@/components/wind/ColorImage'
 import Wind3D from '@/components/wind/wind3D.js'
-import axios from 'axios'
 import setLand from '@/components/wind/land.js'
 import setGlobal from '@/components/wind/global.js'
-import airImgUrl from '@/assets/images/airbg.png'
 import Heatmap from 'heatmap.js'
-var i = 0
-var t3 = null
-var FYD = null
-var FYDen = null
-var FYDbet = null
-var FY3D = null
-var arr3 = null
-var speed = 500
-var speedSate = 1000
 var j = Date.now()
-var p3 = 0
 var onTick = null
 export default {
   components: {
@@ -245,6 +233,7 @@ export default {
       gray: 'https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}',
       windMap: 'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
       landMap: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
+      globalMap: '/statics/back.jpeg',
       mapBG: '',
       viewer: null,
       fsData: [],
@@ -408,39 +397,7 @@ export default {
         '0.3': 'rgb(0,178,255)',
         '0.0': 'rgb(0,0,255)'
       },
-      wind3D: null,
-      satellite: [
-        {
-          'satellitename': 'FY3B',
-          'id': '3B',
-          'groundId': 'B',
-          'sername': 'ser3B',
-          'arrname': 'arr3B',
-          'width': '80.5',
-          'height': '85',
-          'imgURL': '/images/FY-3B.png'
-        },
-        {
-          'satellitename': 'FY3C',
-          'id': '3C',
-          'groundId': 'C',
-          'sername': 'ser3C',
-          'arrname': 'arr3C',
-          'width': '80.5',
-          'height': '67',
-          'imgURL': '/images/FY-3C.png'
-        },
-        {
-          'satellitename': 'FY3D',
-          'id': '3D',
-          'groundId': 'D',
-          'sername': 'ser3D',
-          'arrname': 'arr3D',
-          'width': '70',
-          'height': '100',
-          'imgURL': '/images/FY-3D.png'
-        }
-      ]
+      wind3D: null
     }
   },
   mounted() {
@@ -461,11 +418,11 @@ export default {
           this.setWindPage(true)
           break
         case 'global':
-          this.mapBG = ''
+          this.mapBG = this.globalMap
           this.setGlobalPage(true)
           break
         case 'land':
-          this.mapBG = this.landMap
+          this.mapBG = this.gray
           this.setLandPage(true)
           break
         case 'route':
@@ -699,14 +656,6 @@ export default {
         this.planeMoveHandler(movement)
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
     },
-
-    // createPlaneUpdateFunction(plane) {
-    //     return function () {
-    //        let yellowPlane0=new Cesium.Plane(Cesium.Cartesian3.UNIT_Z, 0.0)
-    //       // plane.distance = this.targetY;
-    //       return yellowPlane0;
-    //     }
-    // },
     setGlobalPage(state) {
       // 初始化
       if (state) {
@@ -715,6 +664,7 @@ export default {
             110, 40, 20000000
           )
         })
+
         if (onTick) {
           this.viewer.clock.onTick.addEventListener(onTick)
         } else {
@@ -743,7 +693,6 @@ export default {
         entity.show = state
       }
       // 实体添加
-      entity = this.viewer.entities.getById('FY4A')
       if (state && !entity) {
         setGlobal(this.viewer, 'FY4A')
       }
@@ -756,37 +705,8 @@ export default {
       if (state && entity) {
         setGlobal(this.viewer, 'start')
       }
-      return
       // 控制实体
-      entity = this.viewer.entities.getById('FY4A')
-      if (entity) {
-        entity.show = state
-      }
-      entity = this.viewer.entities.getById('equator')
-      if (entity) {
-        entity.show = state
-      }
-      entity = this.viewer.entities.getById('FY4A_Gray')
-      if (entity) {
-        entity.show = state
-      }
-
-      entity = this.viewer.entities.getById('FY3D')
-      if (entity) {
-        entity.show = state
-      }
-      entity = this.viewer.entities.getById('3D')
-      if (entity) {
-        entity.show = state
-      }
-      entity = this.viewer.entities.getById('D')
-      if (entity) {
-        entity.show = state
-      }
-      entity = this.viewer.entities.getById('arr3D')
-      if (entity) {
-        entity.show = state
-      }
+      setGlobal(this.viewer, 'entity', state)
     },
     playearth() {
       var _this = this
@@ -796,6 +716,10 @@ export default {
         var n = (t - j) / 1e3
         j = t
         _this.viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, a * n)
+        if (_this.viewer.scene.primitives.show) return
+        _this.viewer.scene.primitives.show = true
+        _this.setWindPage(false)
+        _this.setLandPage(false)
       }
       this.viewer.clock.onTick.addEventListener(onTick)
     },
@@ -816,7 +740,7 @@ export default {
         timeline: false,
         navigationHelpButton: false,
         imageryProvider: new Cesium.UrlTemplateImageryProvider({
-          url: this.gray
+          url: this.globalMap
         })
       })
       // 去掉版权号
@@ -825,6 +749,8 @@ export default {
       this.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
         Cesium.ScreenSpaceEventType.LEFT_CLICK
       )
+      // 去除1.50版本亮度
+      this.viewer.scene.globe.showGroundAtmosphere = false
       // 限制视角高度
       this.viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2500// 相机的高度的最小值
       this.viewer.scene.screenSpaceCameraController.maximumZoomDistance = 18000000 // 相机高度的最大值

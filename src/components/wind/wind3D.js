@@ -307,8 +307,8 @@ class Wind3D {
   calWidth(px) {
     var w = 1
     // return this.lwConf;
-    if (px > 512) { return 6}
-    if (px >= 64) { w = Math.log2(px) - 2} else if (px < 42) {
+    if (px > 512) { return 6 }
+    if (px >= 64) { w = Math.log2(px) - 2 } else if (px < 42) {
       w = 0.03
     } else {
       // const a = [-394.12024676993497, 30.103893729839470, -0.86034688168263518,0.010898275605563869,-5.1406960882154350e-005];
@@ -328,12 +328,14 @@ class Wind3D {
 
   moveStartListener() {
     this.scene.primitives.show = false
+    console.log('start', this.scene.primitives)
   }
 
   moveEndListener() {
     this.updateViewerParameters()
     this.particleSystem.applyViewerParameters(this.viewerParameters)
     this.scene.primitives.show = true
+    console.log('end', this.scene.primitives)
   }
 
   preRenderListener() {
