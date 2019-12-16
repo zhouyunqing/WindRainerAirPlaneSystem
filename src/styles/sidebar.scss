@@ -15,7 +15,7 @@
     background-color: $menuBg;
     height: 100%;
     position: fixed;
-    z-index: 1000;
+    z-index: 0;
     overflow: hidden;
     .sidebar-container {
       transition: width 0.28s;

@@ -9,10 +9,10 @@
       </div>
       <app-main />
     </div> -->
-    <div class="sidebarcontainer-all">
+    <!-- <div class="sidebarcontainer-all">
       <sidebar class="sidebar-container" />
       <navbar class="navbar-container" />
-    </div>
+    </div> -->
 
     <div class="main-container">
       <!-- <div :class="{'fixed-header':fixedHeader}">

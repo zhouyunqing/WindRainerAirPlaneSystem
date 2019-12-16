@@ -105,7 +105,7 @@ const start = Cesium.JulianDate.fromDate(new Date(2019, 12, 10))
 // 结束时间
 const stop = Cesium.JulianDate.addSeconds(start, 720, new Cesium.JulianDate())
 
-const land = (viewer, airUrl) => {
+const land = (viewer) => {
   viewer.entities.add({
     id: 'landLine',
     show: true,

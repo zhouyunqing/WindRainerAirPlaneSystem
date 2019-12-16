@@ -1,11 +1,27 @@
 <template>
   <div class="wind">
     <div class="all-type">
-      <div @click="changePage('global')">全球</div>
-      <div @click="changePage('land')">五边形</div>
-      <div @click="changePage('route')">航线</div>
-      <div @click="changePage('message')">报文</div>
-      <div @click="changePage('wind')">风</div>
+      <div class="logo" />
+      <div @click="changePage('wind')">
+        <div class="icon" :class="{sp: page == 'wind'}">1</div>
+        <div class="tit">风</div>
+      </div>
+      <div @click="changePage('land')">
+        <div class="icon" :class="{sp: page == 'land'}">1</div>
+        <div class="tit">五边形</div>
+      </div>
+      <div @click="changePage('route')">
+        <div class="icon">1</div>
+        <div class="tit">航线</div>
+      </div>
+      <div @click="changePage('message')">
+        <div class="icon">1</div>
+        <div class="tit">报文</div>
+      </div>
+      <div @click="changePage('global')">
+        <div class="icon">1</div>
+        <div class="tit">全球</div>
+      </div>
     </div>
     <div id="cesiumContainer" />
     <div v-if="page ==='wind'">
@@ -194,7 +210,7 @@ import ColorImage from '@/components/wind/ColorImage'
 import Wind3D from '@/components/wind/wind3D.js'
 import axios from 'axios'
 import setLand from '@/components/wind/land.js'
-import airImgUrl from '@/assets/images/airbg.png'
+import setGlobal from '@/components/wind/global.js'
 var i = 0
 var t3 = null
 var FYD = null
@@ -430,14 +446,13 @@ export default {
       this.setWindPage(false)
       this.setGlobalPage(false)
       this.setLandPage(false)
-      this.deleteEntity()
       switch (val) {
         case 'wind':
           this.mapBG = this.gray
           this.setWindPage(true)
           break
         case 'global':
-          this.mapBG = this.globalMap
+          this.mapBG = ''
           this.setGlobalPage(true)
           break
         case 'land':
@@ -452,6 +467,7 @@ export default {
           break
       }
 
+      if (!this.mapBG) return
       // 加载一个新的层
       var gdsat = new Cesium.UrlTemplateImageryProvider({
         url: this.mapBG,
@@ -460,36 +476,27 @@ export default {
       })
       this.viewer.imageryLayers.addImageryProvider(gdsat)
     },
-    deleteEntity() {
-      if (this.wind3D) {
-        this.wind3D.removeWindPrimitives()
-      }
-      if (this.colorImage) {
-        this.colorImage.remove(this.viewer)
-      }
-      if (onTick) {
-        this.viewer.clock.onTick.removeEventListener(onTick)
-      }
-      clearInterval(t3)
-    },
     setWindPage(state) {
-      this.activeWind = 'plane'
-      this.viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(
-          116.595534748692,
-          40.0580145185529,
-          21961.9883961571
-        )
-      })
-      this.getChartData(this.site)
-      // 当前时间显示
-      let time = this.getNowTime()
-      this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
-      setInterval(() => {
-        time = this.getNowTime()
+      // 设置初始状态
+      if (state) {
+        this.activeWind = 'plane'
+        this.viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(
+            116.595534748692,
+            40.0580145185529,
+            21961.9883961571
+          )
+        })
+        this.getChartData(this.site)
+        // 当前时间显示
+        let time = this.getNowTime()
         this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
-      }, 1000)
-
+        setInterval(() => {
+          time = this.getNowTime()
+          this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
+        }, 1000)
+      }
+      // 显示隐藏实体
       let entity
       this.pointName.forEach((item, i) => {
         entity = this.viewer.entities.getById(item.id)
@@ -520,6 +527,13 @@ export default {
         setTimeout(() => {
           this.getModelForecastData()
         }, 1000)
+      } else {
+        if (this.wind3D) {
+          this.wind3D.removeWindPrimitives()
+        }
+        if (this.colorImage) {
+          this.colorImage.remove(this.viewer)
+        }
       }
       if (state && !entity) {
         setTimeout(() => {
@@ -528,26 +542,29 @@ export default {
       }
     },
     setLandPage(state) {
-      this.viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(
-          116.481554,
-          39.684974,
-          25961.9883961571
-        ),
-        orientation: {
-          heading: Cesium.Math.toRadians(400.668148999818),
-          pitch: Cesium.Math.toRadians(-30.8329210486802),
-          roll: Cesium.Math.toRadians(0)
-        }
-      })
-      let entity = this.viewer.entities.getById('landLine')
+      // 初始化状态
       if (state) {
-        if (!entity) {
-          setTimeout(() => {
-            setLand(this.viewer, airImgUrl)
-          }, 4000)
-        }
+        this.viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(
+            116.481554,
+            39.684974,
+            25961.9883961571
+          ),
+          orientation: {
+            heading: Cesium.Math.toRadians(400.668148999818),
+            pitch: Cesium.Math.toRadians(-30.8329210486802),
+            roll: Cesium.Math.toRadians(0)
+          }
+        })
       }
+      // 设置实体
+      let entity = this.viewer.entities.getById('landLine')
+      if (state && !entity) {
+        setTimeout(() => {
+          setLand(this.viewer)
+        }, 4000)
+      }
+      // 实体状态
       if (entity) {
         entity.show = state
       }
@@ -557,17 +574,28 @@ export default {
       }
     },
     setGlobalPage(state) {
-      this.viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(
-          110, 40, 20000000
-        )
-      })
+      // 初始化
       if (state) {
-        this.playearth()
+        this.viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(
+            110, 40, 20000000
+          )
+        })
+        if (onTick) {
+          this.viewer.clock.onTick.addEventListener(onTick)
+        } else {
+          this.playearth()
+        }
+      } else {
+        if (onTick) {
+          this.viewer.clock.onTick.removeEventListener(onTick)
+        }
+        setGlobal(this.viewer, 'stop')
       }
+      // 视频覆盖
       let entity
       entity = this.viewer.entities.getById('静止卫星全球拼图')
-      if (!entity) {
+      if (state && !entity) {
         var videoElement = document.getElementById('trailer')
         this.viewer.entities.add({
           id: '静止卫星全球拼图',
@@ -576,211 +604,54 @@ export default {
             material: videoElement
           }
         })
-        this.setEquatorY4A()
-        this.setFY3D()
-        this.dian()
-      } else {
-        setTimeout(() => {
-          if (entity) {
-            entity.show = state
-          }
-          entity = this.viewer.entities.getById('equator')
-          if (entity) {
-            entity.show = state
-          }
-          entity = this.viewer.entities.getById('FY4A')
-          if (entity) {
-            entity.show = state
-          }
-          entity = this.viewer.entities.getById('FY4A_Gray')
-          if (entity) {
-            entity.show = state
-          }
-          entity = this.viewer.entities.getById('JMSZ')
-          if (entity) {
-            entity.show = state
-          }
-          entity = this.viewer.entities.getById('FY3D')
-          if (entity) {
-            entity.show = state
-          }
-          entity = this.viewer.entities.getById('3D')
-          if (entity) {
-            entity.show = state
-          }
-          entity = this.viewer.entities.getById('D')
-          if (entity) {
-            entity.show = state
-          }
-          entity = this.viewer.entities.getById('arr3D')
-          if (entity) {
-            entity.show = state
-          }
-          t3 = setInterval(() => { this.showD(2) }, 1000)
-        }, 5000)
       }
-    },
-    setEquatorY4A() {
-      this.viewer.entities.add({
-        id: 'equator',
-        polyline: {
-          positions: Cesium.Cartesian3.fromDegreesArrayHeights([0.0, 0.0, 3000000.0, 90.0, 0.0, 3000000.0, 180.0, 1.0, 3000000.0, 270.0, 0.0, 3000000.0, 360.0, 0.0, 3000000.0]),
-          width: 1,
-          material: new Cesium.PolylineDashMaterialProperty({
-            color: Cesium.Color.YELLOW
-          })
-        }
-      })
-      this.viewer.entities.add({
-        id: 'FY4A',
-        position: Cesium.Cartesian3.fromDegrees(104.7, 0, 3000000),
-        billboard: {
-          image: '/images/FY-4A.png',
-          width: 150,
-          height: 90
-        },
-        label: {
-          text: 'FY4A',
-          name: 'FY4A',
-          font: '14pt monospace',
-          fillColor: Cesium.Color.YELLOW,
-          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          outlineWidth: 2,
-          verticalOrigin: Cesium.VerticalOrigin.TOP,
-          pixelOffset: new Cesium.Cartesian2(0, 40)
-        }
-      })
-      this.viewer.entities.add({
-        id: 'FY4A_Gray',
-        position: Cesium.Cartesian3.fromDegrees(104.7, 0),
-        point: {
-          pixelSize: 6,
-          color: Cesium.Color.GRAY,
-          outlineColor: Cesium.Color.WHITE,
-          outlineWidth: 1
-        }
-      })
-    },
-    setFY3D() {
-      clearInterval(t3)
-      p3 = 1
-      const SUCCESS = this.satellite
-      // SUCCESS.forEach((item, i) => {
-      axios.get('/statics/SampleData/windData/fy3d.json').then(res => {
-        SUCCESS[2].name = res.data.resource
-        if (!SUCCESS[2].name) {
-          return SUCCESS
-        }
-        return SUCCESS
-      }).then(res => {
-        this.satellite = res
-        this.addEntityD('FY3D')
-      })
-      // })
-    },
-    addEntityD(name) {
-      const SUCCESS = this.satellite
-      SUCCESS.forEach((item, i) => {
-        if (item.satellitename == name) {
-          if (!!SUCCESS[i].name && SUCCESS[i].name.length > 0) {
-            FYDen = this.viewer.entities.add({
-              id: SUCCESS[i].satellitename,
-              position: Cesium.Cartesian3.fromDegrees(30, 30, 1000000),
-              billboard: {
-                image: SUCCESS[i].imgURL,
-                width: SUCCESS[i].width,
-                height: SUCCESS[i].height
-              },
-              label: {
-                text: SUCCESS[i].name[0].satellitename,
-                font: '14pt monospace',
-                style: Cesium.LabelStyle.FULL_AND_OUTLINE,
-                outlineWidth: 3,
-                fillColor: Cesium.Color.YELLOW,
-                verticlOrigin: Cesium.VerticalOrigin.TOP,
-                pixelOffset: new Cesium.Cartesian2(20, 45)
-              }
-            })
-            FYD = this.viewer.entities.add({
-              id: SUCCESS[i].id,
-              position: Cesium.Cartesian3.fromDegrees(30, 30),
-              point: {
-                pixelSize: 6,
-                color: Cesium.Color.GRAY,
-                outlineColor: Cesium.Color.WHITE,
-                outlineWidth: 1
-              }
-            })
-            FYDbet = this.viewer.entities.add({
-              id: SUCCESS[i].groundId,
-              polyline: {
-                positions: Cesium.Cartesian3.fromDegreesArrayHeights([0, 0, 1000000,
-                  0, 0, 1000000, 0, 0, 1000000, 0, 0, 1000000, 0, 0, 1000000, 0, 0, 1000000]),
-                width: 3,
-                material: new Cesium.PolylineDashMaterialProperty({
-                  color: Cesium.Color.YELLOW
-                })
-              }
-            })
-            FY3D = this.viewer.entities.add({
-              id: SUCCESS[i].arrname,
-              polyline: {
-                positions: Cesium.Cartesian3.fromDegreesArrayHeights([0, 0, 1000000, 0, 0, 1000000,
-                  0, 0, 1000000, 0, 0, 1000000, 0, 0, 1000000, 0, 0, 1000000]),
-                width: 3,
-                material: Cesium.Color.YELLOW
-              }
-            })
-          }
-          t3 = setInterval(() => { this.showD(2) }, 1000)
-        }
-      })
-    },
-    showD(q) {
-      const SUCCESS = this.satellite
-      arr3 = SUCCESS[q].name
-      if (!!arr3 && !!arr3.length && i < arr3.length - 100) {
-        var date = arr3[i].time
-        var Latitude = arr3[i].lat
-        var Longitude = arr3[i].lon
-        var Latitude1 = arr3[i + 10].lat
-        var Longitude1 = arr3[i + 10].lon
-        var Latitude2 = arr3[i + 20].lat
-        var Longitude2 = arr3[i + 20].lon
-        var Latitude3 = arr3[i + 30].lat
-        var Longitude3 = arr3[i + 30].lon
-        var Latitude4 = arr3[i + 40].lat
-        var Longitude4 = arr3[i + 40].lon
-        var Latitude5 = arr3[i + 50].lat
-        var Longitude5 = arr3[i + 50].lon
-        var Latitude6 = arr3[i + 60].lat
-        var Longitude6 = arr3[i + 60].lon
-        var Latitude7 = arr3[i + 70].lat
-        var Longitude7 = arr3[i + 70].lon
-        var Latitude8 = arr3[i + 80].lat
-        var Longitude8 = arr3[i + 80].lon
-        var Latitude9 = arr3[i + 90].lat
-        var Longitude9 = arr3[i + 90].lon
-        var Latitude10 = arr3[i + 100].lat
-        var Longitude10 = arr3[i + 100].lon
-        FYDbet.polyline.positions = Cesium.Cartesian3.fromDegreesArrayHeights([Longitude5, Latitude5, 1000000,
-          Longitude6, Latitude6, 1000000,
-          Longitude7, Latitude7, 1000000,
-          Longitude8, Latitude8, 1000000,
-          Longitude9, Latitude9, 1000000,
-          Longitude10, Latitude10, 1000000])
-        FYD.position = Cesium.Cartesian3.fromDegrees(Longitude5, Latitude5)
-        FY3D.polyline.positions = Cesium.Cartesian3.fromDegreesArrayHeights([Longitude, Latitude, 1000000,
-          Longitude1, Latitude1, 1000000,
-          Longitude2, Latitude2, 1000000,
-          Longitude3, Latitude3, 1000000,
-          Longitude4, Latitude4, 1000000,
-          Longitude5, Latitude5, 1000000])
-        FYDen.position = Cesium.Cartesian3.fromDegrees(Longitude5, Latitude5, 1000000)
+      if (entity) {
+        entity.show = state
       }
-      i++
-      if (!!arr3 && !!arr3.length && i >= arr3.length - 100) {
-        i = 0
+      // 实体添加
+      entity = this.viewer.entities.getById('FY4A')
+      if (state && !entity) {
+        setGlobal(this.viewer, 'FY4A')
+      }
+
+      entity = this.viewer.entities.getById('FY3D')
+      if (state && !entity) {
+        setGlobal(this.viewer, 'FY3D')
+      }
+
+      if (state && entity) {
+        setGlobal(this.viewer, 'start')
+      }
+      return
+      // 控制实体
+      entity = this.viewer.entities.getById('FY4A')
+      if (entity) {
+        entity.show = state
+      }
+      entity = this.viewer.entities.getById('equator')
+      if (entity) {
+        entity.show = state
+      }
+      entity = this.viewer.entities.getById('FY4A_Gray')
+      if (entity) {
+        entity.show = state
+      }
+
+      entity = this.viewer.entities.getById('FY3D')
+      if (entity) {
+        entity.show = state
+      }
+      entity = this.viewer.entities.getById('3D')
+      if (entity) {
+        entity.show = state
+      }
+      entity = this.viewer.entities.getById('D')
+      if (entity) {
+        entity.show = state
+      }
+      entity = this.viewer.entities.getById('arr3D')
+      if (entity) {
+        entity.show = state
       }
     },
     playearth() {
@@ -793,44 +664,6 @@ export default {
         _this.viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, a * n)
       }
       this.viewer.clock.onTick.addEventListener(onTick)
-    },
-    dian() {
-      var circleIn4 = new Cesium.CircleOutlineGeometry({
-        center: Cesium.Cartesian3.fromDegrees(130.31, 46.80),
-        radius: 1.0,
-        granularity: 0.001
-      })
-      var geometryIn = Cesium.CircleOutlineGeometry.createGeometry(circleIn4)
-      var float64ArrayPositionsIn = geometryIn.attributes.position.values
-      var positionsIn = [].slice.call(float64ArrayPositionsIn)
-      var oneArrL1 = positionsIn.length
-      var erArrL1 = positionsIn.length / 3
-      var er1 = new Array()
-      for (var p = 0; p < erArrL1; p++) {
-        er1[p] = new Array()
-      }
-      var k1 = 0
-      for (var o = 0; o < erArrL1; o++) {
-        for (var u = 0; u < 3; u++) {
-          er1[o][u] = positionsIn[k1]
-          k1++
-          if (k1 > oneArrL1 - 1) {
-            break
-          }
-        }
-      }
-      var posCir1 = []
-      for (var i = 0; i < er1.length; i++) {
-        posCir1.push(new Cesium.Cartesian3(er1[i][0], er1[i][1], er1[i][2]))
-      }
-      var JMS = this.viewer.entities.add({
-        id: 'JMSZ',
-        polyline: {
-          positions: posCir1,
-          width: 1,
-          material: Cesium.Color.BLUE
-        }
-      })
     },
     setRoutePage() {},
     setMessagePage() {},
@@ -1684,23 +1517,48 @@ export default {
 }
 .all-type {
   position: fixed;
-  top: 0.16rem;
-  left: 0.8rem;
-  right: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
   z-index: 10;
+  background: rgba(29,38,50,0.98);
+  width: 0.64rem;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  .logo {
+    background: url("../../assets/images/mainpage-logo.png") center center no-repeat;
+    background-size: 100% 100%;
+    height: 0.38rem;
+    width: 0.38rem;
+    margin-top: 0.14rem;
+  }
   div {
-    height: 0.4rem;
-    line-height: 0.4rem;
-    background: rgba(0,100,38,1);
-    box-shadow: 0px 6px 19px 0px rgba(36,34,54,0.1);
-    border-radius: 4px;
+    width: 0.4rem;
     cursor: pointer;
-    margin: 0 4px;
     color: #fff;
     font-weight: 500;
     font-size: 0.15rem;
-    padding: 0 20px;
+    margin-bottom: 0.23rem;
+    .icon {
+      height: 0.36rem;
+      width: 0.4rem;
+      background: rgba(33,165,80,0.2);
+      border-radius: 4px;
+      margin-bottom: 4px;
+      &.sp {
+        background: rgba(33,165,80,1);
+      }
+    }
+    .tit {
+      height: 0.17rem;
+      line-height: 0.17rem;
+      font-size: 0.12rem;
+      font-weight: 300;
+      color: rgba(255,255,255,1);
+      text-align: center;
+      margin-bottom: 0;
+    }
   }
 }
 .wind {
