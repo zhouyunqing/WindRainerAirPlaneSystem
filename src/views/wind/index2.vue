@@ -211,6 +211,8 @@ import Wind3D from '@/components/wind/wind3D.js'
 import axios from 'axios'
 import setLand from '@/components/wind/land.js'
 import setGlobal from '@/components/wind/global.js'
+import airImgUrl from '@/assets/images/airbg.png'
+import Heatmap from 'heatmap.js'
 var i = 0
 var t3 = null
 var FYD = null
@@ -232,6 +234,13 @@ export default {
   },
   data() {
     return {
+      selectedPlane: null,
+      targetY: 0.0,
+      yellowPlane0: new Cesium.Plane(new Cesium.Cartesian3(0, 0, -1), 0.0),
+      targetX: 0.0,
+      redPlane0: new Cesium.Plane(new Cesium.Cartesian3(0, 1, 0), 0.0),
+      targetZ: 0.0,
+      bluePlane0: new Cesium.Plane(new Cesium.Cartesian3(1, 0, 0), 0.0),
       page: '', // global 全球；wind 风；land 飞机起降；route 航线；message 报文
       gray: 'https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}',
       windMap: 'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
@@ -541,6 +550,56 @@ export default {
         }, 1000)
       }
     },
+    // 生成len个随机数据
+    getData(len) {
+      // 构建一些随机数据点
+      var points = []
+      var max = 0
+      var width = 1000
+      var height = 1000
+      while (len--) {
+        var val = Math.floor(Math.random() * 1000)
+        max = Math.max(max, val)
+        var point = {
+          x: Math.floor(Math.random() * width),
+          y: Math.floor(Math.random() * height),
+          value: val
+        }
+        points.push(point)
+      }
+      return { max: max, data: points }
+    },
+
+    // 创建热力图
+    createHeatMap(max, data) {
+      // 创建元素
+      const heatDoc = document.createElement('div')
+      heatDoc.setAttribute('style', 'width:1000px;height:1000px;margin: 0px;display: none;')
+      document.body.appendChild(heatDoc)
+      // 创建热力图对象
+      const heatmap = Heatmap.create({
+        container: heatDoc,
+        radius: 20,
+        maxOpacity: 0.5,
+        minOpacity: 0,
+        blur: 0.75,
+        gradient: {
+          '1.0': 'rgb(255,255,0)',
+          '0.9': 'rgb(0,255,0)',
+          '0.8': 'rgb(0,255,88)',
+          '0.7': 'rgb(0,255,178)',
+          '0.6': 'rgb(0,255,255)',
+          '0.3': 'rgb(0,178,255)',
+          '0.0': 'rgb(0,0,255)'
+        }
+      })
+      // 添加数据
+      heatmap.setData({
+        max: max,
+        data: data
+      })
+      return heatmap
+    },
     setLandPage(state) {
       // 初始化状态
       if (state) {
@@ -572,7 +631,82 @@ export default {
       if (entity) {
         entity.show = state
       }
+
+      const coordinate3 = [-109.0, 41.0, -80.0, 50.0]
+      const gradiant = {
+        '1.0': 'rgb(255,255,0)',
+        '0.9': 'rgb(0,255,0)',
+        '0.8': 'rgb(0,255,88)',
+        '0.7': 'rgb(0,255,178)',
+        '0.6': 'rgb(0,255,255)',
+        '0.3': 'rgb(0,178,255)',
+        '0.0': 'rgb(0,0,255)'
+      }
+      const heatMap3 = this.createHeatMap(this.getData(10000).max, this.getData(10000).data, gradiant)
+
+      const bluePlane = this.viewer.entities.add({
+        name: 'BluePlane',
+        position: Cesium.Cartesian3.fromDegrees(116.519855, 40.07209, 300.0),
+        plane: {
+          // plane: new Cesium.Plane(Cesium.Cartesian3.UNIT_X, 0.0),
+          plane: new Cesium.CallbackProperty(this.createPlaneUpdateFunction2(this.bluePlane0), false),
+
+          dimensions: new Cesium.Cartesian2(40000.0, 4000.0),
+          material: heatMap3._renderer.canvas
+        }
+      })
+
+      const redPlane = this.viewer.entities.add({
+        name: 'RedPlane',
+        position: Cesium.Cartesian3.fromDegrees(116.58823, 39.91376, 300.0),
+        plane: {
+          plane: new Cesium.CallbackProperty(this.createPlaneUpdateFunction1(this.redPlane0), false),
+          dimensions: new Cesium.Cartesian2(12000.0, 4000.0),
+          material: heatMap3._renderer.canvas
+        }
+      })
+      const yellowPlane = this.viewer.entities.add({
+        name: 'YellowPlane',
+        position: Cesium.Cartesian3.fromDegrees(116.59303, 40.07061, 0.0),
+        plane: {
+          // plane: new Cesium.Plane(Cesium.Cartesian3.UNIT_Z, 0.0),
+          // plane: this.yellowPlane0,
+          plane: new Cesium.CallbackProperty(this.createPlaneUpdateFunction(this.yellowPlane0), false),
+          dimensions: new Cesium.Cartesian2(12000.0, 40000.0),
+          material: heatMap3._renderer.canvas
+        }
+      })
+      // handlerVideo.setInputAction((movement) => {
+      //   if (this.activeWind === 'plane') {
+      //     this.pointHandler(movement)
+      //   }
+      // }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+      // 鼠标按下选中平面
+      const downHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas)
+      downHandler.setInputAction((movement) => {
+        this.planeDownHandler(movement)
+      }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
+
+      // 鼠标松开释放面板
+      const upHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas)
+      upHandler.setInputAction(() => {
+        this.planeUpHandler()
+      }, Cesium.ScreenSpaceEventType.LEFT_UP)
+
+      // 更新plane
+      const moveHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas)
+      moveHandler.setInputAction((movement) => {
+        this.planeMoveHandler(movement)
+      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
     },
+
+    // createPlaneUpdateFunction(plane) {
+    //     return function () {
+    //        let yellowPlane0=new Cesium.Plane(Cesium.Cartesian3.UNIT_Z, 0.0)
+    //       // plane.distance = this.targetY;
+    //       return yellowPlane0;
+    //     }
+    // },
     setGlobalPage(state) {
       // 初始化
       if (state) {
@@ -750,6 +884,28 @@ export default {
       handlerVideo.setInputAction((click) => {
         this.wallHandler(click)
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+    },
+
+    createPlaneUpdateFunction(plane) {
+      const that = this
+      return function() {
+        plane.distance = that.targetY
+        return plane
+      }
+    },
+    createPlaneUpdateFunction1(plane) {
+      const that = this
+      return function() {
+        plane.distance = that.targetX
+        return plane
+      }
+    },
+    createPlaneUpdateFunction2(plane) {
+      const that = this
+      return function() {
+        plane.distance = that.targetZ
+        return plane
+      }
     },
     // 切换平面风 和 剖面风
     windToggle(type) {
@@ -978,6 +1134,41 @@ export default {
         }
       })
       return backColor
+    },
+
+    planeDownHandler(movement) {
+      const pickedObject = this.viewer.scene.pick(movement.position)
+      if (Cesium.defined(pickedObject) &&
+              Cesium.defined(pickedObject.id) &&
+              Cesium.defined(pickedObject.id.plane)) {
+        this.selectedPlane = pickedObject.id.plane
+        this.selectedPlane.name = pickedObject.id.name + 's'
+        // this.selectedPlane.material = Cesium.Color.WHITE.withAlpha(0.05)
+        this.selectedPlane.outlineColor = Cesium.Color.WHITE
+        this.viewer.scene.screenSpaceCameraController.enableInputs = false
+      }
+    },
+    planeUpHandler() {
+      if (Cesium.defined(this.selectedPlane)) {
+        // this.selectedPlane.material = Cesium.Color.WHITE.withAlpha(0.1)
+        // this.selectedPlane.outlineColor = Cesium.Color.WHITE
+        this.selectedPlane = undefined
+      }
+      this.viewer.scene.screenSpaceCameraController.enableInputs = true
+    },
+    planeMoveHandler(movement) {
+      if (Cesium.defined(this.selectedPlane)) {
+        if (this.selectedPlane.name == 'YellowPlanes') {
+          const deltaY = movement.startPosition.y - movement.endPosition.y
+          this.targetY += deltaY
+        } else if (this.selectedPlane.name == 'RedPlanes') {
+          const deltaX = movement.startPosition.x - movement.endPosition.x
+          this.targetX += deltaX
+        } else if (this.selectedPlane.name == 'BluePlanes') {
+          const deltaZ = movement.startPosition.y - movement.endPosition.y
+          this.targetZ += deltaZ
+        }
+      }
     },
     // 九点hover事件
     pointHandler(movement) {

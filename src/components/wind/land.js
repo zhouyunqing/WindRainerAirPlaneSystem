@@ -112,12 +112,11 @@ const land = (viewer) => {
     polyline: {
       // 多线段
       positions: Cesium.Cartesian3.fromDegreesArrayHeights(line), // 方位
-      width: 5, // 折线的宽度（以像素为单位）
-      material: Cesium.Color.YELLOW.withAlpha(0.5),
+      width: 20, // 折线的宽度（以像素为单位）
+      material: Cesium.Color.GREY,
       shadows: Cesium.ShadowMode.ENABLED
     }
   })
-
   // 设置始时钟始时间
   viewer.clock.startTime = start.clone()
   // 设置时钟当前时间
