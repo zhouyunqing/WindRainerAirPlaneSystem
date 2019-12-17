@@ -1,4 +1,5 @@
 import Cesium from 'cesium/Cesium'
+import Heatmap from 'heatmap.js'
 const line = [
   116.620741094571, 40.076284245746, 0,
   116.618008856637, 40.094626475820, 0,
@@ -100,23 +101,66 @@ const data = [
   ]
 ]
 
+const gradiant = {
+  '1.0': 'rgb(255,255,0)',
+  '0.9': 'rgb(0,255,0)',
+  '0.8': 'rgb(0,255,88)',
+  '0.7': 'rgb(0,255,178)',
+  '0.6': 'rgb(0,255,255)',
+  '0.3': 'rgb(0,178,255)',
+  '0.0': 'rgb(0,0,255)'
+}
+
+const entityList = [
+  'landLine',
+  'air',
+  'planeX',
+  'planeY',
+  'planeZ'
+]
+
+const hotData = {
+  planeX: new Cesium.Plane(new Cesium.Cartesian3(0, 1, 0), 0.0),
+  targetX: 0.0,
+  planeY: new Cesium.Plane(new Cesium.Cartesian3(0, 0, -1), 0.0),
+  targetY: 0.0,
+  planeZ: new Cesium.Plane(new Cesium.Cartesian3(1, 0, 0), 0.0),
+  targetZ: 0.0
+}
+
+let selectedPlane = null
+
 // 起始时间
 const start = Cesium.JulianDate.fromDate(new Date(2019, 12, 10))
 // 结束时间
 const stop = Cesium.JulianDate.addSeconds(start, 720, new Cesium.JulianDate())
 
-const land = (viewer) => {
+const land = (viewer, name, state) => {
+  if (name === 'create') {
+    setRoute(viewer)
+    setAir(viewer)
+    setHot(viewer)
+  }
+  if (name === 'entity') {
+    setEntityState(viewer, state)
+  }
+}
+
+const setRoute = (viewer) => {
   viewer.entities.add({
     id: 'landLine',
     show: true,
     polyline: {
       // 多线段
       positions: Cesium.Cartesian3.fromDegreesArrayHeights(line), // 方位
-      width: 20, // 折线的宽度（以像素为单位）
+      width: 5, // 折线的宽度（以像素为单位）
       material: Cesium.Color.GREY,
       shadows: Cesium.ShadowMode.ENABLED
     }
   })
+}
+
+const setAir = (viewer) => {
   // 设置始时钟始时间
   viewer.clock.startTime = start.clone()
   // 设置时钟当前时间
@@ -143,9 +187,139 @@ const land = (viewer) => {
       // 模型数据
       model: {
         uri: '/CesiumAir/Cesium_Air.glb',
-        minimumPixelSize: 180
+        minimumPixelSize: 100
       }
     })
+  }
+}
+
+const setHot = (viewer) => {
+  const heatMap = createHeatMap(getData(10000).max, getData(10000).data)
+  viewer.entities.add({
+    id: 'planeX',
+    position: Cesium.Cartesian3.fromDegrees(116.58823, 39.91376, 300.0),
+    plane: {
+      plane: new Cesium.CallbackProperty(createPlaneUpdateFunction(hotData.planeX, 'X'), false),
+      dimensions: new Cesium.Cartesian2(12000.0, 4000.0),
+      material: heatMap._renderer.canvas
+    }
+  })
+  viewer.entities.add({
+    id: 'planeY',
+    position: Cesium.Cartesian3.fromDegrees(116.59303, 40.07061, 0.0),
+    plane: {
+      plane: new Cesium.CallbackProperty(createPlaneUpdateFunction(hotData.planeY, 'Y'), false),
+      dimensions: new Cesium.Cartesian2(12000.0, 40000.0),
+      material: heatMap._renderer.canvas
+    }
+  })
+  viewer.entities.add({
+    id: 'planeZ',
+    position: Cesium.Cartesian3.fromDegrees(116.519855, 40.07209, 300.0),
+    plane: {
+      plane: new Cesium.CallbackProperty(createPlaneUpdateFunction(hotData.planeZ, 'Z'), false),
+      dimensions: new Cesium.Cartesian2(40000.0, 4000.0),
+      material: heatMap._renderer.canvas
+    }
+  })
+
+  const downHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
+  downHandler.setInputAction((movement) => {
+    var pickedObject = viewer.scene.pick(movement.position)
+    if (Cesium.defined(pickedObject) && Cesium.defined(pickedObject.id) && Cesium.defined(pickedObject.id.plane)) {
+      selectedPlane = pickedObject.id.plane
+      selectedPlane.outlineColor = Cesium.Color.WHITE
+      selectedPlane.id = pickedObject.id.id
+      viewer.scene.screenSpaceCameraController.enableInputs = false
+    }
+  }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
+
+  const moveHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
+  moveHandler.setInputAction((movement) => {
+    if (Cesium.defined(selectedPlane)) {
+      if (selectedPlane.id === 'planeX') {
+        const deltaX = movement.startPosition.x - movement.endPosition.x
+        hotData.targetX += deltaX
+      }
+      if (selectedPlane.id === 'planeY') {
+        const deltaY = movement.startPosition.y - movement.endPosition.y
+        hotData.targetY += deltaY
+      }
+      if (selectedPlane.id === 'planeZ') {
+        const deltaZ = movement.startPosition.y - movement.endPosition.y
+        hotData.targetZ += deltaZ
+      }
+    }
+  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+
+  const upHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
+  upHandler.setInputAction(() => {
+    if (Cesium.defined(selectedPlane)) {
+      selectedPlane = undefined
+    }
+    viewer.scene.screenSpaceCameraController.enableInputs = true
+  }, Cesium.ScreenSpaceEventType.LEFT_UP)
+}
+
+const createHeatMap = (max, data) => {
+  // 创建元素
+  const heatDoc = document.createElement('div')
+  heatDoc.setAttribute('style', 'width:1000px;height:1000px;margin: 0px;display: none;')
+  document.body.appendChild(heatDoc)
+  // 创建热力图对象
+  const heatmap = Heatmap.create({
+    container: heatDoc,
+    radius: 20,
+    maxOpacity: 0.5,
+    minOpacity: 0,
+    blur: 0.75,
+    gradient: gradiant
+  })
+  // 添加数据
+  heatmap.setData({
+    max: max,
+    data: data
+  })
+  return heatmap
+}
+
+const getData = (len) => {
+  // 构建一些随机数据点
+  var points = []
+  var max = 0
+  var width = 1000
+  var height = 1000
+  while (len--) {
+    var val = Math.floor(Math.random() * 1000)
+    max = Math.max(max, val)
+    var point = {
+      x: Math.floor(Math.random() * width),
+      y: Math.floor(Math.random() * height),
+      value: val
+    }
+    points.push(point)
+  }
+  return { max: max, data: points }
+}
+
+const createPlaneUpdateFunction = (plane, line) => {
+  if (line === 'X') {
+    return function() {
+      plane.distance = hotData.targetX
+      return plane
+    }
+  }
+  if (line === 'Y') {
+    return function() {
+      plane.distance = hotData.targetY
+      return plane
+    }
+  }
+  if (line === 'Z') {
+    return function() {
+      plane.distance = hotData.targetZ
+      return plane
+    }
   }
 }
 
@@ -159,5 +333,15 @@ const computeFlight = (source) => {
     property.addSample(time, position)
   }
   return property
+}
+
+const setEntityState = (viewer, state) => {
+  let entity
+  entityList.forEach(item => {
+    entity = viewer.entities.getById(item)
+    if (entity) {
+      entity.show = state
+    }
+  })
 }
 export default land

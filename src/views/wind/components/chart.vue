@@ -1,13 +1,13 @@
 <template>
   <div class="wind-chart">
-    <ul v-if="active == 'plane'" class="tab">
+    <ul v-if="active != 'section'" class="tab">
       <li :class="{sp: forecastTab == 'near'}" @click="changeForecastTab('near')">临近预报</li>
       <li :class="{sp: forecastTab == 'short'}" @click="changeForecastTab('short')">短时预报</li>
     </ul>
     <div class="content">
       <div class="content-title">
         <div>{{ params.site || 'ZBAA' }}</div>
-        <i v-if="active == 'plane'" :class="{sp: chartShow}" @click="upAndDown" />
+        <i v-if="active != 'section'" :class="{sp: chartShow}" @click="upAndDown" />
       </div>
       <div class="content-tab">
         <div class="time">{{ time }}</div>
@@ -654,16 +654,16 @@ export default {
 <style lang="scss" scoped>
 .wind-chart {
   position: fixed;
-  bottom: 0.2rem;
-  left: 1rem;
-  right: 0.2rem;
-  width: calc(100vw - 120px);
+  bottom: 0.08rem;
+  left: 0.72rem;
+  right: 0.08rem;
+  z-index: 10;
   font-size: 0.14rem;
   text-align: left;
   font-weight: 500;
   .tab {
     display: flex;
-    margin: 0 0 0.1rem;
+    margin: 0 0 0.04rem;
     padding: 0;
     list-style: none;
     li {

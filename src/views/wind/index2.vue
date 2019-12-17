@@ -1,43 +1,89 @@
 <template>
   <div class="wind">
+    <!-- 左侧导航 start -->
     <div class="all-type">
       <div class="logo" />
       <div @click="changePage('wind')">
-        <div class="icon" :class="{sp: page == 'wind'}">1</div>
+        <div class="icon" :class="{sp: page == 'wind'}">
+          <img src="@/assets/images/icon/wind.png" alt="">
+        </div>
         <div class="tit">风</div>
       </div>
-      <div @click="changePage('land')">
-        <div class="icon" :class="{sp: page == 'land'}">1</div>
-        <div class="tit">五边形</div>
-      </div>
       <div @click="changePage('route')">
-        <div class="icon">1</div>
+        <div class="icon" :class="{sp: page == 'route'}">
+          <img src="@/assets/images/icon/air.png" alt="">
+        </div>
         <div class="tit">航线</div>
       </div>
       <div @click="changePage('message')">
-        <div class="icon">1</div>
+        <div class="icon" :class="{sp: page == 'message'}">
+          <img src="@/assets/images/icon/message.png" alt="">
+        </div>
         <div class="tit">报文</div>
       </div>
-      <div @click="changePage('global')">
-        <div class="icon">1</div>
-        <div class="tit">全球</div>
+      <div @click="changePage('radar')">
+        <div class="icon" :class="{sp: page == 'radar'}">
+          <img src="@/assets/images/icon/radar.png" alt="">
+        </div>
+        <div class="tit">雷达</div>
+      </div>
+      <div class="more">
+        <div class="icon">
+          <img src="@/assets/images/icon/more.png" alt="">
+        </div>
+        <div class="tit">航线</div>
       </div>
     </div>
+    <!-- 左侧导航 end -->
+
+    <!-- 全球视角 我的位置 start -->
+    <div class="all-type-right">
+      <div @click="changePage('global')">
+        <div class="icon">
+          <img v-if="page === 'global'" src="@/assets/images/icon/globalW.png" alt="">
+          <img v-else src="@/assets/images/icon/globalB.png" alt="">
+        </div>
+        <div class="tit" :class="{sp: page != 'global'}">全球视角</div>
+      </div>
+      <div>
+        <div class="icon">
+          <img v-if="page === 'global'" src="@/assets/images/icon/homeW.png" alt="">
+          <img v-else src="@/assets/images/icon/homeB.png" alt="">
+        </div>
+        <div class="tit" :class="{sp: page != 'global'}">我的位置</div>
+      </div>
+    </div>
+    <!-- 全球视角 我的位置 end -->
     <div id="cesiumContainer" />
+
+    <!-- 全球视角 -->
+    <div v-if="page === 'global'" class="global-wrap">123</div>
+
+    <!-- 风 -->
     <div v-if="page ==='wind'">
       <!-- 顶部 展示切换 start -->
-      <ul class="top-tap">
+      <ul class="top-tap" :class="{'land-tap': activeWind === 'land'}" :style="{ bottom: tapBottom + 'rem' }">
+        <li :class="{sp: activeWind == 'land'}" @click="windToggle('land')">五边形</li>
         <li :class="{sp: activeWind == 'plane'}" @click="windToggle('plane')">平面风展示</li>
         <li :class="{sp: activeWind == 'section'}" @click="windToggle('section')">剖面风展示</li>
       </ul>
       <!-- 顶部 展示切换 end -->
+      <ul v-if="activeWind === 'land'" class="land-angle-switch">
+        <li :class="{sp: landAngle === 'over'}">俯视图</li>
+        <li :class="{sp: landAngle === 'left'}">左视图</li>
+        <li :class="{sp: landAngle === 'front'}">前视图</li>
+      </ul>
+      <ul v-if="activeWind === 'land'" class="air-direction" :style="{ bottom: tapBottom + 'rem' }">
+        <li :class="{sp: airDirection === 'ns'}">自北向南</li>
+        <li :class="{sp: airDirection === 'sn'}">自南向北</li>
+      </ul>
 
       <!-- 右上角 图列组件 start -->
       <rightCard v-if="activeWind == 'plane'" card-title="机场跑道地面风速" normal="正常 0-5 m/s" light="轻度 5-17 m/s" serious="严重 >17 m/s" />
       <!-- 右上角 图列组件 end -->
 
       <!-- 右侧 距地面高度 start -->
-      <slider v-show="activeWind == 'plane'" @change="changeHeightLevel" />
+      <slider v-if="activeWind == 'plane'" @change="changeHeightLevel" />
       <!-- 右侧 距地面高度 end -->
 
       <!-- 平面风展示 底部图表 start -->
@@ -191,7 +237,7 @@
       <!-- 控制条 end -->
     </div>
 
-    <video id="trailer" muted autoplay loop crossorigin controls style="position:absolute;z-index:200;bottom:50px;width:25%;right:100px;opacity: 0;">
+    <video id="trailer" muted autoplay loop crossorigin controls style="position:absolute;z-index:200;left: 100%;bottom:50px;width:25%;right:100px;opacity: 0;">
       <source src="/statics/20191210.mp4" type="video/mp4">
     </video>
   </div>
@@ -211,7 +257,6 @@ import Wind3D from '@/components/wind/wind3D.js'
 import setLand from '@/components/wind/land.js'
 import setGlobal from '@/components/wind/global.js'
 import Heatmap from 'heatmap.js'
-var j = Date.now()
 var onTick = null
 export default {
   components: {
@@ -229,7 +274,7 @@ export default {
       redPlane0: new Cesium.Plane(new Cesium.Cartesian3(0, 1, 0), 0.0),
       targetZ: 0.0,
       bluePlane0: new Cesium.Plane(new Cesium.Cartesian3(1, 0, 0), 0.0),
-      page: '', // global 全球；wind 风；land 飞机起降；route 航线；message 报文
+      page: '', // global 全球；wind 风；route 航线；message 报文
       gray: 'https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}',
       windMap: 'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
       landMap: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
@@ -359,7 +404,7 @@ export default {
           fromDegreesArrayHeights: [116.617997, 40.094787, 2100, 116.623469, 40.059059, 2100]
         }
       ], // 剖面风
-      activeWind: 'plane', // plane 平面风；section 剖面风
+      activeWind: '', // plane 平面风；section 剖面风；land 五边形
       heightLevel: 0,
       sectionwindDetail: false,
       info: {},
@@ -376,6 +421,7 @@ export default {
       dataStartTime: '',
       day: '',
       enlargBottom: 3.3,
+      tapBottom: 3.12,
       isHoverShow: false,
       infoTime: '',
       entity: null,
@@ -397,7 +443,9 @@ export default {
         '0.3': 'rgb(0,178,255)',
         '0.0': 'rgb(0,0,255)'
       },
-      wind3D: null
+      wind3D: null,
+      landAngle: 'over', // over 俯视图；left 左视图；front 前视图
+      airDirection: 'ns' // ns 北南；sn 南北
     }
   },
   mounted() {
@@ -411,22 +459,16 @@ export default {
       this.page = val
       this.setWindPage(false)
       this.setGlobalPage(false)
-      this.setLandPage(false)
+      this.setRoutePage(false)
       switch (val) {
         case 'wind':
-          this.mapBG = this.gray
           this.setWindPage(true)
           break
         case 'global':
-          this.mapBG = this.globalMap
           this.setGlobalPage(true)
           break
-        case 'land':
-          this.mapBG = this.gray
-          this.setLandPage(true)
-          break
         case 'route':
-          this.setRoutePage()
+          this.setRoutePage(true)
           break
         case 'message':
           this.setMessagePage()
@@ -444,15 +486,9 @@ export default {
     },
     setWindPage(state) {
       // 设置初始状态
+      this.activeWind = ''
+      this.windToggle('land')
       if (state) {
-        this.activeWind = 'plane'
-        this.viewer.camera.flyTo({
-          destination: Cesium.Cartesian3.fromDegrees(
-            116.595534748692,
-            40.0580145185529,
-            21961.9883961571
-          )
-        })
         this.getChartData(this.site)
         // 当前时间显示
         let time = this.getNowTime()
@@ -462,109 +498,16 @@ export default {
           this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
         }, 1000)
       }
-      // 显示隐藏实体
-      let entity
-      this.pointName.forEach((item, i) => {
-        entity = this.viewer.entities.getById(item.id)
-        if (entity) {
-          entity.show = state
-        }
-      })
-      this.waysName.forEach((item, i) => {
-        entity = this.viewer.entities.getById(item.id)
-        if (entity) {
-          entity.show = false
-        }
-      })
-      this.walls.forEach((item, i) => {
-        entity = this.viewer.entities.getById(item.name)
-        if (entity) {
-          entity.show = false
-        }
-      })
-      this.ways.forEach((item, i) => {
-        entity = this.viewer.entities.getById(item.name)
-        if (entity) {
-          entity.show = state
-        }
-      })
-      // 数据渲染
-      if (state) {
-        setTimeout(() => {
-          this.getModelForecastData()
-        }, 1000)
-      } else {
-        if (this.wind3D) {
-          this.wind3D.removeWindPrimitives()
-        }
-        if (this.colorImage) {
-          this.colorImage.remove(this.viewer)
-        }
-      }
-      if (state && !entity) {
-        setTimeout(() => {
-          this.getSiteData()
-        }, 1000)
-      }
-    },
-    // 生成len个随机数据
-    getData(len) {
-      // 构建一些随机数据点
-      var points = []
-      var max = 0
-      var width = 1000
-      var height = 1000
-      while (len--) {
-        var val = Math.floor(Math.random() * 1000)
-        max = Math.max(max, val)
-        var point = {
-          x: Math.floor(Math.random() * width),
-          y: Math.floor(Math.random() * height),
-          value: val
-        }
-        points.push(point)
-      }
-      return { max: max, data: points }
     },
 
-    // 创建热力图
-    createHeatMap(max, data) {
-      // 创建元素
-      const heatDoc = document.createElement('div')
-      heatDoc.setAttribute('style', 'width:1000px;height:1000px;margin: 0px;display: none;')
-      document.body.appendChild(heatDoc)
-      // 创建热力图对象
-      const heatmap = Heatmap.create({
-        container: heatDoc,
-        radius: 20,
-        maxOpacity: 0.5,
-        minOpacity: 0,
-        blur: 0.75,
-        gradient: {
-          '1.0': 'rgb(255,255,0)',
-          '0.9': 'rgb(0,255,0)',
-          '0.8': 'rgb(0,255,88)',
-          '0.7': 'rgb(0,255,178)',
-          '0.6': 'rgb(0,255,255)',
-          '0.3': 'rgb(0,178,255)',
-          '0.0': 'rgb(0,0,255)'
-        }
-      })
-      // 添加数据
-      heatmap.setData({
-        max: max,
-        data: data
-      })
-      return heatmap
-    },
     setLandPage(state) {
       // 初始化状态
       if (state) {
         this.viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(
             116.481554,
-            39.684974,
-            25961.9883961571
+            39.984974,
+            20961.9883961571
           ),
           orientation: {
             heading: Cesium.Math.toRadians(400.668148999818),
@@ -574,87 +517,11 @@ export default {
         })
       }
       // 设置实体
-      let entity = this.viewer.entities.getById('landLine')
+      const entity = this.viewer.entities.getById('landLine')
       if (state && !entity) {
-        setTimeout(() => {
-          setLand(this.viewer)
-        }, 4000)
+        setLand(this.viewer, 'create')
       }
-      // 实体状态
-      if (entity) {
-        entity.show = state
-      }
-      entity = this.viewer.entities.getById('air')
-      if (entity) {
-        entity.show = state
-      }
-
-      const coordinate3 = [-109.0, 41.0, -80.0, 50.0]
-      const gradiant = {
-        '1.0': 'rgb(255,255,0)',
-        '0.9': 'rgb(0,255,0)',
-        '0.8': 'rgb(0,255,88)',
-        '0.7': 'rgb(0,255,178)',
-        '0.6': 'rgb(0,255,255)',
-        '0.3': 'rgb(0,178,255)',
-        '0.0': 'rgb(0,0,255)'
-      }
-      const heatMap3 = this.createHeatMap(this.getData(10000).max, this.getData(10000).data, gradiant)
-
-      const bluePlane = this.viewer.entities.add({
-        name: 'BluePlane',
-        position: Cesium.Cartesian3.fromDegrees(116.519855, 40.07209, 300.0),
-        plane: {
-          // plane: new Cesium.Plane(Cesium.Cartesian3.UNIT_X, 0.0),
-          plane: new Cesium.CallbackProperty(this.createPlaneUpdateFunction2(this.bluePlane0), false),
-
-          dimensions: new Cesium.Cartesian2(40000.0, 4000.0),
-          material: heatMap3._renderer.canvas
-        }
-      })
-
-      const redPlane = this.viewer.entities.add({
-        name: 'RedPlane',
-        position: Cesium.Cartesian3.fromDegrees(116.58823, 39.91376, 300.0),
-        plane: {
-          plane: new Cesium.CallbackProperty(this.createPlaneUpdateFunction1(this.redPlane0), false),
-          dimensions: new Cesium.Cartesian2(12000.0, 4000.0),
-          material: heatMap3._renderer.canvas
-        }
-      })
-      const yellowPlane = this.viewer.entities.add({
-        name: 'YellowPlane',
-        position: Cesium.Cartesian3.fromDegrees(116.59303, 40.07061, 0.0),
-        plane: {
-          // plane: new Cesium.Plane(Cesium.Cartesian3.UNIT_Z, 0.0),
-          // plane: this.yellowPlane0,
-          plane: new Cesium.CallbackProperty(this.createPlaneUpdateFunction(this.yellowPlane0), false),
-          dimensions: new Cesium.Cartesian2(12000.0, 40000.0),
-          material: heatMap3._renderer.canvas
-        }
-      })
-      // handlerVideo.setInputAction((movement) => {
-      //   if (this.activeWind === 'plane') {
-      //     this.pointHandler(movement)
-      //   }
-      // }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
-      // 鼠标按下选中平面
-      const downHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas)
-      downHandler.setInputAction((movement) => {
-        this.planeDownHandler(movement)
-      }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
-
-      // 鼠标松开释放面板
-      const upHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas)
-      upHandler.setInputAction(() => {
-        this.planeUpHandler()
-      }, Cesium.ScreenSpaceEventType.LEFT_UP)
-
-      // 更新plane
-      const moveHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas)
-      moveHandler.setInputAction((movement) => {
-        this.planeMoveHandler(movement)
-      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+      setLand(this.viewer, 'entity', state)
     },
     setGlobalPage(state) {
       // 初始化
@@ -664,7 +531,6 @@ export default {
             110, 40, 20000000
           )
         })
-
         if (onTick) {
           this.viewer.clock.onTick.addEventListener(onTick)
         } else {
@@ -709,21 +575,29 @@ export default {
       setGlobal(this.viewer, 'entity', state)
     },
     playearth() {
-      var _this = this
-      onTick = function onTickCallback() {
-        var a = 0.3
-        var t = Date.now()
-        var n = (t - j) / 1e3
+      let j = Date.now()
+      onTick = () => {
+        const a = 0.3
+        const t = Date.now()
+        const n = (t - j) / 1e3
         j = t
-        _this.viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, a * n)
-        if (_this.viewer.scene.primitives.show) return
-        _this.viewer.scene.primitives.show = true
-        _this.setWindPage(false)
-        _this.setLandPage(false)
+        this.viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, a * n)
+        if (this.viewer.scene.primitives.show) return
+        this.viewer.scene.primitives.show = true
+        this.setWindPage(false)
+        this.setLandPage(false)
       }
       this.viewer.clock.onTick.addEventListener(onTick)
     },
-    setRoutePage() {},
+    setRoutePage(state) {
+      this.viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(
+          116.595534748692,
+          40.0580145185529,
+          81961.9883961571
+        )
+      })
+    },
     setMessagePage() {},
     // ---------- 切换场景 end ---------- //
 
@@ -740,7 +614,7 @@ export default {
         timeline: false,
         navigationHelpButton: false,
         imageryProvider: new Cesium.UrlTemplateImageryProvider({
-          url: this.globalMap
+          url: this.gray
         })
       })
       // 去掉版权号
@@ -757,9 +631,9 @@ export default {
       this.viewer.camera.setView({
         destination: Cesium.Cartesian3.fromDegrees(110, 40, 20000000)
       })
-      setTimeout(() => {
-        this.changePage('global')
-      }, 1000)
+      // setTimeout(() => {
+      this.changePage('route')
+      // }, 1000)
     },
     // 获取九点信息
     getSiteData() {
@@ -811,88 +685,99 @@ export default {
         this.wallHandler(click)
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
     },
-
-    createPlaneUpdateFunction(plane) {
-      const that = this
-      return function() {
-        plane.distance = that.targetY
-        return plane
-      }
-    },
-    createPlaneUpdateFunction1(plane) {
-      const that = this
-      return function() {
-        plane.distance = that.targetX
-        return plane
-      }
-    },
-    createPlaneUpdateFunction2(plane) {
-      const that = this
-      return function() {
-        plane.distance = that.targetZ
-        return plane
-      }
-    },
-    // 切换平面风 和 剖面风
+    // 切换 五边形 平面风 剖面风
     windToggle(type) {
       if (this.activeWind === type) return
       this.activeWind = type
-      if (type === 'plane') {
-        if (this.particle) {
-          this.drawParticleMap()
-        }
-        this.isLegendChange = true
-        this.sectionwindDetail = false
-        this.viewer.camera.flyTo({
-          destination: Cesium.Cartesian3.fromDegrees(
-            116.595534748692,
-            40.0580145185529,
-            21961.9883961571
-          )
-        })
-      } else {
-        if (this.particle) {
-          this.wind3D.removeWindPrimitives()
-        }
-        this.isLegendChange = false
-        this.viewer.camera.flyTo({
-          destination: Cesium.Cartesian3.fromDegrees(
-            116.481554,
-            39.984974,
-            6961.9883961571
-          ),
-          orientation: {
-            heading: Cesium.Math.toRadians(400.668148999818),
-            pitch: Cesium.Math.toRadians(-30.8329210486802),
-            roll: Cesium.Math.toRadians(0)
-          }
-        })
-      }
       let entity
       this.pointName.forEach((item, i) => {
         entity = this.viewer.entities.getById(item.id)
-        if (type === 'plane') {
-          entity.show = true
-        } else {
-          entity.show = false
+        if (entity) {
+          if (type === 'plane') {
+            entity.show = true
+          } else {
+            entity.show = false
+          }
         }
       })
       this.waysName.forEach((item, i) => {
         entity = this.viewer.entities.getById(item.id)
-        if (type === 'section') {
-          entity.show = true
-        } else {
-          entity.show = false
+        if (entity) {
+          if (type === 'section') {
+            entity.show = true
+          } else {
+            entity.show = false
+          }
         }
       })
       this.walls.forEach((item, i) => {
         entity = this.viewer.entities.getById(item.name)
-        if (type === 'section') {
-          entity.show = true
-        } else {
-          entity.show = false
+        if (entity) {
+          if (type === 'section') {
+            entity.show = true
+          } else {
+            entity.show = false
+          }
         }
       })
+      this.ways.forEach((item, i) => {
+        entity = this.viewer.entities.getById(item.name)
+        if (entity) {
+          if (type === 'land') {
+            entity.show = false
+          } else {
+            entity.show = true
+          }
+        }
+      })
+      if (type != 'land') {
+        this.setLandPage(false)
+        if (!entity) {
+          this.getSiteData()
+        }
+        if (type === 'plane') {
+          this.isLegendChange = true
+          this.sectionwindDetail = false
+          this.viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(
+              116.595534748692,
+              40.0580145185529,
+              21961.9883961571
+            )
+          })
+          this.particle = true
+        } else {
+          this.viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(
+              116.481554,
+              39.984974,
+              6961.9883961571
+            ),
+            orientation: {
+              heading: Cesium.Math.toRadians(400.668148999818),
+              pitch: Cesium.Math.toRadians(-30.8329210486802),
+              roll: Cesium.Math.toRadians(0)
+            }
+          })
+          if (!this.wind3D) {
+            this.particle = false
+          }
+        }
+        this.getModelForecastData()
+      } else {
+        this.tapBottom = 3.12
+        if (this.page === 'wind') {
+          this.setLandPage(true)
+        } else {
+          this.setLandPage(false)
+        }
+        if (this.wind3D) {
+          this.wind3D.removeWindPrimitives()
+        }
+        if (this.colorImage) {
+          this.colorImage.remove(this.viewer)
+        }
+      }
     },
     // 切换地面高度
     changeHeightLevel(val) {
@@ -933,8 +818,10 @@ export default {
     changeHeight(val) {
       if (val) {
         this.enlargBottom = 3.3
+        this.tapBottom = 3.12
       } else {
         this.enlargBottom = 1.4
+        this.tapBottom = 1.22
       }
     },
     // ---------- 曲线部分 end ---------- //
@@ -972,7 +859,7 @@ export default {
           font: '12px Source Han Sans CN', // 字体样式
           fillColor: Cesium.Color.fromCssColorString(color), // 字体颜色
           backgroundColor: Cesium.Color.fromCssColorString(backcolor), // 背景颜色
-          showBackground: show, // 是否显示背景颜色
+          showBackground: !!backcolor, // 是否显示背景颜色
           style: Cesium.LabelStyle.FILL_AND_OUTLINE, // label样式 TEXT的样式填充以及边框
           outlineWidth: 1,
           outlineColor: Cesium.Color.BLACK,
@@ -1060,41 +947,6 @@ export default {
         }
       })
       return backColor
-    },
-
-    planeDownHandler(movement) {
-      const pickedObject = this.viewer.scene.pick(movement.position)
-      if (Cesium.defined(pickedObject) &&
-              Cesium.defined(pickedObject.id) &&
-              Cesium.defined(pickedObject.id.plane)) {
-        this.selectedPlane = pickedObject.id.plane
-        this.selectedPlane.name = pickedObject.id.name + 's'
-        // this.selectedPlane.material = Cesium.Color.WHITE.withAlpha(0.05)
-        this.selectedPlane.outlineColor = Cesium.Color.WHITE
-        this.viewer.scene.screenSpaceCameraController.enableInputs = false
-      }
-    },
-    planeUpHandler() {
-      if (Cesium.defined(this.selectedPlane)) {
-        // this.selectedPlane.material = Cesium.Color.WHITE.withAlpha(0.1)
-        // this.selectedPlane.outlineColor = Cesium.Color.WHITE
-        this.selectedPlane = undefined
-      }
-      this.viewer.scene.screenSpaceCameraController.enableInputs = true
-    },
-    planeMoveHandler(movement) {
-      if (Cesium.defined(this.selectedPlane)) {
-        if (this.selectedPlane.name == 'YellowPlanes') {
-          const deltaY = movement.startPosition.y - movement.endPosition.y
-          this.targetY += deltaY
-        } else if (this.selectedPlane.name == 'RedPlanes') {
-          const deltaX = movement.startPosition.x - movement.endPosition.x
-          this.targetX += deltaX
-        } else if (this.selectedPlane.name == 'BluePlanes') {
-          const deltaZ = movement.startPosition.y - movement.endPosition.y
-          this.targetZ += deltaZ
-        }
-      }
     },
     // 九点hover事件
     pointHandler(movement) {
@@ -1650,7 +1502,7 @@ export default {
     width: 0.38rem;
     margin-top: 0.14rem;
   }
-  div {
+  > div {
     width: 0.4rem;
     cursor: pointer;
     color: #fff;
@@ -1658,6 +1510,9 @@ export default {
     font-size: 0.15rem;
     margin-bottom: 0.23rem;
     .icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       height: 0.36rem;
       width: 0.4rem;
       background: rgba(33,165,80,0.2);
@@ -1665,6 +1520,10 @@ export default {
       margin-bottom: 4px;
       &.sp {
         background: rgba(33,165,80,1);
+      }
+      img {
+        height: 0.28rem;
+        width: 0.28rem;
       }
     }
     .tit {
@@ -1676,8 +1535,67 @@ export default {
       text-align: center;
       margin-bottom: 0;
     }
+    &.more {
+      .icon {
+        background: transparent;
+        border: 1px dashed rgba(255,255,255,1);
+      }
+    }
   }
 }
+.all-type-right {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 100;
+  width: 0.64rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  > div {
+    width: 0.64rem;
+    cursor: pointer;
+    color: #fff;
+    font-weight: 500;
+    font-size: 0.15rem;
+    margin-bottom: 0.04rem;
+    .icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0.12rem 0 0.08rem 0;
+      height: 0.24rem;
+      width: 0.64rem;
+      img {
+        height: 0.24rem;
+        width: 0.24rem;
+      }
+    }
+    .tit {
+      height: 0.17rem;
+      line-height: 0.17rem;
+      font-size: 0.12rem;
+      font-weight: 400;
+      color: rgba(255,255,255,1);
+      text-align: center;
+      margin-bottom: 0;
+      &.sp {
+        color: #000;
+      }
+    }
+  }
+}
+.global-wrap {
+  position: fixed;
+  right: 0.08rem;
+  bottom: 0.08rem;
+  left: 0.72rem;
+  max-height: calc(100vh/3);
+  overflow-y: scroll;
+  background: rgba(29,38,50,0.98);
+  border-radius: 4px;
+}
+
 .wind {
   height: 100vh;
   #cesiumContainer {
@@ -1698,20 +1616,25 @@ export default {
   .top-tap {
     position: fixed;
     top: 0.2rem;
-    left: 0.8rem;
-    right: 0;
-    z-index: 1;
+    left: 2.6rem;
+    right: 1.8rem;
+    z-index: 100;
     display: flex;
     justify-content: center;
     list-style: none;
-    height: 0.4rem;
+    height: 0.32rem;
     margin: 0;
     padding: 0;
+    transition: bottom 0.3s;
+    -ms-transition: bottom 0.3s;
+    -moz-transition: bottom 0.3s; /* Firefox 4 */
+    -webkit-transition: bottom 0.3s; /* Safari 和 Chrome */
+    -o-transition: bottom 0.3s; /* Opera */
     li {
       width: 1.08rem;
       text-align: center;
-      height: 0.4rem;
-      line-height: 0.4rem;
+      height: 0.32rem;
+      line-height: 0.32rem;
       background: rgba(0,100,38,1);
       box-shadow: 0px 6px 19px 0px rgba(36,34,54,0.1);
       border-radius: 4px;
@@ -1724,6 +1647,69 @@ export default {
       &.sp {
         background: rgba(5,137,42,1);
         box-shadow: 0px 6px 19px 0px rgba(0,0,0,0.12);
+      }
+    }
+    &.land-tap {
+      top: auto;
+    }
+  }
+  .land-angle-switch {
+    position: fixed;
+    left: 0.64rem;
+    top: 0.08rem;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    li {
+      width: 0.7rem;
+      height: 0.32rem;
+      line-height: 0.32rem;
+      margin: 0 2px;
+      background: rgba(227,222,255,1);
+      border-radius: 4px;
+      border: 1px solid rgba(59,55,87,1);
+      font-size: 0.12rem;
+      font-weight: 400;
+      color: rgba(36,34,54,1);
+      cursor: pointer;
+      &.sp {
+        background:rgba(36,34,54,1);
+        color: #fff;
+      }
+    }
+  }
+  .air-direction {
+    position: fixed;
+    right: 0.08rem;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    height: 0.32rem;
+    margin: 0;
+    padding: 0;
+    transition: bottom 0.3s;
+    -ms-transition: bottom 0.3s;
+    -moz-transition: bottom 0.3s; /* Firefox 4 */
+    -webkit-transition: bottom 0.3s; /* Safari 和 Chrome */
+    -o-transition: bottom 0.3s; /* Opera */
+    li {
+      width: 0.7rem;
+      height: 0.32rem;
+      line-height: 0.32rem;
+      margin-left: 4px;
+      background: rgba(0,163,227,1);
+      border-radius: 4px;
+      font-size: 0.12rem;
+      font-weight: 400;
+      color: #fff;
+      cursor: pointer;
+      &.sp {
+        color: #fff;
       }
     }
   }

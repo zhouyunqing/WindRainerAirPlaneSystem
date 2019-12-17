@@ -328,14 +328,12 @@ class Wind3D {
 
   moveStartListener() {
     this.scene.primitives.show = false
-    console.log('start', this.scene.primitives)
   }
 
   moveEndListener() {
     this.updateViewerParameters()
     this.particleSystem.applyViewerParameters(this.viewerParameters)
     this.scene.primitives.show = true
-    console.log('end', this.scene.primitives)
   }
 
   preRenderListener() {
