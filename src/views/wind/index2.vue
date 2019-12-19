@@ -857,11 +857,30 @@ export default {
     changeLandAngle(type) {
       if (this.landAngle === type) return
       this.landAngle = type
-      // switch (type) {
-      //   case 'over':
-
-      //     break
-      // }
+      let entity
+      const entityList = [
+        'planeX',
+        'planeY',
+        'planeZ'
+      ]
+      entityList.forEach(item => {
+        entity = this.viewer.entities.getById(item)
+        entity.show = false
+      })
+      switch (type) {
+        case 'over':
+          entity = this.viewer.entities.getById('planeY')
+          entity.show = true
+          break
+        case 'left':
+          entity = this.viewer.entities.getById('planeX')
+          entity.show = true
+          break
+        case 'front':
+          entity = this.viewer.entities.getById('planeZ')
+          entity.show = true
+          break
+      }
     },
     // 切换地面高度
     changeHeightLevel(val) {

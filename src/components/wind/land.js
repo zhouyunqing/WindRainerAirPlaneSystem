@@ -114,9 +114,7 @@ const gradiant = {
 const entityList = [
   'landLine',
   'air',
-  'planeX',
-  'planeY',
-  'planeZ'
+  'planeY'
 ]
 
 const hotData = {
@@ -196,6 +194,7 @@ const setAir = (viewer) => {
 const setHot = (viewer) => {
   const heatMap = createHeatMap(getData(10000).max, getData(10000).data)
   viewer.entities.add({
+    show: false,
     id: 'planeX',
     position: Cesium.Cartesian3.fromDegrees(116.58823, 39.91376, 300.0),
     plane: {
@@ -205,6 +204,7 @@ const setHot = (viewer) => {
     }
   })
   viewer.entities.add({
+    show: false,
     id: 'planeY',
     position: Cesium.Cartesian3.fromDegrees(116.59303, 40.07061, 0.0),
     plane: {
@@ -214,6 +214,7 @@ const setHot = (viewer) => {
     }
   })
   viewer.entities.add({
+    show: false,
     id: 'planeZ',
     position: Cesium.Cartesian3.fromDegrees(116.519855, 40.07209, 300.0),
     plane: {
@@ -338,6 +339,7 @@ const computeFlight = (source) => {
 const setEntityState = (viewer, state) => {
   let entity
   entityList.forEach(item => {
+    console.log(item)
     entity = viewer.entities.getById(item)
     if (entity) {
       entity.show = state
