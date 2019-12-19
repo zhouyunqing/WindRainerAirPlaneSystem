@@ -57,7 +57,7 @@ import windImgUrl11 from '../../../assets/images/wind11.png'
 import windImgUrl12 from '../../../assets/images/wind12.png'
 import utilTime from '@/utils/time'
 export default {
-  props: ['time', 'site', 'detail', 'active'],
+  props: ['time', 'site', 'detail', 'active', 'page'],
   data() {
     return {
       forecastTab: 'near', // near：临近预报；short：短时预报
@@ -122,6 +122,9 @@ export default {
       this.setChartName()
     },
     'active'() {
+      this.setActiveWind()
+    },
+    'page'() {
       this.setActiveWind()
     }
   },

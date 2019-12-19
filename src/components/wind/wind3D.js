@@ -353,13 +353,13 @@ class Wind3D {
     this.camera.moveEnd.addEventListener(this.moveEndListener, this)
 
     this.resized = false
-    window.addEventListener('resize', function() {
-      that.resized = true
-      that.scene.primitives.show = false
-      console.log(that.scene.primitives)
-      that.removeWindPrimitives()
-      // that.scene.primitives.removeAll()
-    })
+    // window.addEventListener('resize', function() {
+    //   that.resized = true
+    //   that.scene.primitives.show = false
+    //   console.log(that.scene.primitives)
+    //   that.removeWindPrimitives()
+    //   // that.scene.primitives.removeAll()
+    // })
 
     this.scene.preRender.addEventListener(this.preRenderListener, this)
   }

@@ -56,9 +56,6 @@
     <!-- 全球视角 我的位置 end -->
     <div id="cesiumContainer" />
 
-    <!-- 全球视角 -->
-    <div v-if="page === 'global'" class="global-wrap">123</div>
-
     <!-- 风 -->
     <div v-if="page ==='wind'">
       <!-- 顶部 展示切换 start -->
@@ -69,9 +66,9 @@
       </ul>
       <!-- 顶部 展示切换 end -->
       <ul v-if="activeWind === 'land'" class="land-angle-switch">
-        <li :class="{sp: landAngle === 'over'}">俯视图</li>
-        <li :class="{sp: landAngle === 'left'}">左视图</li>
-        <li :class="{sp: landAngle === 'front'}">前视图</li>
+        <li :class="{sp: landAngle === 'over'}" @click="changeLandAngle('over')">俯视图</li>
+        <li :class="{sp: landAngle === 'left'}" @click="changeLandAngle('left')">左视图</li>
+        <li :class="{sp: landAngle === 'front'}" @click="changeLandAngle('front')">前视图</li>
       </ul>
       <ul v-if="activeWind === 'land'" class="air-direction" :style="{ bottom: tapBottom + 'rem' }">
         <li :class="{sp: airDirection === 'ns'}">自北向南</li>
@@ -87,9 +84,9 @@
       <!-- 右侧 距地面高度 end -->
 
       <!-- 平面风展示 底部图表 start -->
-      <div v-show="!sectionwindDetail">
+      <!-- <div v-show="!sectionwindDetail">
         <bottomCard v-if="!!info.T" :time="day" :site="clickSite" :detail="info" :active="activeWind" @change="changeForecastTab" @changeHeight="changeHeight" />
-      </div>
+      </div> -->
       <!-- 平面风展示 底部图表 end -->
 
       <!-- 九站点 hover时展示的 card start -->
@@ -237,7 +234,67 @@
       <!-- 控制条 end -->
     </div>
 
-    <video id="trailer" muted autoplay loop crossorigin controls style="position:absolute;z-index:200;left: 100%;bottom:50px;width:25%;right:100px;opacity: 0;">
+    <!-- 平面风展示 底部图表 start -->
+    <div v-show="!sectionwindDetail && (page === 'wind' || page === 'route')">
+      <bottomCard v-if="!!info.T" :time="day" :site="clickSite" :detail="info" :active="activeWind" :page="page" @change="changeForecastTab" @changeHeight="changeHeight" />
+    </div>
+    <!-- 平面风展示 底部图表 end -->
+
+    <div class="bottom-wrap">
+      <!-- 全球视角 -->
+      <div v-if="page === 'global'" class="global-wrap" />
+
+      <!-- 报文 -->
+      <div v-if="page === 'message'" class="message-wrap">
+        <div class="title">
+          <h3>ZBAA</h3>
+        </div>
+        <ul class="message-item">
+          <li>
+            <div class="item-tit">
+              <div>机场实况报文</div>
+              <div>2019-11-19 14:30更新</div>
+            </div>
+            <div class="type">
+              <span>METAR ZBAA 190630Z 18003MPS 140V230 CAVOK 07/M22 Q1028 NOSIG=</span>
+            </div>
+            <div class="con">
+              <div>
+                <p>机场: ZBAA</p>
+                <p>观测时间: 2019/11/19 14:30(BJT)</p>
+                <p>地面风: 风向180°</p>
+                <p>风速: 3m/s 风向变化范围140°至230°</p>
+                <p>天气状况良好: 能见度≥10km</p>
+                <p>云高≥1500m</p>
+                <p>机场附近无明显天气现象</p>
+                <p>温度: 7℃ </p>
+                <p>露点: -22℃ </p>
+                <p>修正海压: 1028hPa 无显著变化</p>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="item-tit">
+              <div>机场预报报文</div>
+              <div>天气更新</div>
+            </div>
+            <div class="type">
+              <span>METAR ZBAA 190630Z 18003MPS 140V230 CAVOK 07/M22 Q1028 NOSIG=</span>
+            </div>
+            <div class="con">
+              <div>
+                <p>机场: ZBAA</p>
+                <p>观测时间: 2019/11/19 14:30(BJT)</p>
+                <p>地面风: 风向180°</p>
+                <p>风速: 3m/s 风向变化范围140°至230°</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <video id="trailer" muted autoplay loop crossorigin controls style="position:fixed;z-index:0;bottom:0;width:25%;right:100px;opacity: 0;">
       <source src="/statics/20191210.mp4" type="video/mp4">
     </video>
   </div>
@@ -256,6 +313,8 @@ import ColorImage from '@/components/wind/ColorImage'
 import Wind3D from '@/components/wind/wind3D.js'
 import setLand from '@/components/wind/land.js'
 import setGlobal from '@/components/wind/global.js'
+import setRoute from '@/components/wind/route.js'
+import setMessage from '@/components/wind/message.js'
 import Heatmap from 'heatmap.js'
 var onTick = null
 export default {
@@ -450,6 +509,13 @@ export default {
   },
   mounted() {
     this.setMap()
+    // 当前时间显示
+    let time = this.getNowTime()
+    this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
+    setInterval(() => {
+      time = this.getNowTime()
+      this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
+    }, 1000)
   },
   methods: {
     // ---------- 切换场景 start ---------- //
@@ -460,8 +526,10 @@ export default {
       this.setWindPage(false)
       this.setGlobalPage(false)
       this.setRoutePage(false)
+      this.setMessagePage(false)
       switch (val) {
         case 'wind':
+          // this.viewer.scene.morphTo3D(1)
           this.setWindPage(true)
           break
         case 'global':
@@ -471,7 +539,7 @@ export default {
           this.setRoutePage(true)
           break
         case 'message':
-          this.setMessagePage()
+          this.setMessagePage(true)
           break
       }
 
@@ -490,13 +558,6 @@ export default {
       this.windToggle('land')
       if (state) {
         this.getChartData(this.site)
-        // 当前时间显示
-        let time = this.getNowTime()
-        this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
-        setInterval(() => {
-          time = this.getNowTime()
-          this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
-        }, 1000)
       }
     },
 
@@ -505,15 +566,10 @@ export default {
       if (state) {
         this.viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(
-            116.481554,
-            39.984974,
-            20961.9883961571
-          ),
-          orientation: {
-            heading: Cesium.Math.toRadians(400.668148999818),
-            pitch: Cesium.Math.toRadians(-30.8329210486802),
-            roll: Cesium.Math.toRadians(0)
-          }
+            116.595534748692,
+            40.0580145185529,
+            81961.9883961571
+          )
         })
       }
       // 设置实体
@@ -590,15 +646,33 @@ export default {
       this.viewer.clock.onTick.addEventListener(onTick)
     },
     setRoutePage(state) {
-      this.viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(
-          116.595534748692,
-          40.0580145185529,
-          81961.9883961571
-        )
-      })
+      if (state) {
+        this.viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(
+            116.595534748692,
+            40.0580145185529,
+            81961.9883961571
+          )
+        })
+        this.sectionwindDetail = false
+        this.forecastTab = 'near'
+        this.getChartData('ZBAA')
+      }
+      setRoute(this.viewer, state)
     },
-    setMessagePage() {},
+    setMessagePage(state) {
+      if (state) {
+        this.viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(
+            100,
+            24,
+            6000000
+          )
+        })
+        // this.viewer.scene.morphTo2D(1)
+      }
+      setMessage(this.viewer, state)
+    },
     // ---------- 切换场景 end ---------- //
 
     // 设置地图
@@ -778,6 +852,16 @@ export default {
           this.colorImage.remove(this.viewer)
         }
       }
+    },
+    // 切换视角
+    changeLandAngle(type) {
+      if (this.landAngle === type) return
+      this.landAngle = type
+      // switch (type) {
+      //   case 'over':
+
+      //     break
+      // }
     },
     // 切换地面高度
     changeHeightLevel(val) {
@@ -1498,8 +1582,8 @@ export default {
   .logo {
     background: url("../../assets/images/mainpage-logo.png") center center no-repeat;
     background-size: 100% 100%;
-    height: 0.38rem;
-    width: 0.38rem;
+    height: 0.46rem;
+    width: 0.46rem;
     margin-top: 0.14rem;
   }
   > div {
@@ -1585,15 +1669,116 @@ export default {
     }
   }
 }
-.global-wrap {
+
+.bottom-wrap {
   position: fixed;
   right: 0.08rem;
   bottom: 0.08rem;
   left: 0.72rem;
   max-height: calc(100vh/3);
-  overflow-y: scroll;
-  background: rgba(29,38,50,0.98);
   border-radius: 4px;
+  overflow: hidden;
+  text-align: left;
+  .global-wrap {
+    max-height: calc(100vh/3);
+    overflow-y: scroll;
+    background: rgba(29,38,50,0.98);
+    margin-right: -20px;
+    padding-right: 20px;
+  }
+  .message-wrap {
+    background: rgba(29,38,50,0.98);
+    .title {
+      height: 0.47rem;
+      padding-left: 0.24rem;
+      border-bottom: 1px #45416F solid;
+      h3 {
+        position: relative;
+        margin: 0;
+        line-height: 0.46rem;
+        font-size: 0.22rem;
+        font-weight: 500;
+        color: rgba(255,255,255,1);
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0.12rem;
+          bottom: 0.12rem;
+          left: -0.12rem;
+          width: 4px;
+          background: rgba(0,255,71,1);
+          border-radius: 1px;
+        }
+      }
+    }
+    .message-item {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0 5px;
+      li {
+        width: 25%;
+        flex-shrink: 0;
+        padding: 0.05rem 0.05rem 0.1rem;
+        .item-tit {
+          display: flex;
+          justify-content: space-between;
+          height: 0.28rem;
+          line-height: 0.28rem;
+          div:first-child {
+            font-size: 0.14rem;
+            font-weight: 300;
+            color: rgba(255,255,255,1);
+          }
+          div:last-child {
+            font-size: 0.12rem;
+            font-weight: 300;
+            color: rgba(187,187,187,1);
+          }
+        }
+        .type {
+          height: 0.5rem;
+          line-height: 0.17rem;
+          padding: 0.08rem;
+          background: rgba(18,21,41,1);
+          border: 1px solid rgba(69,65,111,1);
+          border-bottom: none;
+          border-radius: 4px 4px 0 0;
+          span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            color: #ffffff;
+            font-size: 0.12rem;
+          }
+        }
+        .con {
+          height: calc(100vh/3 - 1.45rem);
+          overflow: hidden;
+          border: 1px solid rgba(69,65,111,1);
+          border-top: none;
+          border-radius: 0 0 4px 4px;
+          padding: 0.05rem 0.08rem;
+          div {
+            height: calc(100vh/3 - 1.55rem);
+            overflow-y: scroll;
+            margin-right: -20px;
+            padding-right: 20px;
+            p {
+              color: #ffffff;
+              font-size: 0.12rem;
+              line-height: 0.18rem;
+              margin: 0;
+              padding: 0;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 .wind {
