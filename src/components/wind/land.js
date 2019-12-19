@@ -200,7 +200,10 @@ const setHot = (viewer) => {
     plane: {
       plane: new Cesium.CallbackProperty(createPlaneUpdateFunction(hotData.planeX, 'X'), false),
       dimensions: new Cesium.Cartesian2(12000.0, 4000.0),
-      material: heatMap._renderer.canvas
+      // material: heatMap._renderer.canvas
+      material: new Cesium.ImageMaterialProperty({
+        image: '/images/hot.png'
+      })
     }
   })
   viewer.entities.add({
@@ -210,7 +213,10 @@ const setHot = (viewer) => {
     plane: {
       plane: new Cesium.CallbackProperty(createPlaneUpdateFunction(hotData.planeY, 'Y'), false),
       dimensions: new Cesium.Cartesian2(12000.0, 40000.0),
-      material: heatMap._renderer.canvas
+      // material: heatMap._renderer.canvas
+      material: new Cesium.ImageMaterialProperty({
+        image: '/images/hot.png'
+      })
     }
   })
   viewer.entities.add({
@@ -220,7 +226,10 @@ const setHot = (viewer) => {
     plane: {
       plane: new Cesium.CallbackProperty(createPlaneUpdateFunction(hotData.planeZ, 'Z'), false),
       dimensions: new Cesium.Cartesian2(40000.0, 4000.0),
-      material: heatMap._renderer.canvas
+      // material: heatMap._renderer.canvas
+      material: new Cesium.ImageMaterialProperty({
+        image: '/images/hot.png'
+      })
     }
   })
 
@@ -339,7 +348,6 @@ const computeFlight = (source) => {
 const setEntityState = (viewer, state) => {
   let entity
   entityList.forEach(item => {
-    console.log(item)
     entity = viewer.entities.getById(item)
     if (entity) {
       entity.show = state

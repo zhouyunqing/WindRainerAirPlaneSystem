@@ -60,7 +60,7 @@
     <div v-if="page ==='wind'">
       <!-- 顶部 展示切换 start -->
       <ul class="top-tap" :class="{'land-tap': activeWind === 'land'}" :style="{ bottom: tapBottom + 'rem' }">
-        <li :class="{sp: activeWind == 'land'}" @click="windToggle('land')">五边形</li>
+        <li :class="{sp: activeWind == 'land'}" @click="windToggle('land')">五边飞行</li>
         <li :class="{sp: activeWind == 'plane'}" @click="windToggle('plane')">平面风展示</li>
         <li :class="{sp: activeWind == 'section'}" @click="windToggle('section')">剖面风展示</li>
       </ul>
