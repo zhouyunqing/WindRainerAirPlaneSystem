@@ -1,5 +1,6 @@
 <template>
   <div class="forecast">
+    <Sidbar/>
     <notice-dialog
       :notice-visible="noticeVisible"
       :risk-type-id="riskTypeId"
@@ -99,8 +100,9 @@
 </template>
 
 <script>
-import Pagination from "@/components/Pagination";
-import noticeDialog from "./noticeDialog";
+import Pagination from '@/components/Pagination';
+import noticeDialog from './noticeDialog';
+import Sidbar from './sidbar'
 import {
   getOptions,
   getRiskConfigList,
@@ -109,13 +111,14 @@ import {
   getGroupList,
   getRiskConfig,
   timestampToTime
-} from "../../api/alert.js";
-import { constants } from "fs";
+} from '../../api/alert.js';
+import { constants } from 'fs';
 export default {
-  name: "Forecast",
+  name: 'Forecast',
   components: {
     noticeDialog,
-    Pagination
+    Pagination,
+    Sidbar
   },
   data() {
     return {
@@ -138,10 +141,10 @@ export default {
       noticeVisible: false,
       riskTypeId: {},
       value: true,
-      activeIndex: "notice",
+      activeIndex: 'notice',
       noticeWidth: 190,
       configWidth: 220,
-      input: "",
+      input: '',
       tableDataConfig: [],
       tableData: [],
       runwayHistoryData: [],
@@ -150,33 +153,33 @@ export default {
       groupList: [],
       allGroupList: [],
       riskStateDic: []
-    };
+    }
   },
   beforeMount() {
-    this.RunwayHistoryData();
-    this.GroupList();
-    this.RiskServerity();
-    this.getRiskStateDic();
+    this.RunwayHistoryData()
+    this.GroupList()
+    this.RiskServerity()
+    this.getRiskStateDic()
   },
   mounted() {
-    this.RiskConfigList();
-    this.riskinfoList();
+    this.RiskConfigList()
+    this.riskinfoList()
     // 预警通知 暂时注释下一步实现
-    this.popWindow();
+    this.popWindow()
   },
   methods: {
     handleSelect(key, keyPath) {
-      this.activeIndex = key;
+      this.activeIndex = key
     },
     handleCurrentChange(val) {
-      this.currentRow = val;
+      this.currentRow = val
     },
     addNotice(id) {
-      this.initRiskTypeId(id);
-      this.noticeVisible = true;
+      this.initRiskTypeId(id)
+      this.noticeVisible = true
     },
     closeAddNotice() {
-      this.noticeVisible = false;
+      this.noticeVisible = false
     },
     riskinfoList() {
       // params={
@@ -193,195 +196,195 @@ export default {
         state: -1,
         pageSize: this.riskInfoPage.listQuery.limit,
         skipped: 0
-      };
+      }
       if (this.riskInfoPage.total > 0) {
         params.skipped =
           (this.riskInfoPage.listQuery.page - 1) *
-          this.riskInfoPage.listQuery.limit;
+          this.riskInfoPage.listQuery.limit
       }
       getRiskInfoes(params).then(rs => {
-        console.log(rs);
-        this.tableData = [];
-        this.riskInfoPage.total = rs["data"].totalSize;
-        for (const id in rs["data"]["pagedList"]) {
+        console.log(rs)
+        this.tableData = []
+        this.riskInfoPage.total = rs['data'].totalSize
+        for (const id in rs['data']['pagedList']) {
           const severity = this.findObjByKey(
             this.riskServerity,
-            rs["data"]["pagedList"][id].severity
-          );
+            rs['data']['pagedList'][id].severity
+          )
           const riskstate = this.findObjByKey(
             this.riskStateDic,
-            rs["data"]["pagedList"][id].state
-          );
+            rs['data']['pagedList'][id].state
+          )
           const item = {
-            id: rs["data"]["pagedList"][id].id,
-            name: rs["data"]["pagedList"][id].name,
-            site: "ZABB",
+            id: rs['data']['pagedList'][id].id,
+            name: rs['data']['pagedList'][id].name,
+            site: 'ZABB',
             createtime: timestampToTime(
-              rs["data"]["pagedList"][id].createtime / 1000
+              rs['data']['pagedList'][id].createtime / 1000
             ),
-            severityId: rs["data"]["pagedList"][id].severity,
+            severityId: rs['data']['pagedList'][id].severity,
             severity:
-              typeof severity === "undefined"
+              typeof severity === 'undefined'
                 ? this.riskServerity[0].value
                 : severity.value,
-            stateId: rs["data"]["pagedList"][id].state,
+            stateId: rs['data']['pagedList'][id].state,
             state:
-              typeof riskstate === "undefined"
+              typeof riskstate === 'undefined'
                 ? this.riskStateDic[0].value
                 : riskstate.value
-          };
-          this.tableData.push(item);
+          }
+          this.tableData.push(item)
         }
-      });
+      })
     },
     RiskConfigList() {
       const params = {
         isActive: -1,
         pageSize: this.riskConfigPage.listQuery.limit,
         skipped: 0
-      };
+      }
       if (this.riskConfigPage.total > 0) {
         params.skipped =
           (this.riskConfigPage.listQuery.page - 1) *
-          this.riskConfigPage.listQuery.limit;
+          this.riskConfigPage.listQuery.limit
       }
 
       getRiskConfigList(params).then(rs => {
-        this.riskConfigPage.total = rs["data"].totalSize;
-        this.tableDataConfig = [];
+        this.riskConfigPage.total = rs['data'].totalSize
+        this.tableDataConfig = []
 
-        for (const id in rs["data"]["data"]) {
-          let noticemails = "";
-          const t = rs["data"]["data"][id].noticemails.split(",");
-          if (rs["data"]["data"][id].noticemails != "") {
+        for (const id in rs['data']['data']) {
+          let noticemails = '';
+          const t = rs['data']['data'][id].noticemails.split(',')
+          if (rs['data']['data'][id].noticemails != '') {
             for (let i = 0; i < t.length; i++) {
               const obj = this.allGroupList.find(function(x) {
-                return x.id == t[i];
-              });
+                return x.id == t[i]
+              })
 
               if (!!obj && !!obj.name && obj.name.length > 0) {
                 if (noticemails.length > 0) {
-                  noticemails += ",";
+                  noticemails += ',';
                 }
-                noticemails += obj.name;
+                noticemails += obj.name
               }
             }
           }
 
           const item = {
-            id: rs["data"]["data"][id].id,
-            name: rs["data"]["data"][id].name,
-            site: rs["data"]["data"][id].site,
+            id: rs['data']['data'][id].id,
+            name: rs['data']['data'][id].name,
+            site: rs['data']['data'][id].site,
             creater: noticemails,
-            isactive: rs["data"]["data"][id].isactive
-          };
-          this.tableDataConfig.push(item);
+            isactive: rs['data']['data'][id].isactive
+          }
+          this.tableDataConfig.push(item)
           // console.log(item)
         }
-      });
+      })
     },
     RiskServerity() {
-      getOptions({ catagory: "RiskServerity" }).then(rs => {
-        this.riskServerity = [];
-        if (rs["data"]["data"].length > 0) {
-          this.conditionsLevel = rs["data"]["data"][0].value;
+      getOptions({ catagory: 'RiskServerity' }).then(rs => {
+        this.riskServerity = []
+        if (rs['data']['data'].length > 0) {
+          this.conditionsLevel = rs['data']['data'][0].value
         }
-        for (const id in rs["data"]["data"]) {
+        for (const id in rs['data']['data']) {
           this.riskServerity.push({
-            key: rs["data"]["data"][id].key,
-            value: rs["data"]["data"][id].value
-          });
+            key: rs['data']['data'][id].key,
+            value: rs['data']['data'][id].value
+          })
         }
-      });
+      })
     },
     RunwayHistoryData() {
-      const that = this;
-      getOptions({ catagory: "runwayHistoryData" }).then(rs => {
-        this.wind_speed_options = [];
-        if (rs["data"]["data"].length > 0) {
-          this.wind_speed = rs["data"]["data"][0].key;
+      const that = this
+      getOptions({ catagory: 'runwayHistoryData' }).then(rs => {
+        this.wind_speed_options = []
+        if (rs['data']['data'].length > 0) {
+          this.wind_speed = rs['data']['data'][0].key
         }
-        for (const id in rs["data"]["data"]) {
+        for (const id in rs['data']['data']) {
           this.wind_speed_options.push({
-            value: rs["data"]["data"][id].key,
-            label: rs["data"]["data"][id].value
-          });
+            value: rs['data']['data'][id].key,
+            label: rs['data']['data'][id].value
+          })
         }
-      });
+      })
     },
     getRiskStateDic() {
-      const that = this;
-      getOptions({ catagory: "RiskState" }).then(rs => {
-        this.riskStatDic = [];
-        for (const id in rs["data"]["data"]) {
+      const that = this
+      getOptions({ catagory: 'RiskState' }).then(rs => {
+        this.riskStatDic = []
+        for (const id in rs['data']['data']) {
           this.riskStateDic.push({
-            key: rs["data"]["data"][id].key,
-            value: rs["data"]["data"][id].value
-          });
+            key: rs['data']['data'][id].key,
+            value: rs['data']['data'][id].value
+          })
         }
-      });
+      })
     },
     GroupList() {
-      this.allGroupList = [];
-      this.groupList = [];
+      this.allGroupList = []
+      this.groupList = []
       getGroupList({ isActive: 1 }).then(rs => {
-        for (const id in rs["data"]["data"]) {
+        for (const id in rs['data']['data']) {
           this.groupList.push({
-            name: rs["data"]["data"][id].name,
-            id: rs["data"]["data"][id].id
-          });
+            name: rs['data']['data'][id].name,
+            id: rs['data']['data'][id].id
+          })
 
           this.allGroupList.push({
-            name: rs["data"]["data"][id].name,
-            id: rs["data"]["data"][id].id
-          });
+            name: rs['data']['data'][id].name,
+            id: rs['data']['data'][id].id
+          })
         }
-      });
+      })
 
       getGroupList({ isActive: 0 }).then(rs => {
-        for (const id in rs["data"]["data"]) {
+        for (const id in rs['data']['data']) {
           this.allGroupList.push({
-            name: rs["data"]["data"][id].name,
-            id: rs["data"]["data"][id].id
-          });
+            name: rs['data']['data'][id].name,
+            id: rs['data']['data'][id].id
+          })
         }
-      });
+      })
     },
     deleteRiskConfigItem(id) {
-      console.log("deleteRiskConfigid=" + id);
-      if (id != "undefined") {
+      console.log('deleteRiskConfigid=' + id)
+      if (id != 'undefined') {
         deleteRiskConfig({ id: id }).then(rs => {
-          console.log(rs);
-          this.RiskConfigList();
-        });
+          console.log(rs)
+          this.RiskConfigList()
+        })
       }
     },
     initRiskTypeId(id) {
       // init item
-      let conditionList = [];
+      let conditionList = []
       conditionList.push({
         wind_speed: this.wind_speed_options[0].value,
         compare: 1,
         speed: 0
-      });
+      })
 
-      const groupItems = [];
+      const groupItems = []
       for (const item in this.groupList) {
         groupItems.push({
           name: this.groupList[item].name,
           email: false,
           message: false,
           id: this.groupList[item].id
-        });
+        })
       }
 
       this.riskTypeId = {
-        name: "",
-        site: "ZABB",
+        name: '',
+        site: 'ZABB',
         status: true,
         conditionsLevel: this.riskServerity[0].key,
         conditionList: conditionList,
-        remark: "",
+        remark: '',
         minutes: 0,
         second: 0,
         tableData: groupItems,
@@ -389,67 +392,67 @@ export default {
         wind_speed_options: this.wind_speed_options,
         id: -1,
         conditionsOptions: this.riskServerity
-      };
+      }
       if (id > -1) {
         getRiskConfig(id).then(rs => {
-          console.log(rs);
+          console.log(rs)
 
-          const data = rs["data"]["data"];
+          const data = rs['data']['data']
           if (data.queryitems.length > 0) {
-            const t = data.queryitems.split(",");
-            conditionList = [];
+            const t = data.queryitems.split(',')
+            conditionList = []
             for (let len = t.length, i = 0; i < len / 3; i++) {
               conditionList.push({
                 wind_speed: t[i * 3],
-                compare: t[i * 3 + 1] == ">" ? 1 : 2,
+                compare: t[i * 3 + 1] == '>' ? 1 : 2,
                 speed: t[i * 3 + 2]
-              });
+              })
             }
           }
 
           if (data.noticemails.length > 0) {
-            const t = data.noticemails.split(",");
+            const t = data.noticemails.split(',')
             for (let len = t.length, i = 0; i < len; i++) {
               const groupItem = groupItems.find(function(x) {
-                return x.id == t[i];
-              });
-              groupItem.email = true;
+                return x.id == t[i]
+              })
+              groupItem.email = true
             }
           }
 
           if (data.noticephones.length > 0) {
-            const t = data.noticephones.split(",");
+            const t = data.noticephones.split(',')
             for (let len = t.length, i = 0; i < len; i++) {
               const groupItem = groupItems.find(function(x) {
-                return x.id == t[i];
-              });
-              groupItem.message = true;
+                return x.id == t[i]
+              })
+              groupItem.message = true
             }
           }
 
-          this.riskTypeId.name = data.name;
-          this.riskTypeId.state = data.isactive;
-          this.riskTypeId.conditionsLevel = data.severity;
-          this.riskTypeId.conditionList = conditionList;
-          this.riskTypeId.remark = data.remark;
-          this.riskTypeId.minutes = data.prenoticehour;
-          this.riskTypeId.second = data.prenoticemin;
-          this.riskTypeId.tableData = groupItems;
-          this.riskTypeId.conditionListLength = conditionList.length;
-          this.riskTypeId.id = data.id;
-        });
+          this.riskTypeId.name = data.name
+          this.riskTypeId.state = data.isactive
+          this.riskTypeId.conditionsLevel = data.severity
+          this.riskTypeId.conditionList = conditionList
+          this.riskTypeId.remark = data.remark
+          this.riskTypeId.minutes = data.prenoticehour
+          this.riskTypeId.second = data.prenoticemin
+          this.riskTypeId.tableData = groupItems
+          this.riskTypeId.conditionListLength = conditionList.length
+          this.riskTypeId.id = data.id
+        })
       }
     },
 
     findObjByKey(objs, key) {
       return objs.find(function(x) {
-        return x.key == key;
-      });
+        return x.key == key
+      })
     },
 
     popWindow() {
       this.$notify({
-        title: "1个新的预警",
+        title: '1个新的预警',
         message: `<div class="tips">
                 <div class= "wind_forecast" >
                   <div class="wind_forecast_tittle">大风预警</div>
@@ -481,11 +484,11 @@ export default {
             </div > `,
         duration: 0,
         dangerouslyUseHTMLString: true,
-        position: "bottom-right"
-      });
+        position: 'bottom-right'
+      })
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .forecast {

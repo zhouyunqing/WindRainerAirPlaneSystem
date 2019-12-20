@@ -27,6 +27,16 @@ export const constantRoutes = [
       meta: { title: '风', icon: 'feng' }
     }]
   },
+  {
+    path: '/forecast',
+    component: Layout,
+    children: [{
+      path: '',
+      name: 'forecast',
+      component: () => import('@/views/forecast/Forecast'),
+      meta: { title: '预警', icon: 'yujing' }
+    }]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]
 

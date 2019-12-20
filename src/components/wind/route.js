@@ -26,9 +26,26 @@ const circleIn = [
   }
 ]
 
-// const textList = [
-//   {}
-// ]
+const textList = [
+  {
+    name: 'routeLine1',
+    text: '3公里',
+    lat: 116.60000,
+    lng: 40.08387
+  },
+  {
+    name: 'routeLine2',
+    text: '5公里',
+    lat: 116.65000,
+    lng: 40.08387
+  },
+  {
+    name: 'routeLine3',
+    text: '10公里',
+    lat: 116.70000,
+    lng: 40.08387
+  }
+]
 
 const route = (viewer, state) => {
   if (state) {
@@ -36,6 +53,7 @@ const route = (viewer, state) => {
       setEntity(viewer, state)
     } else {
       setRange(viewer)
+      setText(viewer)
     }
   } else {
     if (viewer.entities.getById(circleIn[0].name)) {
@@ -87,6 +105,39 @@ const setRange = (viewer) => {
   })
 }
 
+const setText = (viewer) => {
+  textList.forEach(item => {
+    viewer.entities.add({
+      show: true,
+      id: item.name,
+      position: Cesium.Cartesian3.fromDegrees(item.lat, item.lng, 0),
+      label: {
+        text: item.text,
+        font: '12px Source Han Sans CN', // 字体样式
+        fillColor: Cesium.Color.fromCssColorString('#666666'), // 字体颜色
+        backgroundColor: Cesium.Color.fromCssColorString('rgba(0,0,0,0.2)'), // 背景颜色
+        showBackground: true, // 是否显示背景颜色
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE, // label样式 TEXT的样式填充以及边框
+        outlineWidth: 1,
+        outlineColor: Cesium.Color.BLACK,
+        verticalOrigin: Cesium.VerticalOrigin.CENTER, // 垂直位置
+        horizontalOrigin: Cesium.HorizontalOrigin.LEFT, // 水平位置
+        pixelOffset: new Cesium.Cartesian2(10, 0), // 偏移
+        scale: 1
+      }
+    })
+  })
+  viewer.entities.add({
+    id: 'routeLocation',
+    position: Cesium.Cartesian3.fromDegrees(116.60195, 40.09387, 0),
+    billboard: { // 图标
+      image: '/images/location.png',
+      width: 28,
+      height: 36
+    }
+  })
+}
+
 const setEntity = (viewer, state) => {
   let entity
   circleIn.forEach(item => {
@@ -95,6 +146,14 @@ const setEntity = (viewer, state) => {
       entity.show = state
     }
   })
+  textList.forEach(item => {
+    entity = viewer.entities.getById(item.name)
+    if (entity) {
+      entity.show = state
+    }
+  })
+  entity = viewer.entities.getById('routeLocation')
+  entity.show = state
 }
 
 export default route

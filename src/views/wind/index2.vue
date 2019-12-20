@@ -27,6 +27,12 @@
         </div>
         <div class="tit">雷达</div>
       </div>
+      <div @click="jumpTo('forecast')">
+        <div class="icon">
+          <img src="@/assets/images/icon/forecast.png" alt="">
+        </div>
+        <div class="tit">预警</div>
+      </div>
       <div class="more">
         <div class="icon">
           <img src="@/assets/images/icon/more.png" alt="">
@@ -39,9 +45,13 @@
     <!-- 全球视角 我的位置 start -->
     <div class="all-type-right">
       <div @click="changePage('global')">
-        <div class="icon">
+        <div v-if="globalS" class="icon">
           <img v-if="page === 'global'" src="@/assets/images/icon/globalW.png" alt="">
           <img v-else src="@/assets/images/icon/globalB.png" alt="">
+        </div>
+        <div v-else class="icon">
+          <img v-if="page === 'global'" src="@/assets/images/icon/global2W.png" alt="">
+          <img v-else src="@/assets/images/icon/global2B.png" alt="">
         </div>
         <div class="tit" :class="{sp: page != 'global'}">全球视角</div>
       </div>
@@ -295,7 +305,7 @@
     </div>
 
     <video id="trailer" muted autoplay loop crossorigin controls style="position:fixed;z-index:0;bottom:0;width:25%;right:100px;opacity: 0;">
-      <source src="/statics/20191210.mp4" type="video/mp4">
+      <source src="/statics/geo.mp4" type="video/mp4">
     </video>
   </div>
 </template>
@@ -504,7 +514,8 @@ export default {
       },
       wind3D: null,
       landAngle: 'over', // over 俯视图；left 左视图；front 前视图
-      airDirection: 'ns' // ns 北南；sn 南北
+      airDirection: 'ns', // ns 北南；sn 南北
+      globalS: true
     }
   },
   mounted() {
@@ -521,6 +532,9 @@ export default {
     // ---------- 切换场景 start ---------- //
     changePage(val) {
       // global 全球；wind 风；land 飞机起降；route 航线；message 报文
+      // if (this.page === val && val === 'global') {
+      //   this.setGlobalPage(true, 'change')
+      // }
       if (this.page === val) return
       this.page = val
       this.setWindPage(false)
@@ -579,19 +593,23 @@ export default {
       }
       setLand(this.viewer, 'entity', state)
     },
-    setGlobalPage(state) {
+    setGlobalPage(state, ch) {
       // 初始化
+      // if (state) {
+      //   this.globalS = !this.globalS
+      // }
+      // if (!!ch) return
       if (state) {
         this.viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(
             110, 40, 20000000
           )
         })
-        if (onTick) {
-          this.viewer.clock.onTick.addEventListener(onTick)
-        } else {
-          this.playearth()
-        }
+        // if (onTick) {
+        //   this.viewer.clock.onTick.addEventListener(onTick)
+        // } else {
+        //   this.playearth()
+        // }
       } else {
         if (onTick) {
           this.viewer.clock.onTick.removeEventListener(onTick)
@@ -615,6 +633,7 @@ export default {
         entity.show = state
       }
       // 实体添加
+      setGlobal(this.viewer, 'rain', state)
       if (state && !entity) {
         setGlobal(this.viewer, 'FY4A')
       }
@@ -650,8 +669,8 @@ export default {
         this.viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(
             116.595534748692,
-            40.0580145185529,
-            81961.9883961571
+            39.9580145185529,
+            73961.9883961571
           )
         })
         this.sectionwindDetail = false
@@ -674,7 +693,10 @@ export default {
       setMessage(this.viewer, state)
     },
     // ---------- 切换场景 end ---------- //
-
+    // 跳转页面
+    jumpTo(name) {
+      this.$router.push(`/${name}`)
+    },
     // 设置地图
     setMap() {
       this.viewer = new Cesium.Viewer('cesiumContainer', {
@@ -705,9 +727,9 @@ export default {
       this.viewer.camera.setView({
         destination: Cesium.Cartesian3.fromDegrees(110, 40, 20000000)
       })
-      // setTimeout(() => {
-      this.changePage('route')
-      // }, 1000)
+      const page = this.$route.query.page
+
+      this.changePage(page || 'global')
     },
     // 获取九点信息
     getSiteData() {
@@ -838,7 +860,17 @@ export default {
           }
         }
         this.getModelForecastData()
+        const entityList = [
+          'planeX',
+          'planeY',
+          'planeZ'
+        ]
+        entityList.forEach(item => {
+          entity = this.viewer.entities.getById(item)
+          entity.show = false
+        })
       } else {
+        this.landAngle = 'over'
         this.tapBottom = 3.12
         if (this.page === 'wind') {
           this.setLandPage(true)
@@ -967,8 +999,7 @@ export default {
           horizontalOrigin: Cesium.HorizontalOrigin.LEFT, // 水平位置
           pixelOffset: new Cesium.Cartesian2(10, 0), // 偏移
           scale: 1
-        },
-        tooltip: { html: r, anchor: [0, -12] }
+        }
       })
     },
     // 画跑道

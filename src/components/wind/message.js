@@ -2,16 +2,16 @@ import Cesium from 'cesium/Cesium'
 let dataSources
 
 const message = (viewer, state) => {
-  if (state) {
-    if (dataSources) {
-      dataSources.show = true
-    } else {
-      setAirport(viewer)
-    }
-  } else {
+  if (!state) {
     if (dataSources) {
       dataSources.show = false
     }
+  } else {
+    // if (!dataSources) {
+    setAirport(viewer)
+    // } else {
+    //   dataSources.show = true
+    // }
   }
 }
 
