@@ -945,9 +945,6 @@ export default {
      * @param backcolor 站点背景色
      */
     drawPoint(text, id, lat, lng, runway, color, backcolor, show) {
-      var r =
-          '<table style="width: 200px;"><tr><th scope="col" colspan="4"  style="text-align:center;font-size:15px;">' +
-          '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"></td></tr></table>'
       this.viewer.entities.add({
         show: show,
         id: id,

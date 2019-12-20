@@ -25,6 +25,11 @@ const circleIn = [
     color: Cesium.Color.GRAY
   }
 ]
+
+// const textList = [
+//   {}
+// ]
+
 const route = (viewer, state) => {
   if (state) {
     if (viewer.entities.getById(circleIn[0].name)) {
