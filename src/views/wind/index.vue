@@ -342,7 +342,7 @@ import widgets from "cesium/Widgets/widgets.css";
 import colorTable from "@/components/wind/colorTable.js";
 import Wind3D from "@/components/wind/wind3D.js";
 import sectionwind from "./sectionwind";
-import data from "@/assets/data/j1.json";
+import data00 from "@/assets/data/j1.json";
 import request from "@/utils/request1";
 import windImgUrl from "../../assets/images/windImg.png";
 import windImgUrl1 from "../../assets/images/wind1.png";

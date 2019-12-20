@@ -239,7 +239,7 @@ const setHot = (viewer) => {
         dimensions: item.dimensions,
         // material: heatMap._renderer.canvas
         material: new Cesium.ImageMaterialProperty({
-          image: '/images/hot.png'
+          image: './images/hot.png'
         })
       }
     })

@@ -9,7 +9,7 @@ let satellite = {
   arrname: 'arr3D',
   width: '70',
   height: '100',
-  imgURL: '/images/FY-3D.png'
+  imgURL: './images/FY-3D.png'
 }
 
 let t3 = null
@@ -105,7 +105,7 @@ const setFY4A = (viewer) => {
     id: 'FY4A',
     position: Cesium.Cartesian3.fromDegrees(104.7, 0, 3000000),
     billboard: {
-      image: '/images/FY-4A.png',
+      image: './images/FY-4A.png',
       width: 150,
       height: 90
     },
@@ -133,7 +133,7 @@ const setFY4A = (viewer) => {
 }
 
 const setFY3D = (viewer) => {
-  axios.get('/statics/SampleData/windData/fy3d.json').then(res => {
+  axios.get('./statics/SampleData/windData/fy3d.json').then(res => {
     satellite.name = res.data.resource
     if (!satellite.name) {
       return satellite

@@ -1,7 +1,7 @@
 import Cesium from 'cesium/Cesium'
 
-let time = []
-let hour = []
+const time = []
+const hour = []
 let NAME = []
 let index = 0
 let time2 = null
@@ -54,7 +54,7 @@ const setRainMap = (viewer) => {
       id: 'rainMap' + i,
       rectangle: {
         coordinates: Cesium.Rectangle.fromDegrees(62.2, 3.24, 137, 54),
-        material: `/images/text/Z_RADA_C_BABJ_20190805${NAME[i]}00_P_DOR_RDCP_CR_ACHN 拷贝.png`
+        material: `./images/text/Z_RADA_C_BABJ_20190805${NAME[i]}00_P_DOR_RDCP_CR_ACHN 拷贝.png`
       }
     })
     const entity = viewer.entities.getById('rainMap' + i)

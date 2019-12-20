@@ -155,7 +155,7 @@ const setText = (viewer) => {
     id: 'routeLocation',
     position: Cesium.Cartesian3.fromDegrees(116.60195, 40.09387, 0),
     billboard: { // 图标
-      image: '/images/location.png',
+      image: './images/location.png',
       width: 28,
       height: 36
     }
@@ -168,7 +168,7 @@ const setAirLine = (viewer) => {
     canvas: viewer.scene.canvas,
     clampToGround: true
   }
-  var airLine = viewer.dataSources.add(Cesium.KmlDataSource.load('/statics/SampleData/windData/airline.kml', options))
+  var airLine = viewer.dataSources.add(Cesium.KmlDataSource.load('./statics/SampleData/windData/airline.kml', options))
   airLine.then(res => {
     dataSources = res
     viewer.add(airLine)
@@ -183,11 +183,11 @@ const setAirLine = (viewer) => {
         id: item.name,
         position: item.position,
         billboard: {
-          image: "/images/rair.png",
+          image: './images/rair.png',
           scale: 1,
           rotation: item.rotation,
           color: Cesium.Color.RED,
-          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
         }
       })
     }

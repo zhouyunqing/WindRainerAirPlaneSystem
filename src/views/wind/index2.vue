@@ -309,7 +309,7 @@
     </div>
 
     <video id="trailer" muted autoplay loop crossorigin controls style="position:fixed;z-index:0;bottom:0;width:25%;right:100px;opacity: 0;">
-      <source src="/statics/geo.mp4" type="video/mp4">
+      <source src="../../../public/statics/geo.mp4" type="video/mp4">
     </video>
   </div>
 </template>
@@ -538,15 +538,31 @@ export default {
     changePage(val) {
       // global 全球；wind 风；land 飞机起降；route 航线；message 报文；radar 雷达
       // if (this.page === val && val === 'global') {
-      //   this.setGlobalPage(true, 'change')
+      //   this.setGlobal2D()
       // }
       if (this.page === val) return
+      // if (val === 'global') {
+      //   this.globalS = false
+      //   this.setGlobal2D()
+      // }
       this.page = val
       this.setWindPage(false)
       this.setGlobalPage(false)
       this.setRoutePage(false)
       this.setMessagePage(false)
       this.setRadarPage(false)
+      const entityList = [
+        'planeX',
+        'planeY',
+        'planeZ'
+      ]
+      let entity
+      entityList.forEach(item => {
+        entity = this.viewer.entities.getById(item)
+        if (entity) {
+          entity.show = false
+        }
+      })
       switch (val) {
         case 'wind':
           // this.viewer.scene.morphTo3D(1)
@@ -602,12 +618,11 @@ export default {
       }
       setLand(this.viewer, 'entity', state)
     },
+    setGlobal2D() {
+      this.globalS = !this.globalS
+    },
     setGlobalPage(state, ch) {
       // 初始化
-      // if (state) {
-      //   this.globalS = !this.globalS
-      // }
-      // if (!!ch) return
       if (state) {
         this.viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(
@@ -887,7 +902,9 @@ export default {
         ]
         entityList.forEach(item => {
           entity = this.viewer.entities.getById(item)
-          entity.show = false
+          if (entity) {
+            entity.show = false
+          }
         })
       } else {
         this.landAngle = 'over'

@@ -18,12 +18,15 @@
                 <img :src="item.icon" alt="">
                 <div v-if="item.name != 'NAME'" :class="{sp: chartTab == item.name}">
                   <div class="tit">{{ item.tit }}</div>
-                  <div v-if="!!info[item.name] && item.name == 'SPD'" class="txt">{{ parseFloat(info[item.name][chartIndex]).toFixed(2) || '' }}{{ item.unit }}</div>
-                  <div v-if="!!info[item.name] && item.name == 'RAIN'" class="txt">{{ parseFloat(info[item.name][chartIndex]).toFixed(1) || '' }}{{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'SPD'" class="txt">{{ parseFloat(info[item.name][chartIndex]).toFixed(2) || '- ' }}{{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'RAIN'" class="txt">{{ parseFloat(info[item.name][chartIndex]).toFixed(1) || '- ' }}{{ item.unit }}</div>
                   <div v-if="!!info[item.name] && item.name == 'T'" class="txt">{{ parseInt(info[item.name][chartIndex] - 272.15) || 0 }}{{ item.unit }}</div>
-                  <div v-if="!!info[item.name] && item.name == 'DIR'" class="txt">{{ parseInt(info[item.name][chartIndex]) }}{{ item.unit }}</div>
-                  <div v-if="!!info[item.name] && item.name == 'RH'" class="txt">{{ parseInt(info[item.name][chartIndex]) }}{{ item.unit }}</div>
-                  <div v-if="!!info[item.name] && item.name == 'SLP'" class="txt">{{ parseInt(info[item.name][chartIndex]) }}{{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'DIR'" class="txt">{{ parseInt(info[item.name][chartIndex]) || '- ' }}{{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'RH'" class="txt">{{ parseInt(info[item.name][chartIndex]) || '- ' }}{{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'SLP'" class="txt">{{ parseInt(info[item.name][chartIndex]) || '- ' }}{{ item.unit }}</div>
+                  <div v-if="item.name == 'SF'" class="txt">- {{ item.unit }}</div>
+                  <div v-if="item.name == 'NF'" class="txt">- {{ item.unit }}</div>
+                  <div v-if="item.name == 'CF'" class="txt">- {{ item.unit }}</div>
                 </div>
                 <div v-else class="sp">
                   <div class="tit">{{ item.tit }}</div>
@@ -82,10 +85,34 @@ export default {
           unit: 'm/s',
           data: ''
         }, {
+        //   icon: require('../../../../public/images/icon_qiya@2x.png'),
+        //   tit: '修正海平面气压',
+        //   name: 'SLP',
+        //   unit: 'hPa',
+        //   data: ''
+        // }, {
           icon: require('../../../../public/images/icon_qiya@2x.png'),
-          tit: '修正海平面气压',
+          tit: '修正海压',
           name: 'SLP',
           unit: 'hPa',
+          data: ''
+        }, {
+          icon: require('../../../../public/images/icon_shunfeng@2x.png'),
+          tit: '顺风(南向北)',
+          name: 'SF',
+          unit: 'm/s',
+          data: ''
+        }, {
+          icon: require('../../../../public/images/icon_nifeng@2x.png'),
+          tit: '逆风(北向南)',
+          name: 'NF',
+          unit: 'm/s',
+          data: ''
+        }, {
+          icon: require('../../../../public/images/icon_fengs.png'),
+          tit: '侧风风速',
+          name: 'CF',
+          unit: 'm/s',
           data: ''
         }, {
           icon: require('../../../../public/images/icon_wendu@2x.png'),

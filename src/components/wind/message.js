@@ -12,16 +12,16 @@ const message = (viewer, state) => {
 }
 
 const setAirport = (viewer) => {
-  var airport = Cesium.GeoJsonDataSource.load('/statics/SampleData/windData/airport.geojson')
+  var airport = Cesium.GeoJsonDataSource.load('./statics/SampleData/windData/airport.geojson')
   airport.then(res => {
     dataSources = res
     viewer.dataSources.add(res)
     var entities = res.entities.values
     entities.forEach((item, i) => {
       if (item.name === '[ZBAA]BEIJING-CAPITAL') {
-        item.billboard.image = '/images/airport2.png'
+        item.billboard.image = './images/airport2.png'
       } else {
-        item.billboard.image = '/images/airport.png'
+        item.billboard.image = './images/airport.png'
       }
     })
   })
