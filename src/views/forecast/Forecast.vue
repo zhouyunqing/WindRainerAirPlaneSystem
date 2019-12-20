@@ -6,6 +6,14 @@
       @save="RiskConfigList"
       @closeAddNotice="closeAddNotice"
     />
+    <delete-tip
+      :type="type"
+      :tipInformation="tipInformation"
+      :delete-tip-visible="deleteTipVisible"
+      @deleteTipClose="deleteTipClose"
+      @deleteTipDelete="deleteTipDelete"
+      @deleteNotice="deleteNotice"
+    />
     <h1 class="title-font">预警</h1>
     <el-menu
       :default-active="activeIndex"
@@ -28,25 +36,28 @@
       <div class="notice-table">
         <el-table :data="tableData" style="width: 100%" @current-change="handleCurrentChange">
           <el-table-column :key="Math.random()" property="name" label="名称" />
-          <el-table-column :key="Math.random()" property="site" label="地点" :width="noticeWidth" />
-          <el-table-column
-            :key="Math.random()"
-            property="createtime"
-            :width="noticeWidth"
-            label="记录时间"
-          />
-          <el-table-column
-            :key="Math.random()"
-            property="severity"
-            :width="noticeWidth"
-            label="预警级别"
-          />
-          <el-table-column :key="Math.random()" property="state" :width="noticeWidth" label="执行情况" />
-          <!-- <el-table-column class="button-right"
-                           property="status"
-                           label="" :key="Math.random()">
-            <el-button>删除</el-button >
-          </el-table-column>-->
+          <el-table-column :key="Math.random()" property="site" label="地点" />
+          <el-table-column :key="Math.random()" property="createtime" label="记录时间" />
+          <el-table-column :key="Math.random()" label="预警级别">
+            <template slot-scope="scope">
+              <span
+                :class="scope.row.severity=='一般'?'normal_color':scope.row.severity=='紧急'?'emergency_color':'danger_color'"
+              >{{ scope.row.severity }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column :key="Math.random()" :width="80" label="执行情况">
+            <template slot-scope="scope">
+              <span
+                :class="scope.row.state=='已处理'?'normal_color':'emergency_color'"
+              >{{ scope.row.state }}</span>
+            </template>
+          </el-table-column>
+
+          <el-table-column class="button-right" :width="160" label :key="Math.random()">
+            <template slot-scope="scope">
+              <el-button @click="deleteNoticeShow(scope.row.id)">删除</el-button>
+            </template>
+          </el-table-column>
         </el-table>
         <pagination
           :total="riskInfoPage.total"
@@ -82,7 +93,7 @@
           <el-table-column :key="Math.random()" class="button-right" property="status" label>
             <template slot-scope="scope">
               <el-button @click="addNotice(scope.row.id)">修改</el-button>
-              <el-button @click="deleteRiskConfigItem(scope.row.id)">删除</el-button>
+              <el-button @click="deletebtn(scope.row.id)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -101,6 +112,7 @@
 <script>
 import Pagination from "@/components/Pagination";
 import noticeDialog from "./noticeDialog";
+import deleteTip from "./deleteTip";
 import {
   getOptions,
   getRiskConfigList,
@@ -108,23 +120,29 @@ import {
   getRiskInfoes,
   getGroupList,
   getRiskConfig,
-  timestampToTime
+  timestampToTime,
+  updateRiskInfo
 } from "../../api/alert.js";
 import { constants } from "fs";
 export default {
   name: "Forecast",
   components: {
     noticeDialog,
-    Pagination
+    Pagination,
+    deleteTip
   },
   data() {
     return {
+      type: 1,
+      tipInformation: "",
+      deleteId: "",
+      deleteTipVisible: false,
       // 分页控制
       riskInfoPage: {
         total: 0,
         listQuery: {
           page: 1,
-          limit: 8
+          limit: 5
         }
       },
       riskConfigPage: {
@@ -165,6 +183,33 @@ export default {
     this.popWindow();
   },
   methods: {
+    deleteNoticeShow(id){
+      this.deleteId = id;
+      this.deleteTipVisible = true;
+      this.type = 2
+      this.tipInformation =
+        "执行此操作将会删除预警通知信息，您确定要继续删除吗？";
+    },
+    deleteNotice(){
+        updateRiskInfo({ id: this.deleteId,state: 0 }).then(rs => {
+          console.log(rs);
+          this.riskinfoList();
+          this.deleteTipVisible = false;
+        });
+    },
+    deletebtn(id) {
+      this.deleteId = id;
+      this.deleteTipVisible = true;
+      this.type = 1
+      this.tipInformation =
+        "执行此操作将会删除预警配置信息，您确定要继续删除吗？";
+    },
+    deleteTipClose() {
+      this.deleteTipVisible = false;
+    },
+    deleteTipDelete() {
+      this.deleteRiskConfigItem(this.deleteId);
+    },
     handleSelect(key, keyPath) {
       this.activeIndex = key;
     },
@@ -353,6 +398,7 @@ export default {
         deleteRiskConfig({ id: id }).then(rs => {
           console.log(rs);
           this.RiskConfigList();
+          this.deleteTipVisible = false;
         });
       }
     },
@@ -556,6 +602,10 @@ export default {
           border-bottom: 1px solid #ffffff33;
         }
       }
+      /deep/.el-table .cell {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
       /deep/.el-table td {
         border-bottom: 1px solid #ffffff33;
       }
@@ -599,6 +649,15 @@ export default {
 
       .pagination-container {
         background-color: #242236;
+      }
+      .normal_color {
+        color: #48ff47ff;
+      }
+      .emergency_color {
+        color: #ffbe3aff;
+      }
+      .danger_color {
+        color: #d92d39ff;
       }
     }
   }

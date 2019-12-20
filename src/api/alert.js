@@ -35,6 +35,16 @@ export function getGroupList(params) {
   })
 }
 
+export function updateRiskInfo(params) {
+  return request({
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    url: base_url + '/gis/riskInfoes/updateRiskInfo',
+    method: 'post',
+    data: params
+  })
+}
 // 新建预警配置提交
 export function createRiskConfig(params) {
   return request({

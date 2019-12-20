@@ -2959,11 +2959,6 @@ potail36(Echarts36, id, runway) {
     }
   },
   mounted() {
-<<<<<<< HEAD
-    this.getWinTime();
-=======
-
->>>>>>> 3ce1b7e6dbf6ff86e4e970634db36b6cbab53a4f
     // this.$refs.height_dom.style =
     //   "margin-left:" + ((window.innerHeight / 100) * 12 * 3 + 360) + "px;";
     this.$el.querySelector("#planewind").classList.add("active");

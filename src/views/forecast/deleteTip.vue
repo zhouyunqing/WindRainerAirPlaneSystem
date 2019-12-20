@@ -1,43 +1,56 @@
 <template>
   <div>
-    <el-dialog title="删除未保存信息"
-               :visible.sync="comfirmDeleteVisible"
+    <el-dialog title="删除通知"
+               :visible.sync="deleteTipVisible"
                width="30%"
-               :before-close="comfirmDeleteClose"
-               class="comfirmDelete">
-      <div class="content">执行此操作将会删除未保存信息，您确定要继续删除吗？</div>
+               :before-close="deleteTipClose"
+               class="deleteTip">
+      <!-- <div class="content">执行此操作将会删除预警配置信息，您确定要继续删除吗？</div> -->
+      <div class="content">{{tipInformation}}</div>
       <div class="footer">
-        <span class="span_foot" @click="comfirmDeleteClose">取消</span>
-        <el-button @click="comfirmDelete">确认删除</el-button>
+        <span class="span_foot" @click="deleteTipClose">取消</span>
+        <el-button @click="deleteTipDelete">确认删除</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
 export default {
-  name: 'comfirmDelete',
+  name: 'deleteTip',
   data () {
     return {
     }
   },
   methods: {
-    comfirmDeleteClose (done) {
-      this.$emit('closeComfirmDelete')
+    deleteTipClose (done) {
+      this.$emit('deleteTipClose')
     },
-    comfirmDelete(done){
-      this.$emit('comfirmDelete')
+    deleteTipDelete(done){
+      if(this.type === 1){
+        this.$emit('deleteTipDelete')
+      }else{
+        this.$emit('deleteNotice')
+      }
     }
   },
   props: {
-    comfirmDeleteVisible: {
+    deleteTipVisible: {
       default: false,
       type: Boolean
+    },
+    tipInformation: {
+      default: '',
+      type: String
+    },
+    type: {
+      default: '',
+      type: Number
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-.comfirmDelete {
+.deleteTip {
   /deep/.el-dialog {
     background: #2e2b47;
     padding: 0;
@@ -60,7 +73,7 @@ export default {
     padding: 0 0.2rem;
   }
   .content {
-    margin-top: 0.32rem;
+    margin-top: 0.13rem;
     font-size: 0.14rem;
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
