@@ -30,10 +30,6 @@ const entityList = [
   'arr3D'
 ]
 
-const time = []
-const hour = []
-const NAME = []
-
 const global = (viewer, name, state) => {
   setDian(viewer)
   if (name === 'FY4A') {
@@ -50,9 +46,6 @@ const global = (viewer, name, state) => {
   }
   if (name === 'entity') {
     setEntityState(viewer, state)
-  }
-  if (name === 'rain') {
-    setRainMapName(viewer, state)
   }
 }
 
@@ -265,52 +258,4 @@ const setEntityState = (viewer, state) => {
   })
 }
 
-const setRainMapName = (viewer, state) => {
-  if (state) {
-    if (!NAME || NAME.length === 0) {
-      for (var i = 0; i < 59; i++) {
-        if (i >= 0 && i % 6 === 0) {
-          if (i < 10) {
-            i = '0' + i
-          } else {
-            i = i + ''
-          }
-          time.push(i)
-        }
-      }
-      for (var j = 0; j < 12; j++) {
-        if (j < 10) {
-          j = '0' + j
-        } else {
-          j = j + ''
-        }
-        hour.push(j)
-      }
-      for (var o = 0; o < hour.length; o++) {
-        for (var z = 0; z < time.length; z++) {
-          NAME.push(hour[o] + time[z])
-        }
-      }
-      setRainMap(viewer)
-    }
-  }
-}
-
-const setRainMap = (viewer) => {
-  console.log(time, hour, NAME)
-  NAME.forEach((item, i) => {
-    viewer.entities.add({
-      id: 'rainMap' + i,
-      rectangle: {
-        coordinates: Cesium.Rectangle.fromDegrees(62.2, 3.24, 137, 54),
-        material: `/images/text/Z_RADA_C_BABJ_20190805${NAME[i]}00_P_DOR_RDCP_OHP_ACHN.png`
-      }
-    })
-    const entity = viewer.entities.getById('rainMap' + i)
-    console.log(entity)
-    if (entity) {
-      entity.show = false
-    }
-  })
-}
 export default global

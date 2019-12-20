@@ -37,7 +37,7 @@
         <div class="icon">
           <img src="@/assets/images/icon/more.png" alt="">
         </div>
-        <div class="tit">航线</div>
+        <div class="tit">添加</div>
       </div>
     </div>
     <!-- 左侧导航 end -->
@@ -252,7 +252,11 @@
 
     <div class="bottom-wrap">
       <!-- 全球视角 -->
-      <div v-if="page === 'global'" class="global-wrap" />
+      <!-- <div v-if="page === 'global'" class="global-wrap">
+        <div>风云三号D星上装载了10台套先进的遥感仪器，成为中国低轨道下午观测的主业务卫星，与2013年9月发射的风云三号C共同组网，进一步提高大气探测精度，增强温室气体监测、空间环境综合探测和气象遥感探测能力，促进气象卫星综合应用水平的提升。</div>
+        <div> 风云四号A星区域扫描仅需1分钟，装载的多通道扫描成像辐射计，其14个成像通道与国际水平相当。装载的干涉式大气垂直探测仪在世界上首次实现了静止轨道红外高光谱探测，可以获取大气温湿度三维结构，处于国际领先水平。风云四号装载的闪电成像仪首次实现了对亚洲大洋洲区域的静止轨道闪电持续观测。</div>
+        <div>为促进生态文明建设、国家综合防灾减灾和“一带一路”建设等提供重要支撑。目前，中国已成为世界上在轨气象卫星数量最多、种类最全的国家。</div>
+      </div> -->
 
       <!-- 报文 -->
       <div v-if="page === 'message'" class="message-wrap">
@@ -325,6 +329,7 @@ import setLand from '@/components/wind/land.js'
 import setGlobal from '@/components/wind/global.js'
 import setRoute from '@/components/wind/route.js'
 import setMessage from '@/components/wind/message.js'
+import setRadar from '@/components/wind/radar.js'
 import Heatmap from 'heatmap.js'
 var onTick = null
 export default {
@@ -343,7 +348,7 @@ export default {
       redPlane0: new Cesium.Plane(new Cesium.Cartesian3(0, 1, 0), 0.0),
       targetZ: 0.0,
       bluePlane0: new Cesium.Plane(new Cesium.Cartesian3(1, 0, 0), 0.0),
-      page: '', // global 全球；wind 风；route 航线；message 报文
+      page: '', // global 全球；wind 风；route 航线；message 报文；radar 雷达
       gray: 'https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}',
       windMap: 'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
       landMap: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
@@ -531,7 +536,7 @@ export default {
   methods: {
     // ---------- 切换场景 start ---------- //
     changePage(val) {
-      // global 全球；wind 风；land 飞机起降；route 航线；message 报文
+      // global 全球；wind 风；land 飞机起降；route 航线；message 报文；radar 雷达
       // if (this.page === val && val === 'global') {
       //   this.setGlobalPage(true, 'change')
       // }
@@ -541,6 +546,7 @@ export default {
       this.setGlobalPage(false)
       this.setRoutePage(false)
       this.setMessagePage(false)
+      this.setRadarPage(false)
       switch (val) {
         case 'wind':
           // this.viewer.scene.morphTo3D(1)
@@ -554,6 +560,9 @@ export default {
           break
         case 'message':
           this.setMessagePage(true)
+          break
+        case 'radar':
+          this.setRadarPage(true)
           break
       }
 
@@ -579,11 +588,11 @@ export default {
       // 初始化状态
       if (state) {
         this.viewer.camera.flyTo({
-          destination: Cesium.Cartesian3.fromDegrees(
-            116.595534748692,
-            40.0580145185529,
-            81961.9883961571
-          )
+          destination: Cesium.Cartesian3.fromDegrees(116.875398, 40.300050, 12000),
+          orientation: {
+            heading: Cesium.Math.toRadians(-130),
+            pitch: Cesium.Math.toRadians(-25)
+          }
         })
       }
       // 设置实体
@@ -605,11 +614,11 @@ export default {
             110, 40, 20000000
           )
         })
-        // if (onTick) {
-        //   this.viewer.clock.onTick.addEventListener(onTick)
-        // } else {
-        //   this.playearth()
-        // }
+        if (onTick) {
+          this.viewer.clock.onTick.addEventListener(onTick)
+        } else {
+          this.playearth()
+        }
       } else {
         if (onTick) {
           this.viewer.clock.onTick.removeEventListener(onTick)
@@ -633,7 +642,6 @@ export default {
         entity.show = state
       }
       // 实体添加
-      setGlobal(this.viewer, 'rain', state)
       if (state && !entity) {
         setGlobal(this.viewer, 'FY4A')
       }
@@ -691,6 +699,18 @@ export default {
         // this.viewer.scene.morphTo2D(1)
       }
       setMessage(this.viewer, state)
+    },
+    setRadarPage(state) {
+      if (state) {
+        this.viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(
+            100,
+            24,
+            6000000
+          )
+        })
+      }
+      setRadar(this.viewer, state)
     },
     // ---------- 切换场景 end ---------- //
     // 跳转页面
@@ -901,14 +921,35 @@ export default {
       })
       switch (type) {
         case 'over':
+          this.viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(116.875398, 40.300050, 12000),
+            orientation: {
+              heading: Cesium.Math.toRadians(-130),
+              pitch: Cesium.Math.toRadians(-25)
+            }
+          })
           entity = this.viewer.entities.getById('planeY')
           entity.show = true
           break
         case 'left':
+          this.viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(116.76962042, 40.093294, 6000),
+            orientation: {
+              heading: Cesium.Math.toRadians(-130),
+              pitch: Cesium.Math.toRadians(-25)
+            }
+          })
           entity = this.viewer.entities.getById('planeX')
           entity.show = true
           break
         case 'front':
+          this.viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(117.1060547874, 40.1464165976, 16000),
+            orientation: {
+              heading: Cesium.Math.toRadians(-130),
+              pitch: Cesium.Math.toRadians(-25)
+            }
+          })
           entity = this.viewer.entities.getById('planeZ')
           entity.show = true
           break
@@ -1730,8 +1771,17 @@ export default {
     max-height: calc(100vh/3);
     overflow-y: scroll;
     background: rgba(29,38,50,0.98);
-    margin-right: -20px;
-    padding-right: 20px;
+    margin-right: -0.2rem;
+    padding: 0 0.3rem 0 0.1rem;
+    > div {
+      margin: 0 auto 0.04rem;
+      padding: 0.1rem 0.1rem 0.1rem;
+      line-height: 0.2rem;
+      font-size: 0.14rem;
+      font-weight: 500;
+      color: #fff;
+      text-indent: 2em;
+    }
   }
   .message-wrap {
     background: rgba(29,38,50,0.98);

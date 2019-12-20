@@ -640,7 +640,6 @@ export default {
           break
         case 'T':
           info = parseInt(data)
-          console.log(info)
           break
         case 'SLP':
           info = parseInt(data)

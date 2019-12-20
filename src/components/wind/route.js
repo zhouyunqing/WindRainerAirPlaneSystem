@@ -47,6 +47,26 @@ const textList = [
   }
 ]
 
+const airList = [
+  {
+    name: 'routeAir1',
+    position: Cesium.Cartesian3.fromDegrees(114.336111, 39.314167000000111),
+    rotation: 2
+  },
+  {
+    name: 'routeAir2',
+    position: Cesium.Cartesian3.fromDegrees(117.21500000000015, 36.833333),
+    rotation: 1
+  },
+  {
+    name: 'routeAir3',
+    position: Cesium.Cartesian3.fromDegrees(104.12472200000013, 36.279444),
+    rotation: 1.5
+  }
+]
+
+let dataSources
+
 const route = (viewer, state) => {
   if (state) {
     if (viewer.entities.getById(circleIn[0].name)) {
@@ -54,8 +74,12 @@ const route = (viewer, state) => {
     } else {
       setRange(viewer)
       setText(viewer)
+      setAirLine(viewer)
     }
   } else {
+    if (dataSources) {
+      dataSources.show = false
+    }
     if (viewer.entities.getById(circleIn[0].name)) {
       setEntity(viewer, state)
     }
@@ -138,6 +162,38 @@ const setText = (viewer) => {
   })
 }
 
+const setAirLine = (viewer) => {
+  const options = {
+    camera: viewer.scene.camera,
+    canvas: viewer.scene.canvas,
+    clampToGround: true
+  }
+  var airLine = viewer.dataSources.add(Cesium.KmlDataSource.load('/statics/SampleData/windData/airline.kml', options))
+  airLine.then(res => {
+    dataSources = res
+    viewer.add(airLine)
+    return res
+  })
+  airList.forEach(item => {
+    const entity = viewer.entities.getById(item.name)
+    if (entity) {
+      entity.show = true
+    } else {
+      viewer.entities.add({
+        id: item.name,
+        position: item.position,
+        billboard: {
+          image: "/images/rair.png",
+          scale: 1,
+          rotation: item.rotation,
+          color: Cesium.Color.RED,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        }
+      })
+    }
+  })
+}
+
 const setEntity = (viewer, state) => {
   let entity
   circleIn.forEach(item => {
@@ -154,6 +210,13 @@ const setEntity = (viewer, state) => {
   })
   entity = viewer.entities.getById('routeLocation')
   entity.show = state
+  airList.forEach(item => {
+    entity = viewer.entities.getById(item.name)
+    if (entity) {
+      entity.show = state
+    }
+  })
+  dataSources.show = state
 }
 
 export default route

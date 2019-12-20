@@ -7,11 +7,7 @@ const message = (viewer, state) => {
       dataSources.show = false
     }
   } else {
-    // if (!dataSources) {
     setAirport(viewer)
-    // } else {
-    //   dataSources.show = true
-    // }
   }
 }
 
@@ -22,7 +18,11 @@ const setAirport = (viewer) => {
     viewer.dataSources.add(res)
     var entities = res.entities.values
     entities.forEach((item, i) => {
-      item.billboard.image = '/images/airport.png'
+      if (item.name === '[ZBAA]BEIJING-CAPITAL') {
+        item.billboard.image = '/images/airport2.png'
+      } else {
+        item.billboard.image = '/images/airport.png'
+      }
     })
   })
 }

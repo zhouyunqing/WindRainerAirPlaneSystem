@@ -126,6 +126,39 @@ const hotData = {
   targetZ: 0.0
 }
 
+const hotList = [
+  {
+    name: 'X',
+    id: 'planeX',
+    position: Cesium.Cartesian3.fromDegrees(116.58823, 39.92276, 300.0),
+    heading: Cesium.Math.toRadians(-6.3),
+    pitch: 0,
+    roll: 0,
+    plane: new Cesium.Plane(new Cesium.Cartesian3(0, 1, 0), 0.0),
+    dimensions: new Cesium.Cartesian2(12000.0, 4000.0)
+  },
+  {
+    name: 'Y',
+    id: 'planeY',
+    position: Cesium.Cartesian3.fromDegrees(116.59303, 40.07061, 0.0),
+    heading: Cesium.Math.toRadians(-6.3),
+    pitch: 0,
+    roll: 0,
+    plane: new Cesium.Plane(new Cesium.Cartesian3(0, 0, -1), 0.0),
+    dimensions: new Cesium.Cartesian2(12000.0, 40000.0)
+  },
+  {
+    name: 'Z',
+    id: 'planeZ',
+    position: Cesium.Cartesian3.fromDegrees(116.545855, 40.07209, 300.0),
+    heading: Cesium.Math.toRadians(-6.3),
+    pitch: 0,
+    roll: 0,
+    plane: new Cesium.Plane(new Cesium.Cartesian3(1, 0, 0), 0.0),
+    dimensions: new Cesium.Cartesian2(40000.0, 4000.0)
+  }
+]
+
 let selectedPlane = null
 
 // 起始时间
@@ -193,46 +226,24 @@ const setAir = (viewer) => {
 
 const setHot = (viewer) => {
   const heatMap = createHeatMap(getData(10000).max, getData(10000).data)
-  viewer.entities.add({
-    show: false,
-    id: 'planeX',
-    position: Cesium.Cartesian3.fromDegrees(116.58823, 39.91376, 300.0),
-    plane: {
-      plane: new Cesium.CallbackProperty(createPlaneUpdateFunction(hotData.planeX, 'X'), false),
-      dimensions: new Cesium.Cartesian2(12000.0, 4000.0),
-      // material: heatMap._renderer.canvas
-      material: new Cesium.ImageMaterialProperty({
-        image: '/images/hot.png'
-      })
-    }
+  hotList.forEach((item, i) => {
+    const hpr = new Cesium.HeadingPitchRoll(item.heading, item.pitch, item.roll)
+    const orientation = Cesium.Transforms.headingPitchRollQuaternion(item.position, hpr)
+    viewer.entities.add({
+      show: false,
+      id: item.id,
+      position: item.position,
+      orientation: orientation,
+      plane: {
+        plane: new Cesium.CallbackProperty(createPlaneUpdateFunction(item.plane, item.name), false),
+        dimensions: item.dimensions,
+        // material: heatMap._renderer.canvas
+        material: new Cesium.ImageMaterialProperty({
+          image: '/images/hot.png'
+        })
+      }
+    })
   })
-  viewer.entities.add({
-    show: false,
-    id: 'planeY',
-    position: Cesium.Cartesian3.fromDegrees(116.59303, 40.07061, 0.0),
-    plane: {
-      plane: new Cesium.CallbackProperty(createPlaneUpdateFunction(hotData.planeY, 'Y'), false),
-      dimensions: new Cesium.Cartesian2(12000.0, 40000.0),
-      // material: heatMap._renderer.canvas
-      material: new Cesium.ImageMaterialProperty({
-        image: '/images/hot.png'
-      })
-    }
-  })
-  viewer.entities.add({
-    show: false,
-    id: 'planeZ',
-    position: Cesium.Cartesian3.fromDegrees(116.519855, 40.07209, 300.0),
-    plane: {
-      plane: new Cesium.CallbackProperty(createPlaneUpdateFunction(hotData.planeZ, 'Z'), false),
-      dimensions: new Cesium.Cartesian2(40000.0, 4000.0),
-      // material: heatMap._renderer.canvas
-      material: new Cesium.ImageMaterialProperty({
-        image: '/images/hot.png'
-      })
-    }
-  })
-
   const downHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
   downHandler.setInputAction((movement) => {
     var pickedObject = viewer.scene.pick(movement.position)
