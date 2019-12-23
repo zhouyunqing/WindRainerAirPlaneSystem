@@ -23,7 +23,7 @@ const setRainMapName = (viewer, state) => {
           time.push(i)
         }
       }
-      for (var j = 0; j < 4; j++) {
+      for (var j = 0; j < 2; j++) {
         if (j < 10) {
           j = '0' + j
         } else {
@@ -40,7 +40,7 @@ const setRainMapName = (viewer, state) => {
     } else {
       time2 = setInterval(() => {
         add(viewer)
-      }, 500)
+      }, 50)
     }
   } else {
     clearInterval(time2)
@@ -64,7 +64,7 @@ const setRainMap = (viewer) => {
   })
   time2 = setInterval(() => {
     add(viewer)
-  }, 500)
+  }, 50)
 }
 
 const add = (viewer) => {
@@ -73,18 +73,31 @@ const add = (viewer) => {
     clearInterval(time2)
     return
   }
+  let entity
   if (index >= NAME.length) {
+    entity = viewer.entities.getById('rainMap' + index)
+    if (entity) {
+      entity.show = false
+    }
+    entity = viewer.entities.getById('rainMap' + (index - 1))
+    if (entity) {
+      entity.show = false
+    }
+    entity = viewer.entities.getById('rainMap' + (index - 2))
+    if (entity) {
+      entity.show = false
+    }
     index = 0
   }
   if (index < NAME.length) {
-    const entity = viewer.entities.getById('rainMap' + index)
+    entity = viewer.entities.getById('rainMap' + index)
     if (entity) {
       entity.show = true
     }
     index++
   }
-  if (index > 3) {
-    const entity = viewer.entities.getById('rainMap' + (index - 4))
+  if (index > 1) {
+    entity = viewer.entities.getById('rainMap' + (index - 2))
     if (entity) {
       entity.show = false
     }

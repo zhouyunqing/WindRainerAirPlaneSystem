@@ -45,22 +45,22 @@
     <!-- 全球视角 我的位置 start -->
     <div class="all-type-right">
       <div @click="changePage('global')">
-        <div v-if="globalS" class="icon">
-          <img v-if="page === 'global'" src="@/assets/images/icon/globalW.png" alt="">
+        <div class="icon">
+          <img v-if="page === 'global' && !!globalS" src="@/assets/images/icon/globalW.png" alt="">
           <img v-else src="@/assets/images/icon/globalB.png" alt="">
         </div>
-        <div v-else class="icon">
+        <!-- <div v-else class="icon">
           <img v-if="page === 'global'" src="@/assets/images/icon/global2W.png" alt="">
           <img v-else src="@/assets/images/icon/global2B.png" alt="">
-        </div>
-        <div class="tit" :class="{sp: page != 'global'}">全球视角</div>
+        </div> -->
+        <div class="tit" :class="{sp: page != 'global' || !globalS}">全球视角</div>
       </div>
       <div>
         <div class="icon">
-          <img v-if="page === 'global'" src="@/assets/images/icon/homeW.png" alt="">
+          <img v-if="page === 'global' && !!globalS" src="@/assets/images/icon/homeW.png" alt="">
           <img v-else src="@/assets/images/icon/homeB.png" alt="">
         </div>
-        <div class="tit" :class="{sp: page != 'global'}">我的位置</div>
+        <div class="tit" :class="{sp: page != 'global' || !globalS}">我的位置</div>
       </div>
     </div>
     <!-- 全球视角 我的位置 end -->
@@ -539,12 +539,18 @@ export default {
       // global 全球；wind 风；land 飞机起降；route 航线；message 报文；radar 雷达
       // if (this.page === val && val === 'global') {
       //   this.setGlobal2D()
+      // } else {
+      //   this.viewer.scene.morphTo3D(0)
+      //   this.globalS = true
       // }
       if (this.page === val) return
       // if (val === 'global') {
       //   this.globalS = false
       //   this.setGlobal2D()
       // }
+      if (val != 'global') {
+        this.viewer.scene.morphTo3D(0)
+      }
       this.page = val
       this.setWindPage(false)
       this.setGlobalPage(false)
@@ -565,7 +571,6 @@ export default {
       })
       switch (val) {
         case 'wind':
-          // this.viewer.scene.morphTo3D(1)
           this.setWindPage(true)
           break
         case 'global':
@@ -619,9 +624,16 @@ export default {
       setLand(this.viewer, 'entity', state)
     },
     setGlobal2D() {
-      this.globalS = !this.globalS
+      this.viewer.scene.morphTo2D(0)
+      this.viewer.clock.onTick.removeEventListener(onTick)
+      // 视频覆盖
+      const entity = this.viewer.entities.getById('静止卫星全球拼图')
+      if (entity) {
+        entity.show = false
+      }
+      setGlobal(this.viewer, 'entity', false)
     },
-    setGlobalPage(state, ch) {
+    setGlobalPage(state) {
       // 初始化
       if (state) {
         this.viewer.camera.flyTo({
@@ -629,16 +641,27 @@ export default {
             110, 40, 20000000
           )
         })
-        if (onTick) {
-          this.viewer.clock.onTick.addEventListener(onTick)
+        if (this.globalS) {
+          if (onTick) {
+            this.viewer.clock.onTick.addEventListener(onTick)
+          } else {
+            this.playearth()
+          }
+          setTimeout(() => {
+            this.globalS = false
+            this.setGlobal2D()
+          }, 10000)
         } else {
-          this.playearth()
+          this.setGlobal2D()
         }
       } else {
         if (onTick) {
           this.viewer.clock.onTick.removeEventListener(onTick)
         }
         setGlobal(this.viewer, 'stop')
+      }
+      if (!this.globalS) {
+        return
       }
       // 视频覆盖
       let entity
