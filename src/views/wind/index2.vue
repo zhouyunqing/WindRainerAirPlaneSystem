@@ -65,9 +65,9 @@
     <!-- 剖面风 start -->
     <div v-show="activeWind == 'section' && sectionwindDetail" class="shadow">
       <div class="wind_header_icon">
-        <img v-if="!isDetail" src="../../assets/images/profileIcon.png" />
+        <img v-if="!isDetail" src="../../assets/images/profileIcon.png" >
         <span v-if="!isDetail" @click="detail(true)">详细</span>
-        <img v-if="isDetail" src="../../assets/images/reduction.png" />
+        <img v-if="isDetail" src="../../assets/images/reduction.png" >
         <span v-if="isDetail" @click="detail(false)">还原</span>
       </div>
 
@@ -219,7 +219,7 @@ import windImgUrl from '../../assets/images/windImg.png'
 import utilTime from '@/utils/time'
 import { getRunwayPointForecastData, getParabolic, getModelForecast, getRunwaysForecast } from '@/api/wind'
 export default {
-  name: "CesiumContainer",
+  name: 'CesiumContainer',
   components: {
     rightCard,
     bottomCard,
@@ -237,67 +237,67 @@ export default {
       isHoverShow: false,
       isDetail: false,
       gradientWind: {
-        "1.0": "rgb(255,255,0)",
-        "0.9": "rgb(0,255,0)",
-        "0.8": "rgb(0,255,88)",
-        "0.7": "rgb(0,255,178)",
-        "0.6": "rgb(0,255,255)",
-        "0.3": "rgb(0,178,255)",
-        "0.0": "rgb(0,0,255)"
+        '1.0': 'rgb(255,255,0)',
+        '0.9': 'rgb(0,255,0)',
+        '0.8': 'rgb(0,255,88)',
+        '0.7': 'rgb(0,255,178)',
+        '0.6': 'rgb(0,255,255)',
+        '0.3': 'rgb(0,178,255)',
+        '0.0': 'rgb(0,0,255)'
       },
       pointName: [
-        "18L",
-        "MID1",
-        "36R",
-        "18R",
-        "MID2",
-        "36L",
-        "19",
-        "MID3",
-        "01"
+        '18L',
+        'MID1',
+        '36R',
+        '18R',
+        'MID2',
+        '36L',
+        '19',
+        'MID3',
+        '01'
       ], // 九站点名
       colorTable: {
         type: Object,
         default: () => {
-          return colorTable;
+          return colorTable
         }
       },
-      searchInput: "",
+      searchInput: '',
       heightLevel: 0,
-      activeWind: "plane",
-      site: "ZBAA",
-      clickSite: "ZBAA",
-      hoverSite: "ZBAA",
+      activeWind: 'plane',
+      site: 'ZBAA',
+      clickSite: 'ZBAA',
+      hoverSite: 'ZBAA',
       hoverStyle: {
-        top: "",
-        left: ""
+        top: '',
+        left: ''
       },
-      forecastTab: "near", // near：临近预报；short：短时预报
+      forecastTab: 'near', // near：临近预报；short：短时预报
       info: {},
       ip: 'http://52.82.54.61:8090',
       url: '/gis/BJPEK/RunwayPointForecastData',
       fsUrl: '/gis/BJPEK/RunwaysForecast',
       params: {
-        starttime: "",
-        endtime: "",
-        site: "",
-        frequency: "10min",
-        dataset: "RH,SLP,T,PSFC,DIR,RAIN,SPD,U,V",
-        resolution: "1000M",
+        starttime: '',
+        endtime: '',
+        site: '',
+        frequency: '10min',
+        dataset: 'RH,SLP,T,PSFC,DIR,RAIN,SPD,U,V,HWIND,CWIND',
+        resolution: '1000M',
         nsukey:
-          "1MwqTdFv7hAds1SqfakVA+6H/9i2DGzSdQ2FeAkGnsRzyYPhHlRhE57L3D2K1zVP7bHZC8sT1FTrzxBoFa17MdzAMvyreQb51aAooPSDY0R+QHEXGXYDWNA0U77sHyKHNAMv/zl5yg6t1ofgEX94P2h6cyRNynxI9ESUoRn6PXgLaf0mCe7HxlFN94q6yu5q"
+          '1MwqTdFv7hAds1SqfakVA+6H/9i2DGzSdQ2FeAkGnsRzyYPhHlRhE57L3D2K1zVP7bHZC8sT1FTrzxBoFa17MdzAMvyreQb51aAooPSDY0R+QHEXGXYDWNA0U77sHyKHNAMv/zl5yg6t1ofgEX94P2h6cyRNynxI9ESUoRn6PXgLaf0mCe7HxlFN94q6yu5q'
       },
       changeT: false,
-      infoTime: "",
+      infoTime: '',
       showHour: 12,
       sectionwindDetail: false,
-      runType: "runway1",
+      runType: 'runway1',
       runwayTime: 1,
       height_num: 35,
-      searchTime: "",
+      searchTime: '',
       sliderTime: new Date(new Date().toLocaleDateString()),
-      runName: "跑道1",
-      day: "",
+      runName: '跑道1',
+      day: '',
       hoverIndex: 0,
       particleSystemOptions: {
         type: Object,
@@ -311,14 +311,14 @@ export default {
             dropRateBump: 0.01,
             speedFactor: 4.0,
             lineWidth: 4.0
-          };
+          }
         }
       },
       enlarg: false,
       enlargBottom: 3.3,
       fsData: [],
-      dataStartTime: ""
-    };
+      dataStartTime: ''
+    }
   },
   mounted() {
     this.setMap()
@@ -327,137 +327,137 @@ export default {
     let time = utilTime.timeObj(nowTime)
     this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
     setInterval(() => {
-      nowTime = new Date().getTime();
-      time = utilTime.timeObj(nowTime);
-      this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`;
-    }, 1000);
+      nowTime = new Date().getTime()
+      time = utilTime.timeObj(nowTime)
+      this.day = `${time.y}-${time.m}-${time.d} 星期${time.w} ${time.hh}:${time.mm}:${time.ss}`
+    }, 1000)
     window.onresize = () => {
-      this.enlarg = document.body.scrollHeight == window.screen.height;
+      this.enlarg = document.body.scrollHeight == window.screen.height
     };
   },
   methods: {
     changeHeight(val) {
       if (val) {
-        this.enlargBottom = 3.3;
+        this.enlargBottom = 3.3
       } else {
-        this.enlargBottom = 1.4;
+        this.enlargBottom = 1.4
       }
     },
     fullScreen() {
-      var element = document.documentElement;
+      var element = document.documentElement
       if (element.requestFullscreen) {
-        element.requestFullscreen();
+        element.requestFullscreen()
       } else if (element.msRequestFullscreen) {
-        element.msRequestFullscreen();
+        element.msRequestFullscreen()
       } else if (element.mozRequestFullScreen) {
-        element.mozRequestFullScreen();
+        element.mozRequestFullScreen()
       } else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen();
+        element.webkitRequestFullscreen()
       }
     },
     exitFullscreen() {
       if (document.exitFullscreen) {
-        document.exitFullscreen();
+        document.exitFullscreen()
       } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
+        document.msExitFullscreen()
       } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
+        document.mozCancelFullScreen()
       } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
+        document.webkitExitFullscreen()
       }
     },
     getChartData(site) {
-      const info = {};
-      this.params.site = site;
-      this.params.starttime = this.getStartTime();
-      this.params.endtime = this.getEndTime();
-      info.url = this.ip + this.url;
-      info.params = this.params;
+      const info = {}
+      this.params.site = site
+      this.params.starttime = this.getStartTime()
+      this.params.endtime = this.getEndTime()
+      info.url = this.ip + this.url
+      info.params = this.params
       getRunwayPointForecastData(this.params).then(res => {
         if (res.data.returnCode * 1 === 0) {
-          this.info = res.data.data;
+          this.info = res.data.data
           if (this.changeT) {
-            this.site = "ZBAA";
-            this.clickSite = "ZBAA";
-            this.hoverSite = "ZBAA";
-            this.changeT = false;
+            this.site = 'ZBAA';
+            this.clickSite = 'ZBAA';
+            this.hoverSite = 'ZBAA';
+            this.changeT = false
           }
         } else {
-          this.$message.error(res.data.returnMessage);
+          this.$message.error(res.data.returnMessage)
         }
-      });
-      const nowTime = new Date().getTime();
-      const sTime = utilTime.timeObj(nowTime);
+      })
+      const nowTime = new Date().getTime()
+      const sTime = utilTime.timeObj(nowTime)
       getRunwaysForecast({
-        datacode: "ZBAA",
-        airport: "ZBAA",
-        runway: "runway1,runway2,runway3",
+        datacode: 'ZBAA',
+        airport: 'ZBAA',
+        runway: 'runway1,runway2,runway3',
         starttime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`,
         endtime: `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:59:59`,
         // starttime: '2019-12-02 11:00:00',
         // endtime: '2019-12-02 11:59:59',
-        dataset: "SPD",
-        resolution: "1000M",
-        hight: "0010m"
+        dataset: 'SPD',
+        resolution: '1000M',
+        hight: '0010m'
       }).then(res => {
         if (res.data.returnCode * 1 === 0) {
-          this.fsData = res.data.runways;
+          this.fsData = res.data.runways
         } else {
-          this.$message.error(res.data.returnMessage);
+          this.$message.error(res.data.returnMessage)
         }
-      });
+      })
     },
     getStartTime() {
-      const nowTime = new Date().getTime();
-      const dataStartTime = utilTime.timeObj(nowTime);
-      var mm = dataStartTime.mm;
+      const nowTime = new Date().getTime()
+      const dataStartTime = utilTime.timeObj(nowTime)
+      var mm = dataStartTime.mm
       if (mm < 10 && mm >= 0) {
-        mm = 0 + "0";
+        mm = 0 + '0';
       } else if (mm < 20 && mm >= 10) {
-        mm = 10;
+        mm = 10
       } else if (mm < 30 && mm >= 20) {
-        mm = 20;
+        mm = 20
       } else if (mm < 40 && mm >= 30) {
-        mm = 30;
+        mm = 30
       } else if (mm < 50 && mm >= 40) {
-        mm = 40;
+        mm = 40
       } else if (mm <= 59 && mm >= 50) {
-        mm = 50;
+        mm = 50
       }
-      this.dataStartTime = `${dataStartTime.y}-${dataStartTime.m}-${dataStartTime.d} ${dataStartTime.hh}:${mm}:00`;
-      if (this.forecastTab === "near") {
-        const sTime = utilTime.timeObj(nowTime - 6 * 60 * 60 * 1000);
-        this.hoverIndex = 6 * 6;
-        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:${mm}:00`;
+      this.dataStartTime = `${dataStartTime.y}-${dataStartTime.m}-${dataStartTime.d} ${dataStartTime.hh}:${mm}:00`
+      if (this.forecastTab === 'near') {
+        const sTime = utilTime.timeObj(nowTime - 6 * 60 * 60 * 1000)
+        this.hoverIndex = 6 * 6
+        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:${mm}:00`
       } else {
-        const sTime = utilTime.timeObj(nowTime - 12 * 60 * 60 * 1000);
-        this.hoverIndex = 12 * 6;
-        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:${mm}:00`;
+        const sTime = utilTime.timeObj(nowTime - 12 * 60 * 60 * 1000)
+        this.hoverIndex = 12 * 6
+        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:${mm}:00`
       }
     },
     getEndTime() {
-      const nowTime = new Date().getTime();
-      if (this.forecastTab === "near") {
-        const sTime = utilTime.timeObj(nowTime + 6 * 60 * 60 * 1000);
-        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`;
+      const nowTime = new Date().getTime()
+      if (this.forecastTab === 'near') {
+        const sTime = utilTime.timeObj(nowTime + 6 * 60 * 60 * 1000)
+        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
         // return '2019-11-22 20:00:00'
       } else {
-        const sTime = utilTime.timeObj(nowTime + 24 * 60 * 60 * 1000);
-        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`;
+        const sTime = utilTime.timeObj(nowTime + 24 * 60 * 60 * 1000)
+        return `${sTime.y}-${sTime.m}-${sTime.d} ${sTime.hh}:00:00`
         // return '2019-11-21 22:00:00'
       }
     },
     detail(type) {
-      this.isDetail = type;
+      this.isDetail = type
     },
     changeForecastTab(val) {
-      this.forecastTab = val;
-      this.changeT = true;
-      this.clickSite = "";
-      this.getChartData("ZBAA");
+      this.forecastTab = val
+      this.changeT = true
+      this.clickSite = '';
+      this.getChartData('ZBAA')
     },
     setMap() {
-      this.viewer = new Cesium.Viewer("cesiumContainer", {
+      this.viewer = new Cesium.Viewer('cesiumContainer', {
         geocoder: false,
         animation: false,
         shouldAnimate: true,
@@ -469,22 +469,22 @@ export default {
         navigationHelpButton: false,
         imageryProvider: new Cesium.UrlTemplateImageryProvider({
           url:
-            "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}"
+            'http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}'
         })
       })
       var blackMarble = this.viewer.imageryLayers.addImageryProvider(
         new Cesium.UrlTemplateImageryProvider({
           url:
-            "http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8"
+            'http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8'
         })
 
       )
       // 高德卫星   https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}   http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8
       // 限制视角高度
-      this.viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2500; // 相机的高度的最小值
-      this.viewer.scene.screenSpaceCameraController.maximumZoomDistance = 18000000; // 相机高度的最大值
+      this.viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2500 // 相机的高度的最小值
+      this.viewer.scene.screenSpaceCameraController.maximumZoomDistance = 18000000 // 相机高度的最大值
       // 摄像机定位
-      const camera = this.viewer.camera;
+      const camera = this.viewer.camera
       camera.setView({
         destination: Cesium.Cartesian3.fromDegrees(
           116.595534748692,
@@ -496,7 +496,7 @@ export default {
           pitch: Cesium.Math.toRadians(-88.8329210486802),
           roll: Cesium.Math.toRadians(0)
         }*/
-      });
+      })
       this.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
         Cesium.ScreenSpaceEventType.LEFT_CLICK
       )
@@ -508,16 +508,16 @@ export default {
             116.765146586308,
             40.135425293208
           ),
-          material: "../images/Pic2.png",
+          material: '../images/Pic2.png',
           height: 2
         }
       })
       setTimeout(() => {
-        delPI();
-      }, 4000);
-      var _this = this;
+        delPI()
+      }, 4000)
+      var _this = this
       function delPI() {
-        _this.viewer.entities.remove(PI);
+        _this.viewer.entities.remove(PI)
       }
       /*
       // 定位北京首都机场
@@ -540,53 +540,53 @@ export default {
       // 加载风场
       if (val === 1) {
         this.loadNetCDF(this.urlNetCDF).then(data => {
-          this.windData = data;
-        });
+          this.windData = data
+        })
       } else if (val === 2) {
-        const nowTime = new Date().getTime();
-        const time0 = utilTime.timeObj(nowTime);
-        const time = `${time0.y}-${time0.m}-${time0.d} ${time0.hh}:00:00`;
-        const level = 0;
+        const nowTime = new Date().getTime()
+        const time0 = utilTime.timeObj(nowTime)
+        const time = `${time0.y}-${time0.m}-${time0.d} ${time0.hh}:00:00`
+        const level = 0
         // const time = '2019-11-13%2000:00:00'
         this.loadwind(time, level, 'start')
       }
     },
     showHeightLevelToolTip(value) {
-      let tip = "";
+      let tip = '';
       if (value === 0) {
-        tip = "地面";
+        tip = '地面';
       } else if (value === 1) {
-        tip = "30米";
+        tip = '30米';
       } else if (value === 2) {
-        tip = "50米";
+        tip = '50米';
       } else if (value === 3) {
-        tip = "100米";
+        tip = '100米';
       } else if (value === 4) {
-        tip = "150米";
+        tip = '150米';
       } else if (value === 5) {
-        tip = "200米";
+        tip = '200米';
       } else if (value === 6) {
-        tip = "250米";
+        tip = '250米';
       } else if (value === 7) {
-        tip = "300米";
+        tip = '300米';
       } else if (value === 8) {
-        tip = "400米";
+        tip = '400米';
       } else if (value === 9) {
-        tip = "500米";
+        tip = '500米';
       } else if (value === 10) {
-        tip = "600米";
+        tip = '600米';
       } else if (value === 11) {
-        tip = "900米";
+        tip = '900米';
       } else if (value === 12) {
-        tip = "1200米";
+        tip = '1200米';
       } else if (value === 13) {
-        tip = "1500米";
+        tip = '1500米';
       } else if (value === 14) {
-        tip = "1800米";
+        tip = '1800米';
       } else if (value === 15) {
-        tip = "2100米";
+        tip = '2100米';
       }
-      return tip;
+      return tip
     },
     changeHeightLevel(val) {
       const nowTime = new Date().getTime()
@@ -633,7 +633,7 @@ export default {
             pitch: Cesium.Math.toRadians(-30.8329210486802),
             roll: Cesium.Math.toRadians(0)
           }
-        });
+        })
       }
       const nowTime = new Date().getTime()
       const time0 = utilTime.timeObj(nowTime)
@@ -643,8 +643,8 @@ export default {
     loadwind(time, level, scene) {
       this.viewer.scene.primitives.show = false
       if (this.wind3D) {
-        this.wind3D.removeWindPrimitives();
-        this.wind3D.colorImage = null;
+        this.wind3D.removeWindPrimitives()
+        this.wind3D.colorImage = null
       }
       // const jsonPath =
       //   'http://161.189.11.216:8090/gis/BJPEK/ModelForecast?datacode=ABC&dataset=XLONG,XLAT,U,V&time=' +
@@ -653,11 +653,11 @@ export default {
       //   level +
       //   '&resolution=1000M'
       getModelForecast({
-        datacode: "ABC",
-        dataset: "XLONG,XLAT,U,V",
+        datacode: 'ABC',
+        dataset: 'XLONG,XLAT,U,V',
         time: time,
         // time: '2019-12-02 11:00:00',
-        bbox: "110,30,120,42",
+        bbox: '110,30,120,42',
         z: level,
         resolution: '1000M'
       }).then(resData => {
@@ -912,238 +912,238 @@ export default {
               }
             }
           }
-          });
+        })
           this.viewer.entities.add({
-            show: !this.isLegendChange,
-            id: "wall2",
-            name: "windWall",
-            type: "runway2",
-            wall: {
-              positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-                116.600573,
-                40.089862,
-                2100,
-                116.605809,
-                40.056497,
-                2100
-              ]),
-              material: new Cesium.ImageMaterialProperty({
-                image: windImgUrl
-              }),
-              outline: true,
-              minimumHeights: [100, 100]
-            }
-          });
+          show: !this.isLegendChange,
+          id: 'wall2',
+          name: 'windWall',
+          type: 'runway2',
+          wall: {
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+              116.600573,
+              40.089862,
+              2100,
+              116.605809,
+              40.056497,
+              2100
+            ]),
+            material: new Cesium.ImageMaterialProperty({
+              image: windImgUrl
+            }),
+            outline: true,
+            minimumHeights: [100, 100]
+          }
+        })
           this.viewer.entities.add({
-            show: this.isLegendChange,
-            id: "runway3",
-            name: "Runway",
-            station: "runway3",
-            polyline: {
-              // 多线段
-              positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-                116.617997,
-                40.094787,
-                0,
-                116.623469,
-                40.059059,
-                0
-              ]), // 方位
-              width: 10, // 折线的宽度（以像素为单位）
-              material: new Cesium.ImageMaterialProperty({
-                image: this.drawRunWays(
-                  this.getRunWayColor(this.fsData[2], ["19", "MID3", "01"])
-                )
-              }),
-              shadows: Cesium.ShadowMode.ENABLED
-            }
-          });
+          show: this.isLegendChange,
+          id: 'runway3',
+          name: 'Runway',
+          station: 'runway3',
+          polyline: {
+            // 多线段
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+              116.617997,
+              40.094787,
+              0,
+              116.623469,
+              40.059059,
+              0
+            ]), // 方位
+            width: 10, // 折线的宽度（以像素为单位）
+            material: new Cesium.ImageMaterialProperty({
+              image: this.drawRunWays(
+                this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])
+              )
+            }),
+            shadows: Cesium.ShadowMode.ENABLED
+          }
+        })
           this.viewer.entities.add({
-            show: !this.isLegendChange,
-            id: "wall3",
-            name: "windWall",
-            type: "runway3",
-            wall: {
-              positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-                116.617997,
-                40.094787,
-                2100,
-                116.623469,
-                40.059059,
-                2100
-              ]),
-              material: new Cesium.ImageMaterialProperty({
-                image: windImgUrl
-              }),
-              outline: true,
-              minimumHeights: [100, 100]
-            }
-          });
+          show: !this.isLegendChange,
+          id: 'wall3',
+          name: 'windWall',
+          type: 'runway3',
+          wall: {
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+              116.617997,
+              40.094787,
+              2100,
+              116.623469,
+              40.059059,
+              2100
+            ]),
+            material: new Cesium.ImageMaterialProperty({
+              image: windImgUrl
+            }),
+            outline: true,
+            minimumHeights: [100, 100]
+          }
+        })
           this.drawPoint(
-            " 18R ",
-            116.575473,
-            40.10303,
-            0,
-            this.getRunWayColor(this.fsData[0], ["18R", "MID1", "36L"])[0],
-            this.getPointColor(this.fsData[0], ["18R", "MID1", "36L"])[0]
-          );
+          ' 18R ',
+          116.575473,
+          40.10303,
+          0,
+          this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[0],
+          this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[0]
+        )
           this.drawPoint(
-            "MID1",
-            116.577925,
-            40.088623,
-            0,
-            this.getRunWayColor(this.fsData[0], ["18R", "MID1", "36L"])[1],
-            this.getPointColor(this.fsData[0], ["18R", "MID1", "36L"])[1]
-          );
+          'MID1',
+          116.577925,
+          40.088623,
+          0,
+          this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[1],
+          this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[1]
+        )
           this.drawPoint(
-            " 36L ",
-            116.580113,
-            40.074035,
-            0,
-            this.getRunWayColor(this.fsData[0], ["18R", "MID1", "36L"])[2],
-            this.getPointColor(this.fsData[0], ["18R", "MID1", "36L"])[2]
-          );
+          ' 36L ',
+          116.580113,
+          40.074035,
+          0,
+          this.getRunWayColor(this.fsData[0], ['18R', 'MID1', '36L'])[2],
+          this.getPointColor(this.fsData[0], ['18R', 'MID1', '36L'])[2]
+        )
           this.drawPoint(
-            " 18L ",
-            116.600573,
-            40.089862,
-            1,
-            this.getRunWayColor(this.fsData[1], ["18L", "MID2", "36R"])[0],
-            this.getPointColor(this.fsData[1], ["18L", "MID2", "36R"])[0]
-          );
+          ' 18L ',
+          116.600573,
+          40.089862,
+          1,
+          this.getRunWayColor(this.fsData[1], ['18L', 'MID2', '36R'])[0],
+          this.getPointColor(this.fsData[1], ['18L', 'MID2', '36R'])[0]
+        )
           this.drawPoint(
-            "MID2",
-            116.603528,
-            40.07174,
-            1,
-            this.getRunWayColor(this.fsData[1], ["18L", "MID2", "36R"])[1],
-            this.getPointColor(this.fsData[1], ["18L", "MID2", "36R"])[1]
-          );
+          'MID2',
+          116.603528,
+          40.07174,
+          1,
+          this.getRunWayColor(this.fsData[1], ['18L', 'MID2', '36R'])[1],
+          this.getPointColor(this.fsData[1], ['18L', 'MID2', '36R'])[1]
+        )
           this.drawPoint(
-            " 36R ",
-            116.605809,
-            40.056497,
-            1,
-            this.getRunWayColor(this.fsData[1], ["18L", "MID2", "36R"])[2],
-            this.getPointColor(this.fsData[1], ["18L", "MID2", "36R"])[2]
-          );
+          ' 36R ',
+          116.605809,
+          40.056497,
+          1,
+          this.getRunWayColor(this.fsData[1], ['18L', 'MID2', '36R'])[2],
+          this.getPointColor(this.fsData[1], ['18L', 'MID2', '36R'])[2]
+        )
           this.drawPoint(
-            "  19  ",
-            116.617997,
-            40.094787,
-            2,
-            this.getRunWayColor(this.fsData[2], ["19", "MID3", "01"])[0],
-            this.getPointColor(this.fsData[2], ["19", "MID3", "01"])[0]
-          );
+          '  19  ',
+          116.617997,
+          40.094787,
+          2,
+          this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[0],
+          this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[0]
+        )
           this.drawPoint(
-            "MID3",
-            116.621128,
-            40.074618,
-            2,
-            this.getRunWayColor(this.fsData[2], ["19", "MID3", "01"])[1],
-            this.getPointColor(this.fsData[2], ["19", "MID3", "01"])[1]
-          );
+          'MID3',
+          116.621128,
+          40.074618,
+          2,
+          this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[1],
+          this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[1]
+        )
           this.drawPoint(
-            " 01 ",
-            116.623469,
-            40.059059,
-            2,
-            this.getRunWayColor(this.fsData[2], ["19", "MID3", "01"])[2],
-            this.getPointColor(this.fsData[2], ["19", "MID3", "01"])[2]
-          );
+          ' 01 ',
+          116.623469,
+          40.059059,
+          2,
+          this.getRunWayColor(this.fsData[2], ['19', 'MID3', '01'])[2],
+          this.getPointColor(this.fsData[2], ['19', 'MID3', '01'])[2]
+        )
           var handlerVideo = new Cesium.ScreenSpaceEventHandler(
-            this.viewer.scene.canvas
-          );
-          var that = this;
+          this.viewer.scene.canvas
+        )
+          var that = this
           /**
            * 鼠标移动事件
            */
           handlerVideo.setInputAction(movement => {
-            this.pointHandler(movement);
-          }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+          this.pointHandler(movement)
+          }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
           /**
            * 鼠标左键点击事件
            */
           handlerVideo.setInputAction(click => {
-            this.wallHandler(click);
-          }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+          this.wallHandler(click)
+          }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
           /**
            * 相机高度监听事件
            */
           this.viewer.scene.camera.moveEnd.addEventListener(() => {
-            // 获取当前相机高度
-            const height = Math.ceil(
-              this.viewer.camera.positionCartographic.height
-            );
+          // 获取当前相机高度
+          const height = Math.ceil(
+            this.viewer.camera.positionCartographic.height
+          )
             if (height > 60000) {
-              for (let i = 0; i < that.pointName.length; i++) {
-                const entity = that.viewer.entities.getById(that.pointName[i]);
-                entity.show = false;
+            for (let i = 0; i < that.pointName.length; i++) {
+              const entity = that.viewer.entities.getById(that.pointName[i])
+                entity.show = false
               }
-            } else {
-              for (let i = 0; i < that.pointName.length; i++) {
-                const entity = that.viewer.entities.getById(that.pointName[i]);
-                entity.show = true;
+          } else {
+            for (let i = 0; i < that.pointName.length; i++) {
+              const entity = that.viewer.entities.getById(that.pointName[i])
+                entity.show = true
               }
-            }
-          });
-          function loadColorTable() {
-            const json = {
-              ncolors: 1,
-              colorTable: [1, 1, 1.0, 0.8]
-            };
-            const colorNum = json["ncolors"];
-            const colorTable = json["colorTable"];
-            const channel = 4;
-            const colorsArray = new Float32Array(channel * colorNum);
-            for (var i = 0; i < colorNum; i++) {
-              for (var j = 0; j < channel; j++) {
-                colorsArray[channel * i + j] = colorTable[channel * i + j];
-              }
-            }
-            const result = {};
-            result.colorNum = colorNum;
-            result.array = colorsArray;
-            return result;
-          }
-          function objToStrMap(obj) {
-            const strMap = new Map();
-            for (const k of Object.keys(obj)) {
-              strMap.set(k, obj[k]);
-            }
-            return strMap;
           }
         })
-        .catch(err => {});
+          function loadColorTable() {
+          const json = {
+            ncolors: 1,
+            colorTable: [1, 1, 1.0, 0.8]
+          }
+            const colorNum = json['ncolors']
+            const colorTable = json['colorTable']
+            const channel = 4
+            const colorsArray = new Float32Array(channel * colorNum)
+            for (var i = 0; i < colorNum; i++) {
+            for (var j = 0; j < channel; j++) {
+              colorsArray[channel * i + j] = colorTable[channel * i + j]
+              }
+          }
+          const result = {}
+            result.colorNum = colorNum
+            result.array = colorsArray
+            return result
+          }
+        function objToStrMap(obj) {
+          const strMap = new Map()
+            for (const k of Object.keys(obj)) {
+            strMap.set(k, obj[k])
+            }
+          return strMap
+          }
+      })
+        .catch(err => {})
       // Cesium.Resource.fetchJson({ url: jsonPath }).then(resData => {
       //   resData = resData.data
       // })
     },
     getRunWayColor(runWay, arr) {
-      const runWayColor = [];
+      const runWayColor = []
       arr.forEach(item => {
         if (runWay[item].SPD[0] > 0 && runWay[item].SPD[0] < 5) {
-          runWayColor.push("#0BD3A7");
+          runWayColor.push('#0BD3A7')
         } else if (runWay[item].SPD[0] >= 5 && runWay[item].SPD[0] < 17) {
-          runWayColor.push("#FFBE3A");
+          runWayColor.push('#FFBE3A')
         } else if (runWay[item].SPD[0] >= 17) {
-          runWayColor.push("#FF2C55");
+          runWayColor.push('#FF2C55')
         }
-      });
-      return runWayColor;
+      })
+      return runWayColor
     },
     getPointColor(runWay, arr) {
-      const backColor = [];
+      const backColor = []
       arr.forEach(item => {
         if (runWay[item].SPD[0] > 0 && runWay[item].SPD[0] < 5) {
-          backColor.push("#DDFBF5");
+          backColor.push('#DDFBF5')
         } else if (runWay[item].SPD[0] >= 5 && runWay[item].SPD[0] < 17) {
-          backColor.push("#FFF1D4");
+          backColor.push('#FFF1D4')
         } else if (runWay[item].SPD[0] >= 17) {
-          backColor.push("#FFD8DF");
+          backColor.push('#FFD8DF')
         }
-      });
-      return backColor;
+      })
+      return backColor
     },
     drawWindHeatLayer(data) { // 绘制风场热力图
       var points = []
@@ -1163,26 +1163,26 @@ export default {
       var max = 0
       var speeds = []
       for (var i = 0; i < data.lat.array.length; i++) {
-        var speed = Math.sqrt(udata[i] * udata[i] + vdata[i] * vdata[i]);
-        speeds.push(speed);
-        minSpeed = Math.min(minSpeed, speed);
-        maxSpeed = Math.max(maxSpeed, speed);
+        var speed = Math.sqrt(udata[i] * udata[i] + vdata[i] * vdata[i])
+        speeds.push(speed)
+        minSpeed = Math.min(minSpeed, speed)
+        maxSpeed = Math.max(maxSpeed, speed)
       }
       // minSpeed = 0;
       // maxSpeed = 100;
       for (var i = 0; i < data.lat.array.length; i++) {
         // var speed = Math.sqrt(udata[i]*udata[i]+vdata[i]*vdata[i]);
-        var value = (speeds[i] - minSpeed) * (1 / (maxSpeed - minSpeed));
-        max = Math.max(max, value);
+        var value = (speeds[i] - minSpeed) * (1 / (maxSpeed - minSpeed))
+        max = Math.max(max, value)
         var point = {
           x: (longdata[i] - minLong) * (1000 / (maxLong - minLong)),
           y: (maxLat - latdata[i]) * (1000 / (maxLat - minLat)),
           value: value
-        };
-        points.push(point);
+        }
+        points.push(point)
       }
       // max = 4;
-      var coordinate3 = [minLong, minLat, maxLong, maxLat];
+      var coordinate3 = [minLong, minLat, maxLong, maxLat]
       if (this.colorImage) {
         this.colorImage.redraw(
           this.viewer,
@@ -1190,7 +1190,7 @@ export default {
           max,
           points,
           this.gradientWind
-        );
+        )
       } else {
         this.colorImage = new ColorImage(
           this.viewer,
@@ -1198,7 +1198,7 @@ export default {
           max,
           points,
           this.gradientWind
-        );
+        )
       }
     },
     /**
@@ -1207,20 +1207,20 @@ export default {
      * @returns {Element|HTMLElementTagNameMap[string]}
      */
     drawRunWays: function(colors) {
-      var point = [0, 0.5, 1];
-      var canvas = document.createElement("canvas"); // 创建canvas标签
-      var ctx = canvas.getContext("2d");
-      var grd = ctx.createLinearGradient(0, 0, 300, 0);
+      var point = [0, 0.5, 1]
+      var canvas = document.createElement('canvas') // 创建canvas标签
+      var ctx = canvas.getContext('2d')
+      var grd = ctx.createLinearGradient(0, 0, 300, 0)
       for (var i = 0; i < point.length; i++) {
-        grd.addColorStop(point[i], colors[i]);
+        grd.addColorStop(point[i], colors[i])
       }
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetX = 10;
-      ctx.shadowColor = "black";
-      ctx.rect(0, 0, 300, 150);
-      ctx.fillStyle = grd;
-      ctx.fill();
-      return canvas;
+      ctx.shadowBlur = 10
+      ctx.shadowOffsetX = 10
+      ctx.shadowColor = 'black';
+      ctx.rect(0, 0, 300, 150)
+      ctx.fillStyle = grd
+      ctx.fill()
+      return canvas
     },
     /**
      * 画站点
@@ -1231,7 +1231,7 @@ export default {
     drawPoint(text, lat, lng, runway, color, backcolor, pdId) {
       var r =
         '<table style="width: 200px;"><tr><th scope="col" colspan="4"  style="text-align:center;font-size:15px;">' +
-        '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"></td></tr></table>';
+        '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"></td></tr></table>'
       this.viewer.entities.add({
         show: !(text.indexOf('跑道') >= 0),
         id: text.indexOf('跑道') >= 0 ? pdId : text.replace(/^\s*|\s*$/g, ''),
@@ -1243,7 +1243,7 @@ export default {
         textColor: color,
         label: {
           text: text,
-          font: "12px Source Han Sans CN", // 字体样式
+          font: '12px Source Han Sans CN', // 字体样式
           fillColor: Cesium.Color.fromCssColorString(color), // 字体颜色
           backgroundColor: Cesium.Color.fromCssColorString(backcolor), // 背景颜色
           showBackground: !(text.indexOf('跑道') >= 0), // 是否显示背景颜色
@@ -1256,19 +1256,19 @@ export default {
           scale: 1
         },
         tooltip: { html: r, anchor: [0, -12] }
-      });
+      })
     },
     /**
      * 站点悬浮事件，获取当前站点时间数据
      * @param movement
      */
     pointHandler(movement) {
-      var pick = this.viewer.scene.pick(movement.endPosition);
-      if (!!pick && !!pick.id && !!pick.id.name && this.activeWind == "plane") {
+      var pick = this.viewer.scene.pick(movement.endPosition)
+      if (!!pick && !!pick.id && !!pick.id.name && this.activeWind == 'plane') {
         const name = this.pointName.some(item => {
-          return item == pick.id.name.trim();
-        });
-        this.isHoverShow = true;
+          return item == pick.id.name.trim()
+        })
+        this.isHoverShow = true
         if (name && pick.id.name.trim() != this.hoverSite) {
           this.hoverSite = pick.id.name.trim()
           this.getChartData(this.hoverSite)
@@ -1277,21 +1277,21 @@ export default {
           this.infoTime = '2019-12-03 ' + this.showHour + ':00:00'
         }
       } else {
-        this.isHoverShow = false;
+        this.isHoverShow = false
       }
       if (this.entity && this.entity.id.label.scale != 1) {
         if (!pick || this.entity.id.id != pick.id.id) {
-          this.entity.id.label.scale = 1;
+          this.entity.id.label.scale = 1
           this.entity.id.label.fillColor = Cesium.Color.fromCssColorString(
             this.entity.id.textColor
-          );
+          )
           this.entity.id.label.backgroundColor = Cesium.Color.fromCssColorString(
             this.entity.id.backColor
-          );
-          if (pick && pick.id.type == "station") {
-            this.entity = pick;
+          )
+          if (pick && pick.id.type == 'station') {
+            this.entity = pick
           } else {
-            this.entity = undefined;
+            this.entity = undefined
           }
         }
       }
@@ -1301,70 +1301,70 @@ export default {
         pick.id.label.fillColor = Cesium.Color.fromCssColorString('#ffffff')
         pick.id.label.backgroundColor = Cesium.Color.fromCssColorString(
           pick.id.textColor
-        );
+        )
       }
     },
     wallHandler(data) {
-      var pick = this.viewer.scene.pick(data.position);
-      if (this.activeWind == "plane") {
+      var pick = this.viewer.scene.pick(data.position)
+      if (this.activeWind == 'plane') {
         if (pick.id.name) {
-          this.clickSite = pick.id.name.trim();
+          this.clickSite = pick.id.name.trim()
         }
       } else {
         if (pick) {
-          if (pick.id.name == "windWall") {
-            this.sectionwindDetail = true;
-            this.changeRunway(pick.id.type);
+          if (pick.id.name == 'windWall') {
+            this.sectionwindDetail = true
+            this.changeRunway(pick.id.type)
           }
         }
       }
     },
     // 剖面风
     moveMyScroll(type) {
-      const leftDistance = this.$refs["myScrollbar"].wrap.scrollLeft;
-      if (type == "left") {
+      const leftDistance = this.$refs['myScrollbar'].wrap.scrollLeft
+      if (type == 'left') {
         if (leftDistance - 30 < 0) {
-          this.$refs["myScrollbar"].wrap.scrollLeft = 0;
+          this.$refs['myScrollbar'].wrap.scrollLeft = 0
         } else {
-          this.$refs["myScrollbar"].wrap.scrollLeft =
-            this.$refs["myScrollbar"].wrap.scrollLeft - 30;
+          this.$refs['myScrollbar'].wrap.scrollLeft =
+            this.$refs['myScrollbar'].wrap.scrollLeft - 30
         }
       } else {
-        if (leftDistance + 30 > this.$refs["myScrollbar"].wrap.scrollWidth) {
-          this.$refs["myScrollbar"].wrap.scrollLeft = this.$refs[
-            "myScrollbar"
-          ].wrap.scrollWidth;
+        if (leftDistance + 30 > this.$refs['myScrollbar'].wrap.scrollWidth) {
+          this.$refs['myScrollbar'].wrap.scrollLeft = this.$refs[
+            'myScrollbar'
+          ].wrap.scrollWidth
         } else {
-          this.$refs["myScrollbar"].wrap.scrollLeft =
-            this.$refs["myScrollbar"].wrap.scrollLeft + 30;
+          this.$refs['myScrollbar'].wrap.scrollLeft =
+            this.$refs['myScrollbar'].wrap.scrollLeft + 30
         }
       }
     },
     closeWindow() {
-      this.sectionwindDetail = false;
+      this.sectionwindDetail = false
     },
     changeRunway(type) {
       switch (type) {
-        case "runway1":
-          this.runName = "跑道1";
-          break;
-        case "runway2":
-          this.runName = "跑道2";
-          break;
-        case "runway3":
-          this.runName = "跑道3";
-          break;
+        case 'runway1':
+          this.runName = '跑道1';
+          break
+        case 'runway2':
+          this.runName = '跑道2';
+          break
+        case 'runway3':
+          this.runName = '跑道3';
+          break
       }
-      this.runType = type;
-      this.runwayTime = 1;
-      const self = this;
-      this.$refs.canvas.innerHTML = "";
-      const time = utilTime.timeObj(new Date().getTime());
+      this.runType = type
+      this.runwayTime = 1
+      const self = this
+      this.$refs.canvas.innerHTML = '';
+      const time = utilTime.timeObj(new Date().getTime())
       getParabolic({
-        dataCode: "ABC",
-        dataSet: "XLONG,XLAT,hight,U,V,W",
+        dataCode: 'ABC',
+        dataSet: 'XLONG,XLAT,hight,U,V,W',
         time: `${time.y}-${time.m}-${time.d} 00:00:00`,
-        resolution: "1000M",
+        resolution: '1000M',
         runway: type
       }).then(res => {
         this.$refs['myScrollbar'].wrap.scrollLeft = 0
@@ -1373,38 +1373,38 @@ export default {
         self.draw(res)
       })
         .then(res => {
-          return res.data;
+          return res.data
         })
         .then(res => {
-          self.draw(res);
-        });
+          self.draw(res)
+        })
     },
     draw(data) {
-      var finList = this.formatData(data);
-      this.drawDiv(finList);
+      var finList = this.formatData(data)
+      this.drawDiv(finList)
     },
     formatData(data) {
-      var v = data["data"]["V"];
-      var w = data["data"]["W"];
-      var xlat = data["data"]["XLAT"];
-      this.height_num = Math.ceil(data["data"]["count"] / 16);
-      var sortList = [];
+      var v = data['data']['V']
+      var w = data['data']['W']
+      var xlat = data['data']['XLAT']
+      this.height_num = Math.ceil(data['data']['count'] / 16)
+      var sortList = []
       // 每行数据按纬度xlat排序
       for (let i = 0, len = xlat.length / this.height_num; i < len; i++) {
-        var jList = [];
+        var jList = []
         for (let j = 0; j < this.height_num; j++) {
           if (jList.length == 0) {
-            jList.push(j);
+            jList.push(j)
           } else if (
             xlat[i * this.height_num + j] <=
             xlat[i * this.height_num + jList[jList.length - 1]]
           ) {
-            jList.push(j);
+            jList.push(j)
           } else if (
             xlat[i * this.height_num + j] >=
             xlat[i * this.height_num + jList[0]]
           ) {
-            jList.unshift(j);
+            jList.unshift(j)
           } else {
             for (let k = 1, klen = jList.length; k < klen; k++) {
               if (
@@ -1413,38 +1413,38 @@ export default {
                 xlat[i * this.height_num + j] <=
                   xlat[i * this.height_num + jList[k - 1]]
               ) {
-                jList.splice(k, 0, j);
+                jList.splice(k, 0, j)
               }
             }
           }
         }
-        sortList.push(jList);
+        sortList.push(jList)
       }
       // 整理最后的数据[xlat,w,v,speed,speed_direction]
-      var finList = [];
+      var finList = []
       for (let i = 0, len = xlat.length / this.height_num; i < len; i++) {
-        var xList = [];
+        var xList = []
         for (let j = 0; j < this.height_num; j++) {
           var w1 =
             w[[i * this.height_num + sortList[i][j]]] == null
               ? 0
-              : w[[i * this.height_num + sortList[i][j]]];
-          var v1 = v[[i * this.height_num + sortList[i][j]]];
-          var speed = Math.sqrt(w1 * w1 + v1 * v1);
-          var r2d = 45.0 / Math.atan(1.0);
-          var speed_dir = 0;
+              : w[[i * this.height_num + sortList[i][j]]]
+          var v1 = v[[i * this.height_num + sortList[i][j]]]
+          var speed = Math.sqrt(w1 * w1 + v1 * v1)
+          var r2d = 45.0 / Math.atan(1.0)
+          var speed_dir = 0
           if (v1 == 0 && w1 > 0) {
-            speed_dir = 0;
+            speed_dir = 0
           } else if (v1 == 0 && w1 < 0) {
-            speed_dir = 180;
+            speed_dir = 180
           } else {
             // speed_dir=Math.atan((-1*w1)/(-1/v1))*r2d
-            speed_dir = Math.atan((-1 * v1) / (-1 * w1 * 10)) * r2d;
+            speed_dir = Math.atan((-1 * v1) / (-1 * w1 * 10)) * r2d
           }
           if (speed_dir < 0) {
-            speed_dir = speed_dir + 360;
+            speed_dir = speed_dir + 360
           }
-          speed_dir += 180;
+          speed_dir += 180
           //  if(speed_dir>360){speed_dir -= 180}
           xList.push([
             xlat[i * this.height_num + sortList[i][j]],
@@ -1453,103 +1453,103 @@ export default {
             speed,
             speed_dir,
             i
-          ]);
+          ])
         }
-        finList.push(xList);
+        finList.push(xList)
       }
-      return finList;
+      return finList
     },
     drawDiv(finList) {
       // draw canvas
-      var body = document.getElementById("body");
-      var canvast = document.getElementById("canvas");
-      body.removeChild(canvast);
-      var canvas = document.createElement("div");
-      canvas.setAttribute("id", "canvas");
-      body.appendChild(canvas);
+      var body = document.getElementById('body')
+      var canvast = document.getElementById('canvas')
+      body.removeChild(canvast)
+      var canvas = document.createElement('div')
+      canvas.setAttribute('id', 'canvas')
+      body.appendChild(canvas)
       if (finList.length < 1) {
-        return;
+        return
       }
       // calc(105vh + 1050px);
       const stylestr =
-        "width : calc(" +
+        'width : calc(' +
         finList[0].length * 3 +
-        "vh + " +
+        'vh + ' +
         finList[0].length * 30 +
-        "px)";
-      body.setAttribute("style", stylestr);
+        'px)';
+      body.setAttribute('style', stylestr)
       for (let len = finList.length, j = len - 1; j >= 0; j--) {
-        var div_0 = document.createElement("div");
+        var div_0 = document.createElement('div')
         div_0.setAttribute(
-          "style",
-          "text-align:center;display:flex;padding-left: 5px;background: #242236;"
-        );
+          'style',
+          'text-align:center;display:flex;padding-left: 5px;background: #242236;'
+        )
         for (let i = 0, len1 = finList[0].length; i < len1; i++) {
-          var div_1 = document.createElement("div");
-          div_1.setAttribute("class", "demo");
+          var div_1 = document.createElement('div')
+          div_1.setAttribute('class', 'demo')
           if (i == 14) {
             div_1.style =
-              "border-left:2px dashed red;box-shadow:inset 15px 0px  10px -15px red;";
+              'border-left:2px dashed red;box-shadow:inset 15px 0px  10px -15px red;';
           }
           if (i == 14 && j == finList.length - 1) {
             div_1.style =
-              "border-left:2px dashed red;border-top:2px dashed red;box-shadow:inset 8px 8px 9px -8px red;";
+              'border-left:2px dashed red;border-top:2px dashed red;box-shadow:inset 8px 8px 9px -8px red;';
           }
           if (j == finList.length - 1 && i > 14 && i < 20) {
             div_1.style =
-              "border-top:2px dashed red;box-shadow:inset -1px 11px 13px -15px red";
+              'border-top:2px dashed red;box-shadow:inset -1px 11px 13px -15px red';
           }
           if (i == 20) {
             div_1.style =
-              "border-right:2px dashed red;box-shadow:inset -15px 0px  10px -15px red";
+              'border-right:2px dashed red;box-shadow:inset -15px 0px  10px -15px red';
           }
           if (i == 20 && j == finList.length - 1) {
             div_1.style =
-              "border-right:2px dashed red;border-top:2px dashed red;box-shadow:inset -8px 8px  9px -8px red";
+              'border-right:2px dashed red;border-top:2px dashed red;box-shadow:inset -8px 8px  9px -8px red';
           }
           if (j == 0 && i > 14 && i < 20) {
             div_1.style =
-              "border-bottom:2px dashed red;box-shadow:inset -1px -11px 13px -15px red";
+              'border-bottom:2px dashed red;box-shadow:inset -1px -11px 13px -15px red';
           }
           if (j == 0 && i == 14) {
             div_1.style =
-              "border-bottom:2px dashed red; border-left:2px dashed red;box-shadow:inset 8px -8px 9px -8px red;";
+              'border-bottom:2px dashed red; border-left:2px dashed red;box-shadow:inset 8px -8px 9px -8px red;';
           }
           if (j == 0 && i == 20) {
             div_1.style =
-              "border-bottom:2px dashed red; border-right:2px dashed red;box-shadow:inset -8px -8px 9px -8px red;";
+              'border-bottom:2px dashed red; border-right:2px dashed red;box-shadow:inset -8px -8px 9px -8px red;';
           }
-          var b_1 = document.createElement("b");
-          var speed = finList[j][i][3];
-          var iconid = this.getSpeedIconId(speed);
-          b_1.setAttribute("class", "icon-" + iconid);
-          var color = "";
+          var b_1 = document.createElement('b')
+          var speed = finList[j][i][3]
+          var iconid = this.getSpeedIconId(speed)
+          b_1.setAttribute('class', 'icon-' + iconid)
+          var color = '';
           b_1.setAttribute(
-            "style",
-            "transform: rotate(" + Math.round(finList[j][i][4]) + "deg)" + color
-          );
-          div_1.appendChild(b_1);
-          div_0.appendChild(div_1);
+            'style',
+            'transform: rotate(' + Math.round(finList[j][i][4]) + 'deg)' + color
+          )
+          div_1.appendChild(b_1)
+          div_0.appendChild(div_1)
         }
-        var div_sp = document.createElement("div");
-        div_sp.setAttribute("class", "clear");
-        canvas.appendChild(div_sp);
-        canvas.appendChild(div_0);
+        var div_sp = document.createElement('div')
+        div_sp.setAttribute('class', 'clear')
+        canvas.appendChild(div_sp)
+        canvas.appendChild(div_0)
       }
-      let value_num = -16;
-      const hang = document.createElement("div");
+      let value_num = -16
+      const hang = document.createElement('div')
       hang.setAttribute(
-        "style",
-        "text-align:center;display:flex;width: fit-content;padding-left:5px;font-size: 16px;font-family: DINMittelschriftStd;color: rgba(255,255,255,1);line-height: 19px;margin-top: 0.20rem;"
-      );
+        'style',
+        'text-align:center;display:flex;width: fit-content;padding-left:5px;font-size: 16px;font-family: DINMittelschriftStd;color: rgba(255,255,255,1);line-height: 19px;margin-top: 0.20rem;'
+      )
       for (let k = 0; k < 35; k++) {
-        const div_child = document.createElement("div");
-        div_child.setAttribute("class", "demo");
+        const div_child = document.createElement('div')
+        div_child.setAttribute('class', 'demo')
         if (k % 2 == 1) {
-          div_child.innerHTML = value_num;
-          value_num = value_num + 2;
+          div_child.innerHTML = value_num
+          value_num = value_num + 2
         }
-        hang.appendChild(div_child);
+        hang.appendChild(div_child)
       }
       // value_num = -16
       // const hang2 = document.createElement('div')
@@ -1602,69 +1602,69 @@ export default {
       // canvas.appendChild(hang2)
     },
     changeTimeToPic() {
-      this.$refs.canvas.innerHTML = "";
-      const timeArray = this.searchTime.split(" ");
-      const secondArray = timeArray[1].split(":");
-      const nowTime = new Date().getTime();
-      const time0 = utilTime.timeObj(nowTime);
+      this.$refs.canvas.innerHTML = '';
+      const timeArray = this.searchTime.split(' ')
+      const secondArray = timeArray[1].split(':')
+      const nowTime = new Date().getTime()
+      const time0 = utilTime.timeObj(nowTime)
       // const timestr = '2019-11-01%20' + secondArray[0] + ':' + secondArray[1] + ':00'
       const timestr = `${time0.y}-${time0.m}-${time0.d} ${secondArray[0]}:${
         secondArray[1]
-      }:00`;
+      }:00`
       getParabolic({
-        dataCode: "ABC",
-        dataSet: "XLONG,XLAT,hight,U,V,W",
+        dataCode: 'ABC',
+        dataSet: 'XLONG,XLAT,hight,U,V,W',
         time: timestr,
-        resolution: "1000M",
+        resolution: '1000M',
         runway: this.runType
       }).then(res => {
-        this.draw(res.data);
-      });
+        this.draw(res.data)
+      })
     },
     changeTime() {
       this.sliderTime = new Date(
         new Date(new Date().toLocaleDateString()).getTime() +
           (Math.floor(this.runwayTime * 24) / 100) * 60 * 60 * 1000
-      );
+      )
     },
     getTime(value) {
       this.searchTime = this.$moment(this.sliderTime)
-        .format("YYYY.MM.DD HH:mm")
-        .toString();
-      return this.searchTime;
+        .format('YYYY.MM.DD HH:mm')
+        .toString()
+      return this.searchTime
     },
     getSpeedIconId(speed) {
-      var t = Math.round(speed, 1);
+      var t = Math.round(speed, 1)
       // 计算风速图标
-      var iconid = 36;
+      var iconid = 36
       if (speed < 0.3) {
-        iconid = 0;
+        iconid = 0
       } else if (speed < 2.1) {
-        iconid = 2;
+        iconid = 2
       } else if (speed < 4.1) {
-        iconid = 4;
+        iconid = 4
       } else if (speed < 6.1) {
-        iconid = 6;
+        iconid = 6
       } else if (speed < 8.1) {
-        iconid = 8;
+        iconid = 8
       } else if (speed < 10.1) {
-        iconid = 10;
+        iconid = 10
       } else if (speed < 12.1) {
-        iconid = 12;
+        iconid = 12
       } else if (speed < 14.1) {
-        iconid = 14;
+        iconid = 14
       } else if (speed < 16.1) {
-        iconid = 16;
+        iconid = 16
       } else if (speed < 20.1) {
-        iconid = 20;
+        iconid = 20
       } else if (speed < 24.1) {
-        iconid = 24;
+        iconid = 24
       } else if (speed < 28.1) {
-        iconid = 28;
+        iconid = 28
       } else if (speed < 32.1) {
-        iconid = 32;
+        iconid = 32
       } else {
-        iconid = 36;
+        iconid = 36
       }
       return iconid
     },
@@ -1716,7 +1716,7 @@ export default {
       })
     }
   }
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

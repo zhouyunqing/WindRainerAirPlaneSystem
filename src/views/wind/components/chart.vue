@@ -7,30 +7,32 @@
     <div class="content">
       <div class="content-title">
         <div>{{ params.site || 'ZBAA' }}</div>
+        <span class="time">{{ time }}</span>
         <i v-if="active == 'plane'" :class="{sp: chartShow}" @click="upAndDown" />
       </div>
       <div class="content-tab">
-        <div class="time">{{ time }}</div>
+        <div class="air-name">
+          <img :src="tab[0].icon" alt="">
+          <div>
+            <div class="tit">{{ tab[0].tit }}</div>
+            <div class="txt">{{ tab[0].data }}</div>
+          </div>
+        </div>
         <div class="right-tab">
           <div class="right-tab-scroll">
             <ul>
-              <li v-for="(item, i) in tab" :key="i" @click="changeTab(item.name)">
+              <li v-for="(item, i) in tab" :key="i" @click="changeTab(item.name)" v-if="item.name != 'NAME'">
                 <img :src="item.icon" alt="">
-                <div v-if="item.name != 'NAME'" :class="{sp: chartTab == item.name}">
+                <div :class="{sp: chartTab == item.name}">
                   <div class="tit">{{ item.tit }}</div>
-                  <div v-if="!!info[item.name] && item.name == 'SPD'" class="txt">{{ parseFloat(info[item.name][chartIndex]).toFixed(2) || '- ' }}{{ item.unit }}</div>
-                  <div v-if="!!info[item.name] && item.name == 'RAIN'" class="txt">{{ parseFloat(info[item.name][chartIndex]).toFixed(1) || '- ' }}{{ item.unit }}</div>
-                  <div v-if="!!info[item.name] && item.name == 'T'" class="txt">{{ parseInt(info[item.name][chartIndex] - 272.15) || 0 }}{{ item.unit }}</div>
-                  <div v-if="!!info[item.name] && item.name == 'DIR'" class="txt">{{ parseInt(info[item.name][chartIndex]) || '- ' }}{{ item.unit }}</div>
-                  <div v-if="!!info[item.name] && item.name == 'RH'" class="txt">{{ parseInt(info[item.name][chartIndex]) || '- ' }}{{ item.unit }}</div>
-                  <div v-if="!!info[item.name] && item.name == 'SLP'" class="txt">{{ parseInt(info[item.name][chartIndex]) || '- ' }}{{ item.unit }}</div>
-                  <div v-if="item.name == 'SF'" class="txt">- {{ item.unit }}</div>
-                  <div v-if="item.name == 'NF'" class="txt">- {{ item.unit }}</div>
-                  <div v-if="item.name == 'CF'" class="txt">- {{ item.unit }}</div>
-                </div>
-                <div v-else class="sp">
-                  <div class="tit">{{ item.tit }}</div>
-                  <div class="txt">{{ item.data }}{{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'SPD'" class="txt">{{ parseFloat(info[item.name][chartIndex]).toFixed(2) || '-' }} {{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'RAIN'" class="txt">{{ parseFloat(info[item.name][chartIndex]).toFixed(1) || '-' }} {{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'T'" class="txt">{{ parseInt(info[item.name][chartIndex] - 272.15) || 0 }} {{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'DIR'" class="txt">{{ parseInt(info[item.name][chartIndex]) || '-' }} {{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'RH'" class="txt">{{ parseInt(info[item.name][chartIndex]) || '-' }} {{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'SLP'" class="txt">{{ parseInt(info[item.name][chartIndex]) || '-' }} {{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'CWIND'" class="txt">{{ parseFloat(info[item.name][chartIndex]).toFixed(2) || '-' }} {{ item.unit }}</div>
+                  <div v-if="!!info[item.name] && item.name == 'HWIND'" class="txt">{{ parseFloat(info[item.name][chartIndex]).toFixed(2) || '-' }} {{ item.unit }}</div>
                 </div>
               </li>
             </ul>
@@ -85,28 +87,22 @@ export default {
         //   unit: 'm/s',
         //   data: ''
         // }, {
+          icon: require('../../../../public/images/icon_wendu@2x.png'),
+          tit: '逆风分量',
+          name: 'HWIND',
+          unit: 'm/s',
+          data: ''
+        }, {
+          icon: require('../../../../public/images/icon_wendu@2x.png'),
+          tit: '侧风分量',
+          name: 'CWIND',
+          unit: 'm/s',
+          data: ''
+        }, {
           icon: require('../../../../public/images/icon_qiya@2x.png'),
           tit: '修正海压',
           name: 'SLP',
           unit: 'hPa',
-          data: ''
-        }, {
-          icon: require('../../../../public/images/icon_wendu@2x.png'),
-          tit: '顺风(南向北)',
-          name: 'SF',
-          unit: 'm/s',
-          data: ''
-        }, {
-          icon: require('../../../../public/images/icon_wendu@2x.png'),
-          tit: '逆风(北向南)',
-          name: 'NF',
-          unit: 'm/s',
-          data: ''
-        }, {
-          icon: require('../../../../public/images/icon_wendu@2x.png'),
-          tit: '侧风风速',
-          name: 'CF',
-          unit: 'm/s',
           data: ''
         }, {
           icon: require('../../../../public/images/icon_wendu@2x.png'),
@@ -132,7 +128,7 @@ export default {
         site: 'ZBAA'
       },
       Echarts: null,
-      chartTab: 'SPD',
+      chartTab: 'HWIND',
       chartIndex: 0,
       info: {},
       chartTit: {}
@@ -200,6 +196,22 @@ export default {
             tooltipUnit: 'm/s',
             unit: 'm/s',
             lineName: '风速(m/s)'
+          }
+          break
+        case 'CWIND':
+          this.chartTit = {
+            tooltip: '侧风风速',
+            tooltipUnit: 'm/s',
+            unit: 'm/s',
+            lineName: '侧风风速(m/s)'
+          }
+          break
+        case 'HWIND':
+          this.chartTit = {
+            tooltip: '顺风风速',
+            tooltipUnit: 'm/s',
+            unit: 'm/s',
+            lineName: '顺风风速(m/s)'
           }
           break
         case 'NAME':
@@ -595,6 +607,8 @@ export default {
       const T = []
       const RAIN = []
       const SPD = []
+      const CWIND = []
+      const HWIND = []
       let sTime = 0
       const _this = this
       if (this.forecastTab === 'near') {
@@ -635,6 +649,8 @@ export default {
         SPD.push(parseFloat(this.info.SPD[i]).toFixed(2))
         RAIN.push(parseFloat(this.info.RAIN[i]).toFixed(1))
         T.push(parseInt(this.info.T[i] - 272.15))
+        CWIND.push(parseFloat(this.info.CWIND[i]).toFixed(2))
+        HWIND.push(parseFloat(this.info.HWIND[i]).toFixed(2))
       }
       return {
         times: times,
@@ -644,7 +660,9 @@ export default {
         SLP: SLP,
         T: T,
         RAIN: RAIN,
-        SPD: SPD
+        SPD: SPD,
+        CWIND: CWIND,
+        HWIND: HWIND
       }
     },
     setchartData(data) {
@@ -664,6 +682,12 @@ export default {
           info = parseInt(data)
           break
         case 'SPD':
+          info = parseFloat(data).toFixed(2)
+          break
+        case 'CWIND':
+          info = parseFloat(data).toFixed(2)
+          break
+        case 'HWIND':
           info = parseFloat(data).toFixed(2)
           break
       }
@@ -734,6 +758,13 @@ export default {
           border-radius: 1px;
         }
       }
+      span {
+        flex: 1;
+        text-align: right;
+        font-size: 0.13rem;
+        color: #fff;
+        padding-right: 0.2rem;
+      }
       i {
         height: 0.28rem;
         width: 0.28rem;
@@ -764,12 +795,27 @@ export default {
       height: 0.6rem;
       align-items: center;
       padding: 0 0.16rem;
-      .time {
-        flex-shrink: 0;
+      .air-name {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
         width: 1.9rem;
-        font-size: 0.18rem;
-        span {
+        img {
+          width: 0.32rem;
+          height: 0.32rem;
+          margin-right: 5px;
+        }
+        .tit {
+          font-size: 0.13rem;
+          color: #888;
+          height: 0.18rem;
+          line-height: 0.18rem;
+        }
+        .txt {
           font-size: 0.16rem;
+          color: #fff;
+          height: 0.22rem;
+          line-height: 0.22rem;
         }
       }
       .right-tab {

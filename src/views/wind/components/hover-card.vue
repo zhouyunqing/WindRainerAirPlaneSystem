@@ -3,8 +3,12 @@
     <div class="title">{{ site }}</div>
     <ul class="item">
       <li>
-        <span>地面风速：</span>
-        <em>{{ parseFloat(detail.SPD[index]).toFixed(2) }}m/s</em>
+        <span>顺风风速：</span>
+        <em>{{ parseFloat(detail.HWIND[index]).toFixed(2) }}m/s</em>
+      </li>
+      <li>
+        <span>侧风风速：</span>
+        <em>{{ parseFloat(detail.CWIND[index]).toFixed(2) }}m/s</em>
       </li>
       <li>
         <span>一小时降水量：</span>
@@ -23,7 +27,7 @@
         <em>{{ parseInt(detail.T[index] - 272.15) }}℃</em>
       </li>
       <li>
-        <span>修正海平面气压：</span>
+        <span>修正海压：</span>
         <em>{{ parseInt(detail.SLP[index]) }}hPa</em>
       </li>
     </ul>
