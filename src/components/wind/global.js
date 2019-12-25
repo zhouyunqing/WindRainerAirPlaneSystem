@@ -20,7 +20,7 @@ let FY3D = null
 let FYDen = null
 let i = 0
 const entityList = [
-  '静止卫星全球拼图',
+  // '静止卫星全球拼图',
   'FY4A',
   'equator',
   'FY4A_Gray',

@@ -627,14 +627,15 @@ export default {
       this.viewer.scene.morphTo2D(0)
       this.viewer.clock.onTick.removeEventListener(onTick)
       // 视频覆盖
-      const entity = this.viewer.entities.getById('静止卫星全球拼图')
-      if (entity) {
-        entity.show = false
-      }
+      // const entity = this.viewer.entities.getById('静止卫星全球拼图')
+      // if (entity) {
+      //   entity.show = false
+      // }
       setGlobal(this.viewer, 'entity', false)
     },
     setGlobalPage(state) {
       // 初始化
+      let entity
       if (state) {
         this.viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(
@@ -660,12 +661,14 @@ export default {
         }
         setGlobal(this.viewer, 'stop')
       }
+      entity = this.viewer.entities.getById('静止卫星全球拼图')
+      if (entity) {
+        entity.show = state
+      }
       if (!this.globalS) {
         return
       }
       // 视频覆盖
-      let entity
-      entity = this.viewer.entities.getById('静止卫星全球拼图')
       if (state && !entity) {
         var videoElement = document.getElementById('trailer')
         this.viewer.entities.add({
@@ -675,9 +678,6 @@ export default {
             material: videoElement
           }
         })
-      }
-      if (entity) {
-        entity.show = state
       }
       // 实体添加
       if (state && !entity) {
