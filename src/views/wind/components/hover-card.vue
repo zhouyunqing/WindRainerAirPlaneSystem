@@ -3,11 +3,11 @@
     <div class="title">{{ site }}</div>
     <ul class="item">
       <li>
-        <span>顺风风速：</span>
+        <span>顶风：</span>
         <em>{{ parseFloat(detail.HWIND[index]).toFixed(2) }}m/s</em>
       </li>
       <li>
-        <span>侧风风速：</span>
+        <span>侧风：</span>
         <em>{{ parseFloat(detail.CWIND[index]).toFixed(2) }}m/s</em>
       </li>
       <li>

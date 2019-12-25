@@ -87,14 +87,14 @@ export default {
         //   unit: 'm/s',
         //   data: ''
         // }, {
-          icon: require('../../../../public/images/icon_wendu@2x.png'),
-          tit: '逆风分量',
+          icon: require('../../../../public/images/dingfeng.png'),
+          tit: '顶风',
           name: 'HWIND',
           unit: 'm/s',
           data: ''
         }, {
-          icon: require('../../../../public/images/icon_wendu@2x.png'),
-          tit: '侧风分量',
+          icon: require('../../../../public/images/cefeng.png'),
+          tit: '侧风',
           name: 'CWIND',
           unit: 'm/s',
           data: ''
@@ -200,18 +200,18 @@ export default {
           break
         case 'CWIND':
           this.chartTit = {
-            tooltip: '侧风风速',
+            tooltip: '侧风',
             tooltipUnit: 'm/s',
             unit: 'm/s',
-            lineName: '侧风风速(m/s)'
+            lineName: '侧风(m/s)'
           }
           break
         case 'HWIND':
           this.chartTit = {
-            tooltip: '顺风风速',
+            tooltip: '顶风',
             tooltipUnit: 'm/s',
             unit: 'm/s',
-            lineName: '顺风风速(m/s)'
+            lineName: '顶风(m/s)'
           }
           break
         case 'NAME':
