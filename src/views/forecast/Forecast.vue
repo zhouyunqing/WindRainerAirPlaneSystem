@@ -133,10 +133,10 @@ export default {
   },
   data() {
     return {
-      type: 1,
-      tipInformation: "",
-      deleteId: "",
-      deleteTipVisible: false,
+      type: 1,  //删除提示类型：1=预警通知, 2=预警配置
+      tipInformation: "", //删除组件提示信息
+      deleteId: "",  //待删除项ID
+      deleteTipVisible: false, //显示/关闭删除提示组件
       // 分页控制
       riskInfoPage: {
         total: 0,
@@ -153,31 +153,33 @@ export default {
         }
       },
 
-      noticeVisible: false,
-      riskTypeId: {},
-      value: true,
-      activeIndex: "notice",
+      noticeVisible: false,  //显示/关闭预警配置界面
+      riskTypeId: {},   //预警配置数据
+      // value: true,
+      activeIndex: "notice", //切换tab,1=notice预警通知，2=config预警配置
       noticeWidth: 190,
-      configWidth: 220,
-      input: "",
-      tableDataConfig: [],
-      tableData: [],
-      runwayHistoryData: [],
-      riskServerity: [],
-      wind_speed_options: [],
-      groupList: [],
-      allGroupList: [],
-      riskStateDic: []
+      configWidth: 220, //预警配置列表行宽
+      input: "", //预警搜索输入框
+      tableDataConfig: [], //预警配置数据
+      tableData: [], //预警信息数据
+      runwayHistoryData: [],  
+      riskServerity: [],  //预警级别
+      wind_speed_options: [],  //预警条件数据
+      groupList: [],  //信息群组 active=1
+      allGroupList: [],  //全部信息群组 
+      riskStateDic: []   //风险状态数据字典，目前1=待处理，2=已处理
     };
   },
   beforeMount() {
-    this.RunwayHistoryData();
-    this.GroupList();
-    this.RiskServerity();
-    this.getRiskStateDic();
+    this.RunwayHistoryData(); //初始化预警条件
+    this.GroupList(); //初始化信息群组
+    this.RiskServerity();  //初始化风险级别
+    this.getRiskStateDic();  //初始化预警状态
   },
   mounted() {
+    //预警配置列表
     this.RiskConfigList();
+    //预警通知列表
     this.riskinfoList();
     // 预警通知 暂时注释下一步实现
     this.popWindow();

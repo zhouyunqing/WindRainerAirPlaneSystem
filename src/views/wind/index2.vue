@@ -1343,6 +1343,7 @@ export default {
     closeWindow() {
       this.sectionwindDetail = false
     },
+    // 剖面风，改变跑道数据
     changeRunway(type) {
       switch (type) {
         case 'runway1':
@@ -1379,10 +1380,12 @@ export default {
           self.draw(res)
         })
     },
+    // 剖面风，根据剖面风数据绘制数据图
     draw(data) {
       var finList = this.formatData(data)
       this.drawDiv(finList)
     },
+    // 剖面风，格式化数据,将数据按输出顺序排序
     formatData(data) {
       var v = data['data']['V']
       var w = data['data']['W']
@@ -1459,6 +1462,7 @@ export default {
       }
       return finList
     },
+    // 剖面风，将格式化数据绘制到body元素
     drawDiv(finList) {
       // draw canvas
       var body = document.getElementById('body')
@@ -1601,6 +1605,7 @@ export default {
       canvas.appendChild(hang)
       // canvas.appendChild(hang2)
     },
+    //剖面风，根据时间修改风向数据
     changeTimeToPic() {
       this.$refs.canvas.innerHTML = '';
       const timeArray = this.searchTime.split(' ')
